@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
-import MainMenu from './MainMenu';
+import LandingPage from './LandingPage';
+import Navbar from './Navbar';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
-    <MainMenu />
-    <App />
+    <Navbar />
+    <LandingPage />
   </React.StrictMode>,
   document.getElementById('root')
 );
