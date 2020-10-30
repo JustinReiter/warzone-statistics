@@ -1,14 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import LandingPage from './LandingPage';
-import Navbar from './Navbar';
+import NavbarComponent from './Navbar';
 import * as serviceWorker from './serviceWorker';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Navbar />
-    <LandingPage />
+    <NavbarComponent />
   </React.StrictMode>,
   document.getElementById('root')
 );

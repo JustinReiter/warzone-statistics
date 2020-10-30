@@ -1,29 +1,40 @@
 import React from 'react';
-import logo from './logo.svg';
-import { Button } from '@material-ui/core';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
 
 import LandingPage from './LandingPage';
 import ContactPage from './ContactPage';
 import './Navbar.css';
 
-function Navbar() {
+function NavbarComponent() {
     return (
         <Router>
             <div className="header">
-                <Button component={Link} to="/"><img src={logo} className="header-logo header-option" alt="Logo" /></Button>
-                <Button component={Link} to="/">Home</Button>
-                <Button component={Link} to="/Ladders">Ladders</Button>
-                <Button component={Link} to="/Contact">Contact</Button>
+                <Navbar bg="light" expand="lg">
+                    <Navbar.Brand as={Link} to="/">Warzone Statistics</Navbar.Brand>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Collapse id="basic-navbar-nav">
+                        <Nav className="mr-auto">
+                            <Nav.Link as={Link} to="/">Home</Nav.Link>
+                            <Nav.Link as={Link} to="/Ladders">Ladders</Nav.Link>
+                            <Nav.Link as={Link} to="/Players">Players</Nav.Link>
+                            <Nav.Link as={Link} to="/Contact">Contact</Nav.Link>
+                        </Nav>
+                    </Navbar.Collapse>
+                </Navbar>
 
                 <Switch>
                     <Route exact path="/">
                         <LandingPage />
                     </Route>
-                    <Route path="/ladders">
+                    <Route path="/Ladders">
                         <LandingPage />
                     </Route>
-                    <Route path="/contact">
+                    <Route path="/Players">
+                        <LandingPage />
+                    </Route>
+                    <Route path="/Contact">
                         <ContactPage />
                     </Route>
                 </Switch>
@@ -32,4 +43,4 @@ function Navbar() {
     );
 }
 
-export default Navbar;
+export default NavbarComponent;
