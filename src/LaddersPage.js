@@ -1,18 +1,19 @@
 import React from 'react';
 import logo from './logo.svg';
-import { Container } from '@material-ui/core';
-import './LandingPage.css';
+import { Container} from '@material-ui/core';
+import './LaddersPage.css';
 import Card from './components/Card';
 
-function LandingPage() {
+import { LaddersPageTitle, LaddersPageDescription } from './text';
 
+function LaddersPage() {
   return (
     <div className="App">
       
       <header className="App-header">
       <Container maxWidth="sm">
-		  <Card title={"HI"} body={"Test"} />
-        </Container>
+		    <Card title={LaddersPageTitle} body={LaddersPageDescription} />
+      </Container>
 
         <img src={logo} className="App-logo" alt="logo" />
         <p>
@@ -31,4 +32,4 @@ function LandingPage() {
   );
 }
 
-export default LandingPage;
+export default LaddersPage;

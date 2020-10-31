@@ -3,8 +3,9 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
 
-import LandingPage from './LandingPage';
-import ContactPage from './ContactPage';
+import LandingPage from '../LandingPage';
+import LaddersPage from '../LaddersPage';
+import ContactPage from '../ContactPage';
 import './Navbar.css';
 
 function NavbarComponent() {
@@ -29,7 +30,7 @@ function NavbarComponent() {
                         <LandingPage />
                     </Route>
                     <Route path="/Ladders">
-                        <LandingPage />
+                        <LaddersPage />
                     </Route>
                     <Route path="/Players">
                         <LandingPage />
