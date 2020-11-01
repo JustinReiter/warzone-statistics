@@ -1,11 +1,11 @@
-const request = require('sync-request');
+import request from 'sync-request';
 
 // Return ladder game IDs to find new games
 function getLadderGameIDs(ladderid) {
     return JSON.parse(request('POST', process.env.WZ_BASE_URL + "/GameIDFeed?LadderID=" + ladderid, {
                     Email: encodeURIComponent(process.env.WZ_EMAIL),
                     APIToken: encodeURIComponent(process.env.WZ_TOKEN)
-                }).getBody('utf-8'));
+                }).getBody('utf-8')).gameIDs;
 }
 
 // Return game data to add new games to database
@@ -15,7 +15,7 @@ function getLadderGameData(gameid) {
             }).getBody('utf-8'));
 }
 
-module.exports = {
+export default {
     getLadderGameIDs,
     getLadderGameData
 };

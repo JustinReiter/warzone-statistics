@@ -36,7 +36,6 @@ CREATE TABLE games
     winner BIT NOT NULL,
     booted BIT NOT NULL,
     turns INTEGER NOT NULL,
-    start_date DATETIME NOT NULL,
     end_date DATETIME NOT NULL,
 
     player0_id INTEGER NOT NULL,
