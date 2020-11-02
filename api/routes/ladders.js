@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.send("Ladders: Seasonal XXVI");
+    res.send("Ladders: Seasonal XXVI");
 });
 
 module.exports = router;

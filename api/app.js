@@ -6,6 +6,8 @@ var logger = require('morgan');
 var cors = require('cors');
 require('dotenv').config();
 
+import updateLadders from './updateLadders';
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var laddersRouter = require('./routes/ladders');
@@ -32,18 +34,25 @@ app.use("/ladders", laddersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+		next(createError(404));
 });
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+	// set locals, only providing error in development
+	res.locals.message = err.message;
+	res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+	// render the error page
+	res.status(err.status || 500);
+	res.render('error');
+});
+
+// Update ladders every 2 hours
+var updateLaddersJob = schedule.scheduleJob('*/2 * * *', () => {
+	console.log(`[${Date()}] Starting to update ladders`);
+	updateLadders();
+	console.log(`[${Date()}] Finished updating ladders`);
 });
 
 module.exports = app;

@@ -1,5 +1,3 @@
-
-
 const home = ``;
 
 const LaddersPageTitle = `Ladders`;
