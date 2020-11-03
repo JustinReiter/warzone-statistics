@@ -31,13 +31,8 @@ function ReadGameFiles() {
     let dataToOutput = [];
     for (let i = 0; i < ladders.length; i++) {
         let games = fs.readdirSync("./GameData/" + ladders[i]);
-
-        let count = 0;
+        
         for (const game of games) {
-            if (count == 5) {
-                break;
-            }
-            count++;
             let gameData = JSON.parse(fs.readFileSync("./GameData/" + ladders[i] + "/" + game));
 
             dataToOutput.push({
