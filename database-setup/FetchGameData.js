@@ -11,7 +11,7 @@ function SaveAllGameData() {
     for (let i = 0; i < filesToParse.length; i++) {
         let gameIDs = readData.ReadGameIDs(filesToParse[i]);
 
-        for (let j = 0; j < 5; j++) {
+        for (let j = 0; j < gameIDs.length; j++) {
             GetGameData(gameIDs[j], filesToParse[i]);
         }
     }
