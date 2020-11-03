@@ -46,4 +46,13 @@ CREATE TABLE games
     player1_colour INTEGER NOT NULL,
 
     FOREIGN KEY (lid) REFERENCES ladders(lid)
-)
+);
+
+CREATE TABLE daily_standing
+(
+    lid INTEGER NOT NULL,
+    date DATE NOT NULL,
+    games INTEGER NOT NULL,
+    PRIMARY KEY (lid, date),
+    FOREIGN KEY (lid) REFERENCES ladders(lid)
+);

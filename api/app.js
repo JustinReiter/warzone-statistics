@@ -6,7 +6,7 @@ var logger = require('morgan');
 var cors = require('cors');
 require('dotenv').config();
 
-import updateLadders from './updateLadders';
+import { updateLadders, updateDailyStandings } from './updateLadders';
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -50,9 +50,16 @@ app.use(function(err, req, res, next) {
 
 // Update ladders every 2 hours
 var updateLaddersJob = schedule.scheduleJob('*/2 * * *', () => {
-	console.log(`[${Date()}] Starting to update ladders`);
+	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Starting to update ladders`);
 	updateLadders();
-	console.log(`[${Date()}] Finished updating ladders`);
+	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Finished updating ladders`);
+});
+
+// Update ladder standings at 4AM
+var updateLaddersJob = schedule.scheduleJob('4 * * *', () => {
+	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Starting to update daily standings`);
+	updateDailyStandings();
+	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Finished updating daily standings`);
 });
 
 module.exports = app;

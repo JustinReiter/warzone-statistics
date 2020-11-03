@@ -98,4 +98,27 @@ function updateLadders() {
     });
 }
 
-module.exports = updateLadders;
+function updateDailyStandings() {
+    let yesterday = new Date();
+    yesterday.setDate(d.getDate() - 1);
+    let dateString = yesterday.toISOString().slice(0, 19).replace('T', ' ');
+    connection.query("SELECT lid, COUNT(*) AS count FROM games WHERE end_date=? GROUP BY lid;",
+        [dateString],
+        (err, ladders, fields) => {
+            if (err) throw err;
+
+            for (const ladder of ladders) {
+                connection.query("INSERT INTO daily_standing (lid, date, games) VALUES (?, ?, ?)",
+                    [ladder.lid, dateString, ladder.count],
+                    (err, res, fields) => {
+                        if (err) throw err;
+                        console.log(`Successfully added new daily standings for ladder ${ladder.lid}.`);
+                });
+            }
+    });
+}
+
+module.exports  = {
+    updateLadders,
+    updateDailyStandings
+};
