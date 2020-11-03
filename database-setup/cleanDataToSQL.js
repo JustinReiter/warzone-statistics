@@ -10,7 +10,7 @@ function GetAllGameFiles() {
     return res;
 }
 
-function writeSQLToFile(games) {
+function writeSQLToFile(games, players) {
     let logger = fs.createWriteStream('init_game_data.sql');
     let hasSeenSecondLadder = false;
 
@@ -24,11 +24,17 @@ function writeSQLToFile(games) {
         logger.write(`INSERT INTO games (gid, lid, winner, booted, turns, start_date, end_date, player0_id, player0_colour, player1_id, player1_colour) VALUES (${game.gid}, ${game.lid}, ${game.winner}, ${game.booted}, ${game.turns}, '${game.start_date}', '${game.end_date}', ${game.player0_id}, '${game.player0_colour}', ${game.player1_id}, '${game.player1_colour}');\n`);
     }
 
+    logger.write("\n-- Insert players to database\n");
+    for (const [id, name] of Object.entries(players)) {
+        logger.write(`INSERT INTO players (pid, name, version) VALUES (${id}, '${name}', 1);\n`);
+    }
+    
     logger.close();
 }
 
 function ReadGameFiles() {
     let dataToOutput = [];
+    let playerNamesToOutput = {};
     for (let i = 0; i < ladders.length; i++) {
         let games = fs.readdirSync("./GameData/" + ladders[i]);
         
@@ -41,17 +47,20 @@ function ReadGameFiles() {
                 winner: Number(gameData.players[0].state === "Won"),
                 booted: Number(gameData.players.filter((player) => player.state === "Booted").length),
                 turns: gameData.numberOfTurns,
-                // start_date: new Date(gameData.startDate).toISOString().slice(0, 19).replace('T', ' ');,
+                start_date: new Date(gameData.created).toISOString().slice(0, 19).replace('T', ' '),
                 end_date: new Date(gameData.lastTurnTime).toISOString().slice(0, 19).replace('T', ' '),
                 player0_id: Number(gameData.players[0].id),
                 player0_colour: gameData.players[0].color,
                 player1_id: Number(gameData.players[1].id),
-                player1_color: gameData.players[1].color
+                player1_colour: gameData.players[1].color
             });
+
+            playerNamesToOutput[Number(gameData.players[0].id)] = gameData.players[0].name;
+            playerNamesToOutput[Number(gameData.players[1].id)] = gameData.players[1].name; 
         }
     }
 
-    writeSQLToFile(dataToOutput);
+    writeSQLToFile(dataToOutput, playerNamesToOutput);
 }
 
 ReadGameFiles();
