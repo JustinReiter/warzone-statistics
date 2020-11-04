@@ -8,20 +8,17 @@ function fetchGameData(gameid, ladderid) {
         gid: Number(gameData.id),
         lid: ladderid,
         turns: Number(gameData.numberOfTurns),
-        winner: gameData.players[0].state === "Won",
+        winner: Number(gameData.players[0].state === "Won"),
+        booted: gameData.players.filter((player) => player.state === "Booted").length > 0,
         start_data: new Date(gameData.created).toISOString().slice(0, 19).replace('T', ' '),
         end_date: new Date(gameData.lastTurnTime).toISOString().slice(0, 19).replace('T', ' '),
         player0_id: Number(gameData.players[0].id),
-        player0_colour: Number(gameData.players[0].color),
+        player0_colour: gameData.players[0].color.substring(1),
         player0_name: gameData.players[0].name,
         player1_id: Number(gameData.players[1].id),
-        player1_colour: Number(gameData.players[1].color),
+        player1_colour: gameData.players[1].color.substring(1),
         player1_name: gameData.players[1].name
     };
-
-    if (gameData.players.filter((player) => player.state === "Booted")) {
-        gameObj.booted = 1;
-    }
 
     return gameObj;
 }
