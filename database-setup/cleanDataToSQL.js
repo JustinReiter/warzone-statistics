@@ -21,7 +21,7 @@ function writeSQLToFile(games, players) {
             hasSeenSecondLadder = true;
         }
 
-        logger.write(`INSERT INTO games (gid, lid, winner, booted, turns, start_date, end_date, player0_id, player0_colour, player1_id, player1_colour) VALUES (${game.gid}, ${game.lid}, ${game.winner}, ${game.booted}, ${game.turns}, '${game.start_date}', '${game.end_date}', ${game.player0_id}, '${game.player0_colour}', ${game.player1_id}, '${game.player1_colour}');\n`);
+        logger.write(`INSERT INTO games (gid, lid, winner, booted, turns, start_date, end_date, player0_id, player0_colour, player1_id, player1_colour) VALUES (${game.gid}, ${game.lid}, '${game.winner}', ${Boolean(game.booted)}, ${game.turns}, '${game.start_date}', '${game.end_date}', ${game.player0_id}, '${game.player0_colour}', ${game.player1_id}, '${game.player1_colour}');\n`);
     }
 
     logger.write("\n-- Insert players to database\n");
@@ -50,9 +50,9 @@ function ReadGameFiles() {
                 start_date: new Date(gameData.created).toISOString().slice(0, 19).replace('T', ' '),
                 end_date: new Date(gameData.lastTurnTime).toISOString().slice(0, 19).replace('T', ' '),
                 player0_id: Number(gameData.players[0].id),
-                player0_colour: gameData.players[0].color,
+                player0_colour: gameData.players[0].color.substring(1),
                 player1_id: Number(gameData.players[1].id),
-                player1_colour: gameData.players[1].color
+                player1_colour: gameData.players[1].color.substring(1)
             });
 
             playerNamesToOutput[Number(gameData.players[0].id)] = gameData.players[0].name;
