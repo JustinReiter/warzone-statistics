@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "heroku": "cd .. && git subtree push --prefix api backend master || true"
+    "heroku": "cd .. && git subtree push --prefix api backend master || true",
+    "herokuforcetoken": "cd .. && git subtree split --prefix api master"
   },
   "dependencies": {
     "axios": "^0.21.0",
