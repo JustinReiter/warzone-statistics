@@ -48,6 +48,8 @@ app.use(function(err, req, res, next) {
 	res.render('error');
 });
 
+console.log("Running app");
+
 // Update ladders every 2 hours
 //! Ignore jobs until application is initialized
 // var updateLaddersJob = schedule.scheduleJob('*/2 * * *', () => {
