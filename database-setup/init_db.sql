@@ -16,6 +16,7 @@ CREATE TABLE ladders
     game_count INTEGER NOT NULL,
     start_date DATETIME NOT NULL,
     end_date DATETIME,
+    last_update DATETIME NOT NULL,
     tid INTEGER NOT NULL,
     active BIT NOT NULL,
     FOREIGN KEY (tid) REFERENCES templates(tid),

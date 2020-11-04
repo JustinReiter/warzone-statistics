@@ -1,4 +1,4 @@
-const connection = require('./database');
+const db = require('./database');
 import { getLadderGameIDs, getLadderGameData } from './warzoneAPI';
 
 function fetchGameData(gameid, ladderid) {
@@ -9,7 +9,8 @@ function fetchGameData(gameid, ladderid) {
         lid: ladderid,
         turns: Number(gameData.numberOfTurns),
         winner: gameData.players[0].state === "Won",
-        end_date: Date(gameData.lastTurnTime),
+        start_data: new Date(gameData.created).toISOString().slice(0, 19).replace('T', ' '),
+        end_date: new Date(gameData.lastTurnTime).toISOString().slice(0, 19).replace('T', ' '),
         player0_id: Number(gameData.players[0].id),
         player0_colour: Number(gameData.players[0].color),
         player0_name: gameData.players[0].name,
@@ -27,51 +28,59 @@ function fetchGameData(gameid, ladderid) {
 
 function updateLadderDatabase(ladder, ladderData) {
     // Update ladder game count
-    connection.query('UPDATE ladders SET game_count=? WHERE lid=?',
-        [ladder.game_count+ladderData.length, ladder.lid],
-        (err, results) => {
-            if (err) throw err;
-            console.log(`Successfully updated game count for ${ladder.name} from ${ladder.game_count} to ${ladder.game_count + ladderData.length}`);
+    db.none('UPDATE ladders SET game_count=$1, last_updated=NOW() WHERE lid=$2',
+        [ladder.game_count+ladderData.length, ladder.lid])
+    .then(() => {
+        console.log(`Successfully updated game count for ${ladder.name} from ${ladder.game_count} to ${ladder.game_count + ladderData.length}`);
+    }).catch((err) => {
+        throw err;
     });
 
     for (const game of ladderData) {
         // Insert game into database
-        connection.query('INSERT INTO games (gid, lid, winner, booted, turns, end_date, player0_id, player0_colour, player1_id, player1_colour) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);',
-            [game.gid, game.lid, game.turns, game.booted, game.turns, game.end_date, game.player0_id, game.player0_colour, game.player1_id, game.player1_colour],
-            (err, results) => {
-                if (err) throw err;
-                console.log(`Inserted new game into the database (game id: ${game.gid})`);
+        db.none('INSERT INTO games (gid, lid, winner, booted, turns, start_date, end_date, player0_id, player0_colour, player1_id, player1_colour) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);',
+            [game.gid, game.lid, game.turns, game.booted, game.turns, game.start_date, game.end_date, game.player0_id, game.player0_colour, game.player1_id, game.player1_colour])
+        .then(() => {
+            console.log(`Inserted new game into the database (game id: ${game.gid})`);
+        }).catch((err) => {
+            throw err;
         });
 
         // Check if player name already exists
-        connection.query("SELECT * FROM players WHERE pid=? AND name=?;",
-            [game.player0_id, game.player0_name],
-            (err, players) => {
-                if (err) throw err;
-
-                if (!players) {
-                    connection.query("INSERT INTO players (pid, name) VALUES (?, ?);",
-                        [game.player0_id, game.player0_name],
-                        (err) => {
-                            if (err) throw err;
-                            console.log(`Successfully added (${game.player0_id}, ${game.player0_name})`);
+        db.any("SELECT * FROM players WHERE pid=$1 AND name=$2 ORDER BY version DESC;",
+            [game.player0_id, game.player0_name])
+        .then((players) => {
+            if (!players || players[0].name != game.player1_name) {
+                db.none("INSERT INTO players (pid, name) VALUES ($1, $2);",
+                    [game.player0_id, game.player0_name])
+                    .then(() => {
+                        console.log(`Successfully added (${game.player0_id}, ${game.player0_name})`);
+                    })
+                    .catch((err) => {
+                        console.log(err);
                     });
-                }
+            }
+        })
+        .catch((err) => {
+            console.log(err);
         });
 
-        connection.query("SELECT * FROM players WHERE pid=? AND name=?",
-            [game.player1_id, game.player1_id],
-            (err, players) => {
-                if (err) throw err;
-
-                if (!players) {
-                    connection.query("INSERT INTO players (pid, name) VALUES (?, ?);",
-                        [game.player1_id, game.player1_name],
-                        (err) => {
-                            if (err) throw err;
-                            console.log(`Successfully added (${game.player1_id}, ${game.player1_name})`);
+        db.any("SELECT * FROM players WHERE pid=$1 AND name=$2 ORDER BY version DESC;",
+            [game.player1_id, game.player1_name])
+        .then((players) => {
+            if (!players || players[0].name != game.player1_name) {
+                db.none("INSERT INTO players (pid, name) VALUES ($1, $2);",
+                    [game.player1_id, game.player1_name])
+                    .then(() => {
+                        console.log(`Successfully added (${game.player1_id}, ${game.player1_name})`);
+                    })
+                    .catch((err) => {
+                        console.log(err);
                     });
-                }
+            }
+        })
+        .catch((err) => {
+            console.log(err);
         });
     }
 }
@@ -88,33 +97,34 @@ function updateLadder(ladder) {
 }
 
 function updateLadders() {
-    connection.query("SELECT * FROM ladders;", function(err, ladders, fields) {
-        if (err) throw err;
-
+    db.any("SELECT * FROM ladders;")
+    .then((ladders) => {
         for (const ladder of ladders) {
             updateLadder(ladder);
             console.log(`Finished updating ${ladder.name}`);
         }
+    })
+    .catch((err) => {
+        console.log("Unable to grab ladders during updateLadders");
     });
 }
 
 function updateDailyStandings() {
     let yesterday = new Date();
     yesterday.setDate(d.getDate() - 1);
-    let dateString = yesterday.toISOString().slice(0, 19).replace('T', ' ');
-    connection.query("SELECT lid, COUNT(*) AS count FROM games WHERE end_date=? GROUP BY lid;",
-        [dateString],
-        (err, ladders, fields) => {
-            if (err) throw err;
-
-            for (const ladder of ladders) {
-                connection.query("INSERT INTO daily_standing (lid, date, games) VALUES (?, ?, ?)",
-                    [ladder.lid, dateString, ladder.count],
-                    (err, res, fields) => {
-                        if (err) throw err;
-                        console.log(`Successfully added new daily standings for ladder ${ladder.lid}.`);
-                });
-            }
+    let dateString = yesterday.toISOString().slice(0, 10);
+    db.any("SELECT lid, COUNT(*) AS count FROM games WHERE end_date BETWEEN '$1' AND '$1 23:59:59' GROUP BY lid;",
+        [dateString, dateString])
+    .then((ladders) => {
+        for (const ladder of ladders) {
+            db.none("INSERT INTO daily_standing (lid, date, games) VALUES ($1, $2, $3)",
+                [ladder.lid, dateString, ladder.count])
+            .catch((err) => {
+                console.log(`Failed to insert new standing for ${ladder.lid}`);
+            });
+        }
+    }).catch((err) => {
+        console.log("Unable to grab ladders during updateDailyStandings");
     });
 }
 

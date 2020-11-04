@@ -56,7 +56,7 @@ var updateLaddersJob = schedule.scheduleJob('*/2 * * *', () => {
 });
 
 // Update ladder standings at 4AM
-var updateLaddersJob = schedule.scheduleJob('4 * * *', () => {
+var updateDailyStandingsJob = schedule.scheduleJob('4 * * *', () => {
 	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Starting to update daily standings`);
 	updateDailyStandings();
 	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Finished updating daily standings`);
