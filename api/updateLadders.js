@@ -1,8 +1,8 @@
 const db = require('./database');
-import { getLadderGameIDs, getLadderGameData } from './warzoneAPI';
+const warzoneAPI = require('./warzoneAPI').default;
 
 function fetchGameData(gameid, ladderid) {
-    let gameData = getLadderGameData(gameid);
+    let gameData = warzoneAPI.getLadderGameData(gameid);
 
     let gameObj = {
         gid: Number(gameData.id),
@@ -86,7 +86,7 @@ function updateLadderDatabase(ladder, ladderData) {
 }
 
 function updateLadder(ladder) {
-    const games = getLadderGameIDs(ladder.lid);
+    const games = warzoneAPI.getLadderGameIDs(ladder.lid);
     let newGameData = [];
 
     for (let i = ladder.game_count; i < games.length; i++) {

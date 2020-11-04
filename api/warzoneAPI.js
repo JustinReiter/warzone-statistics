@@ -1,4 +1,4 @@
-import request from 'sync-request';
+const request = require('sync-request');
 
 // Return ladder game IDs to find new games
 function getLadderGameIDs(ladderid) {
@@ -15,7 +15,7 @@ function getLadderGameData(gameid) {
             }).getBody('utf-8'));
 }
 
-export default {
+module.exports = {
     getLadderGameIDs,
     getLadderGameData
 };
