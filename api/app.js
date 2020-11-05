@@ -7,6 +7,7 @@ var cors = require('cors');
 require('dotenv').config();
 
 const { updateLadders, updateDailyStandings } = require('./updateLadders');
+const populateDailyStandings = require('./initializeDatabases');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -52,18 +53,19 @@ console.log("Running app");
 
 // Update ladders every 2 hours
 //! Ignore jobs until application is initialized
-var updateLaddersJob = schedule.scheduleJob('*/2 * * *', () => {
-	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Starting to update ladders`);
+var updateLaddersJob = schedule.scheduleJob('0 */2 * * *', () => {
+	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Starting process to update ladders with new games`);
 	updateLadders();
-	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Finished updating ladders`);
 });
 
 // Update ladder standings at 4AM
 //! Ignore jobs until application is initialized
-// var updateDailyStandingsJob = schedule.scheduleJob('4 * * *', () => {
-// 	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Starting to update daily standings`);
-// 	updateDailyStandings();
-// 	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Finished updating daily standings`);
-// });
+var updateDailyStandingsJob = schedule.scheduleJob('0 4 * * *', () => {
+	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Starting process to update daily standings`);
+	updateDailyStandings();
+});
+
+// Run once
+populateDailyStandings();
 
 module.exports = app;

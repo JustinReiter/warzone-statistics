@@ -28,7 +28,7 @@ function updateLadderDatabase(ladder, ladderData) {
     db.none('UPDATE ladders SET game_count=$1, last_updated=NOW() WHERE lid=$2',
         [ladder.game_count+ladderData.length, ladder.lid])
     .then(() => {
-        console.log(`Successfully updated game count for ${ladder.name} from ${ladder.game_count} to ${ladder.game_count + ladderData.length}`);
+        console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully updated game count from ${ladder.game_count} to ${ladder.game_count + ladderData.length}`);
     }).catch((err) => {
         throw err;
     });
@@ -38,7 +38,7 @@ function updateLadderDatabase(ladder, ladderData) {
         db.none('INSERT INTO games (gid, lid, winner, booted, turns, start_date, end_date, player0_id, player0_colour, player1_id, player1_colour) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);',
             [game.gid, game.lid, game.turns, game.booted, game.turns, game.start_date, game.end_date, game.player0_id, game.player0_colour, game.player1_id, game.player1_colour])
         .then(() => {
-            console.log(`Inserted new game into the database (game id: ${game.gid})`);
+            console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Inserted new game into the database (game id: ${game.gid})`);
         }).catch((err) => {
             throw err;
         });
@@ -51,7 +51,7 @@ function updateLadderDatabase(ladder, ladderData) {
                 db.none("INSERT INTO players (pid, name) VALUES ($1, $2);",
                     [game.player0_id, game.player0_name])
                     .then(() => {
-                        console.log(`Successfully added (${game.player0_id}, ${game.player0_name})`);
+                        console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully added (${game.player0_id}, ${game.player0_name})`);
                     })
                     .catch((err) => {
                         console.log(err);
@@ -69,7 +69,7 @@ function updateLadderDatabase(ladder, ladderData) {
                 db.none("INSERT INTO players (pid, name) VALUES ($1, $2);",
                     [game.player1_id, game.player1_name])
                     .then(() => {
-                        console.log(`Successfully added (${game.player1_id}, ${game.player1_name})`);
+                        console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully added (${game.player1_id}, ${game.player1_name})`);
                     })
                     .catch((err) => {
                         console.log(err);
@@ -86,13 +86,13 @@ function updateLadder(ladder) {
     const games = getLadderGameIDs(ladder.lid);
     let newGameData = [];
 
-    console.log(`!!!!!!!!!!!!!!!!!! Found ${games.length} games and we need to process ${games.length - ladder.game_count} games`);
+    console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Found ${games.length} games, currently store ${ladder.game_count} games`);
 
-    // for (let i = ladder.game_count; i < games.length; i++) {
-    //     newGameData.push(fetchGameData(games[i], ladder.lid));
-    // }
+    for (let i = ladder.game_count; i < games.length; i++) {
+        newGameData.push(fetchGameData(games[i], ladder.lid));
+    }
 
-    // updateLadderDatabase(ladder, newGameData);
+    updateLadderDatabase(ladder, newGameData);
 }
 
 function updateLadders() {
@@ -100,11 +100,11 @@ function updateLadders() {
     .then((ladders) => {
         for (const ladder of ladders) {
             updateLadder(ladder);
-            console.log(`Finished updating ${ladder.name}`);
+            console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Finished updating games`);
         }
     })
     .catch((err) => {
-        console.log("Unable to grab ladders during updateLadders");
+        console.log("[UpdateLadderGames] Err: Unable to grab ladders during updateLadders");
         console.log(err);
     });
 }
@@ -120,11 +120,11 @@ function updateDailyStandings() {
             db.none("INSERT INTO daily_standing (lid, date, games) VALUES ($1, $2, $3)",
                 [ladder.lid, dateString, ladder.count])
             .catch((err) => {
-                console.log(`Failed to insert new standing for ${ladder.lid}`);
+                console.log(`[UpdateDailyStandings] Err: ${ladder.name} (ID: ${ladder.lid}) Failed to insert new standing`);
             });
         }
     }).catch((err) => {
-        console.log("Unable to grab ladders during updateDailyStandings");
+        console.log("[UpdateDailyStandings] Err: Unable to grab ladders");
     });
 }
 
