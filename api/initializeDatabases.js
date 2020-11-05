@@ -9,7 +9,7 @@ function populateDailyStandings() {
                     db.none('INSERT INTO daily_standings (lid, date, games) VALUES ($1, $2, $3);',
                     [ladder.lid, day.end_date, day.count])
                     .then(() => {
-                        console.log(`Successfully inserted ${day.end_date} into daily_standings for ${ladder.lid}`);
+                        console.log(`[PopulateDailyStandings] Successfully inserted ${day.end_date} into daily_standings for ${ladder.lid}`);
                     })
                     .catch((err) => {
                         console.log(err);

@@ -10,7 +10,7 @@ function fetchGameData(gameid, ladderid) {
         turns: Number(gameData.numberOfTurns),
         winner: Number(gameData.players[0].state === "Won"),
         booted: gameData.players.filter((player) => player.state === "Booted").length > 0,
-        start_data: new Date(gameData.created).toISOString().slice(0, 19).replace('T', ' '),
+        start_date: new Date(gameData.created).toISOString().slice(0, 19).replace('T', ' '),
         end_date: new Date(gameData.lastTurnTime).toISOString().slice(0, 19).replace('T', ' '),
         player0_id: Number(gameData.players[0].id),
         player0_colour: gameData.players[0].color.substring(1),
@@ -25,12 +25,12 @@ function fetchGameData(gameid, ladderid) {
 
 function updateLadderDatabase(ladder, ladderData) {
     // Update ladder game count
-    db.none('UPDATE ladders SET game_count=$1, last_updated=NOW() WHERE lid=$2',
+    db.none('UPDATE ladders SET game_count=$1, last_updated=NOW() WHERE lid=$2;',
         [ladder.game_count+ladderData.length, ladder.lid])
     .then(() => {
         console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully updated game count from ${ladder.game_count} to ${ladder.game_count + ladderData.length}`);
     }).catch((err) => {
-        throw err;
+        console.log(err);
     });
 
     for (const game of ladderData) {
@@ -40,7 +40,7 @@ function updateLadderDatabase(ladder, ladderData) {
         .then(() => {
             console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Inserted new game into the database (game id: ${game.gid})`);
         }).catch((err) => {
-            throw err;
+            console.log(err);
         });
 
         // Check if player name already exists
