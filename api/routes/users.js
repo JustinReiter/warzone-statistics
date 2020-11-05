@@ -16,7 +16,17 @@ router.get('/id/:userId', function(req, res, next) {
         db.any('SELECT * FROM players WHERE pid=$1;',
             [req.params.userId])
         .then((users) => {
-            res.json({users: users});
+            if (users.length) {
+                db.any('SELECT * FROM games WHERE player0_id=$1 OR player1_id=$1 ORDER BY end_date DESC LIMIT 20;',
+                    [users[0].pid])
+                .then((games) => {
+                    res.json({users: users, games: games});
+                }).catch((err) => {
+                    console.log(err);
+                });
+            } else {
+                res.json({users: users, games: []});
+            }
         }).catch((err) => {
             console.log(err);
         });
@@ -29,7 +39,17 @@ router.get('/name/:userName', function(req, res, next) {
         db.any('SELECT * FROM players WHERE name=$1;',
             [req.params.userName.trim()])
         .then((users) => {
-            res.json({users: users});
+            if (users.length) {
+                db.any('SELECT * FROM games WHERE player0_id=$1 OR player1_id=$1 ORDER BY end_date DESC LIMIT 20;',
+                    [users[0].pid])
+                .then((games) => {
+                    res.json({users: users, games: games});
+                }).catch((err) => {
+                    console.log(err);
+                });
+            } else {
+                res.json({users: users, games: []});
+            }
         }).catch((err) => {
             console.log(err);
         });

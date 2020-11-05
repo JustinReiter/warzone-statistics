@@ -45,12 +45,12 @@ function updateLadderDatabase(ladder, ladderData) {
         });
 
         // Check if player name already exists
-        db.any('SELECT * FROM players WHERE pid=$1 AND name=$2 ORDER BY version DESC;',
+        db.any('SELECT * FROM players WHERE pid=$1 ORDER BY version DESC;',
             [game.player0_id, game.player0_name])
         .then((players) => {
-            if (players.length == 0 || !players[0] || players[0].name != game.player1_name) {
+            if (players.length == 0 || !players[0] || players[0].name != game.player0_name) {
                 db.none('INSERT INTO players (pid, name) VALUES ($1, $2);',
-                    [game.player0_id, game.player0_name])
+                    [game.player0_id])
                     .then(() => {
                         console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully added (${game.player0_id}, ${game.player0_name})`);
                     })
@@ -64,8 +64,8 @@ function updateLadderDatabase(ladder, ladderData) {
             console.log(err);
         });
 
-        db.any('SELECT * FROM players WHERE pid=$1 AND name=$2 ORDER BY version DESC;',
-            [game.player1_id, game.player1_name])
+        db.any('SELECT * FROM players WHERE pid=$1 ORDER BY version DESC;',
+            [game.player1_id])
         .then((players) => {
             if (players.length == 0 || !players[0] || players[0].name != game.player1_name) {
                 db.none('INSERT INTO players (pid, name) VALUES ($1, $2);',

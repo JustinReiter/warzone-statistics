@@ -14,7 +14,7 @@ router.get('/', function(req, res, next) {
 });
 
 // Get general ladder data from all ladders
-router.get('/:ladderId', function(req, res, next) {
+router.get('/id/:ladderId', function(req, res, next) {
     if (req.params.ladderId && !isNaN(req.params.ladderId))  {
         db.any('SELECT * FROM ladders, templates WHERE ladders.lid=$1 AND ladders.tid=templates.tid;',
             [req.params.ladderId])
