@@ -52,11 +52,11 @@ console.log("Running app");
 
 // Update ladders every 2 hours
 //! Ignore jobs until application is initialized
-// var updateLaddersJob = schedule.scheduleJob('*/2 * * *', () => {
-// 	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Starting to update ladders`);
-// 	updateLadders();
-// 	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Finished updating ladders`);
-// });
+var updateLaddersJob = schedule.scheduleJob('*/2 * * *', () => {
+	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Starting to update ladders`);
+	updateLadders();
+	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Finished updating ladders`);
+});
 
 // Update ladder standings at 4AM
 //! Ignore jobs until application is initialized

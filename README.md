@@ -7,7 +7,7 @@ This project is a platform that hosts data from competitive ladders on the Risk-
 ## Project Specs
 
 ### Front-end
-The front-end is build with React.
+The front-end is built with React.
 
 ### Back-end
-The backend is built with Express and the application being hosted on Heroku. The data is stored using PostgreSQL.
+The back-end is built with Express and the application is being hosted on Heroku. The data is stored using PostgreSQL.

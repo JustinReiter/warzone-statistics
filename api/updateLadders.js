@@ -86,11 +86,13 @@ function updateLadder(ladder) {
     const games = warzoneAPI.getLadderGameIDs(ladder.lid);
     let newGameData = [];
 
-    for (let i = ladder.game_count; i < games.length; i++) {
-        newGameData.push(fetchGameData(games[i], ladder.lid));
-    }
+    console.log(`!!!!!!!!!!!!!!!!!! Found ${games.length} games and we need to process ${games.length - ladder.game_count} games`);
 
-    updateLadderDatabase(ladder, newGameData);
+    // for (let i = ladder.game_count; i < games.length; i++) {
+    //     newGameData.push(fetchGameData(games[i], ladder.lid));
+    // }
+
+    // updateLadderDatabase(ladder, newGameData);
 }
 
 function updateLadders() {
