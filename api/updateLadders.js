@@ -35,7 +35,7 @@ function updateLadderDatabase(ladder, ladderData) {
 
     for (const game of ladderData) {
         // Insert game into database
-        db.none('INSERT INTO games (gid, lid, winner, booted, turns, start_date, end_date, player0_id, player0_colour, player1_id, player1_colour) VALUES ($1, $2, \'$3\', $4, $5, \'$6\', \'$7\', $8, \'$9\', $10, \'$11\');',
+        db.none('INSERT INTO games (gid, lid, winner, booted, turns, start_date, end_date, player0_id, player0_colour, player1_id, player1_colour) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);',
             [game.gid, game.lid, game.winner, game.booted, game.turns, game.start_date, game.end_date, game.player0_id, game.player0_colour, game.player1_id, game.player1_colour])
         .then(() => {
             console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Inserted new game into the database (game id: ${game.gid})`);
@@ -45,11 +45,11 @@ function updateLadderDatabase(ladder, ladderData) {
         });
 
         // Check if player name already exists
-        db.any("SELECT * FROM players WHERE pid=$1 AND name='$2' ORDER BY version DESC;",
+        db.any('SELECT * FROM players WHERE pid=$1 AND name=$2 ORDER BY version DESC;',
             [game.player0_id, game.player0_name])
         .then((players) => {
             if (players.length == 0 || !players[0] || players[0].name != game.player1_name) {
-                db.none("INSERT INTO players (pid, name) VALUES ($1, '$2');",
+                db.none('INSERT INTO players (pid, name) VALUES ($1, $2);',
                     [game.player0_id, game.player0_name])
                     .then(() => {
                         console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully added (${game.player0_id}, ${game.player0_name})`);
@@ -64,11 +64,11 @@ function updateLadderDatabase(ladder, ladderData) {
             console.log(err);
         });
 
-        db.any("SELECT * FROM players WHERE pid=$1 AND name='$2' ORDER BY version DESC;",
+        db.any('SELECT * FROM players WHERE pid=$1 AND name=$2 ORDER BY version DESC;',
             [game.player1_id, game.player1_name])
         .then((players) => {
             if (players.length == 0 || !players[0] || players[0].name != game.player1_name) {
-                db.none("INSERT INTO players (pid, name) VALUES ($1, '$2');",
+                db.none('INSERT INTO players (pid, name) VALUES ($1, $2);',
                     [game.player1_id, game.player1_name])
                     .then(() => {
                         console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully added (${game.player1_id}, ${game.player1_name})`);
@@ -92,17 +92,17 @@ function updateLadder(ladder) {
     console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Found ${games.length} games; ladder game_count: ${ladder.game_count} games (Difference: ${games.length - ladder.game_count})`);
 
     // Do a set difference between the games from the WZ API and database
-    db.any("SELECT gid FROM games WHERE lid=$1;", [ladder.lid]).then((ladderGames) => {
+    db.any('SELECT gid FROM games WHERE lid=$1;', [ladder.lid]).then((ladderGames) => {
         
         // Remove games already processed
-        ladderGames = ladderGames.map((game) => game.gid);
+        ladderGames = ladderGames.map((game) => Number(game.gid));
         games = games.filter((game) => !ladderGames.includes(game));
 
         console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) After removing processed games, ${games.length} games needed to insert`);
         for (const game of games) {
             newGameData.push(fetchGameData(game, ladder.lid));
         }
-
+        
         updateLadderDatabase(ladder, newGameData);
     }).catch((err) => {
         console.log(err);
@@ -110,7 +110,7 @@ function updateLadder(ladder) {
 }
 
 function updateLadders() {
-    db.any('SELECT * FROM ladders;')
+    db.any('SELECT * FROM ladders WHERE active=true;')
     .then((ladders) => {
         for (const ladder of ladders) {
             updateLadder(ladder);
@@ -127,11 +127,11 @@ function updateDailyStandings() {
     let yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     let dateString = yesterday.toISOString().slice(0, 10);
-    db.any("SELECT lid, COUNT(*) AS count FROM games WHERE end_date BETWEEN '$1' AND '$1 23:59:59' GROUP BY lid;",
-        [dateString, dateString])
+    db.any('SELECT lid, COUNT(*) AS count FROM games WHERE end_date BETWEEN $1 AND $2 GROUP BY lid;',
+        [dateString, dateString + ' 23:59:59'])
     .then((ladders) => {
         for (const ladder of ladders) {
-            db.none("INSERT INTO daily_standing (lid, date, games) VALUES ($1, $2, $3)",
+            db.none('INSERT INTO daily_standing (lid, date, games) VALUES ($1, $2, $3);',
                 [ladder.lid, dateString, ladder.count])
             .catch((err) => {
                 console.log(`[UpdateDailyStandings] Err: ${ladder.name} (ID: ${ladder.lid}) Failed to insert new standing`);
