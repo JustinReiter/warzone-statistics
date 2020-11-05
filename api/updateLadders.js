@@ -96,7 +96,7 @@ function updateLadder(ladder) {
 }
 
 function updateLadders() {
-    db.any("SELECT * FROM ladders;")
+    db.any('SELECT * FROM ladders;')
     .then((ladders) => {
         for (const ladder of ladders) {
             updateLadder(ladder);
@@ -105,6 +105,7 @@ function updateLadders() {
     })
     .catch((err) => {
         console.log("Unable to grab ladders during updateLadders");
+        console.log(err);
     });
 }
 
