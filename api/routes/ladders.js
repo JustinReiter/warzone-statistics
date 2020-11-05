@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
             res.json({ladders: ladders});
     }).catch((err) => {
         console.log(err);
-    })
+    });
 });
 
 // Get general ladder data from all ladders
@@ -25,12 +25,18 @@ router.get('/:ladderId', function(req, res, next) {
                     db.any("SELECT * FROM games WHERE lid=$1 ORDER BY end_date DESC LIMIT 20;",
                         [req.params.ladderId])
                     .then((games) => {
+                        db.any("SELECT * FROM daily_standings WHERE lid=$1 ORDER BY date DESC LIMIT 30",
+                            [req.params.ladderId])
+                        .then ((standings) => {
                             res.json({
                                 ladder: ladder,
-                                games: games
+                                games: games,
+                                standings: standings
                             });
-                        }
-                    ).catch((err) => {
+                        }).catch((err) => {
+                            console.log(err);
+                        });
+                    }).catch((err) => {
                         console.log(err);
                     });
                 }
