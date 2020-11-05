@@ -36,10 +36,11 @@ function updateLadderDatabase(ladder, ladderData) {
     for (const game of ladderData) {
         // Insert game into database
         db.none('INSERT INTO games (gid, lid, winner, booted, turns, start_date, end_date, player0_id, player0_colour, player1_id, player1_colour) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);',
-            [game.gid, game.lid, game.turns, game.booted, game.turns, game.start_date, game.end_date, game.player0_id, game.player0_colour, game.player1_id, game.player1_colour])
+            [game.gid, game.lid, game.winner, game.booted, game.turns, game.start_date, game.end_date, game.player0_id, game.player0_colour, game.player1_id, game.player1_colour])
         .then(() => {
             console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Inserted new game into the database (game id: ${game.gid})`);
         }).catch((err) => {
+            console.log("[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Attempted to insert:\n" + JSON.stringify(game, null, 4));
             console.log(err);
         });
 
@@ -47,13 +48,14 @@ function updateLadderDatabase(ladder, ladderData) {
         db.any("SELECT * FROM players WHERE pid=$1 AND name=$2 ORDER BY version DESC;",
             [game.player0_id, game.player0_name])
         .then((players) => {
-            if (!players || players[0].name != game.player1_name) {
+            if (players.length == 0 || !players[0] || players[0].name != game.player1_name) {
                 db.none("INSERT INTO players (pid, name) VALUES ($1, $2);",
                     [game.player0_id, game.player0_name])
                     .then(() => {
                         console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully added (${game.player0_id}, ${game.player0_name})`);
                     })
                     .catch((err) => {
+                        console.log("[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Attempted to insert: " + game.player0_name + " (ID: " + game.player0_id + ")");
                         console.log(err);
                     });
             }
@@ -65,13 +67,14 @@ function updateLadderDatabase(ladder, ladderData) {
         db.any("SELECT * FROM players WHERE pid=$1 AND name=$2 ORDER BY version DESC;",
             [game.player1_id, game.player1_name])
         .then((players) => {
-            if (!players || players[0].name != game.player1_name) {
+            if (players.length == 0 || !players[0] || players[0].name != game.player1_name) {
                 db.none("INSERT INTO players (pid, name) VALUES ($1, $2);",
                     [game.player1_id, game.player1_name])
                     .then(() => {
                         console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully added (${game.player1_id}, ${game.player1_name})`);
                     })
                     .catch((err) => {
+                        console.log("[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Attempted to insert: " + game.player1_name + " (ID: " + game.player1_id + ")");
                         console.log(err);
                     });
             }
@@ -111,7 +114,7 @@ function updateLadders() {
 
 function updateDailyStandings() {
     let yesterday = new Date();
-    yesterday.setDate(d.getDate() - 1);
+    yesterday.setDate(yesterday.getDate() - 1);
     let dateString = yesterday.toISOString().slice(0, 10);
     db.any("SELECT lid, COUNT(*) AS count FROM games WHERE end_date BETWEEN '$1' AND '$1 23:59:59' GROUP BY lid;",
         [dateString, dateString])

@@ -5,7 +5,6 @@ const db = require('../database');
 
 // Get general ladder data from all ladders
 router.get('/', function(req, res, next) {
-    console.log("Running ladders");
     db.any("SELECT * FROM ladders, templates WHERE ladders.tid=templates.tid")
     .then((ladders) => {
             res.json({ladders: ladders});
@@ -16,7 +15,6 @@ router.get('/', function(req, res, next) {
 
 // Get general ladder data from all ladders
 router.get('/:ladderId', function(req, res, next) {
-    console.log("Running ladder id");
     if (req.params.ladderId && !isNaN(req.params.ladderId))  {
         db.any("SELECT * FROM ladders, templates WHERE ladders.lid=$1 AND ladders.tid=templates.tid;",
             [req.params.ladderId])

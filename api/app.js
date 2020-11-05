@@ -49,15 +49,13 @@ app.use(function(err, req, res, next) {
 	res.render('error');
 });
 
-console.log("Running app");
-
 // Update ladders every 2 hours
 var updateLaddersJob = schedule.scheduleJob('0 */2 * * *', () => {
 	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Starting process to update ladders with new games`);
 	updateLadders();
 });
 
-// Update ladder standings at 4:10AM (Staggered after ladder update)
+// Update ladder standings at 4:10AM (Staggered to update after ladders fetch new games)
 var updateDailyStandingsJob = schedule.scheduleJob('10 4 * * *', () => {
 	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Starting process to update daily standings`);
 	updateDailyStandings();
