@@ -86,16 +86,25 @@ function updateLadderDatabase(ladder, ladderData) {
 }
 
 function updateLadder(ladder) {
-    const games = getLadderGameIDs(ladder.lid);
+    let games = getLadderGameIDs(ladder.lid);
     let newGameData = [];
 
     console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Found ${games.length} games, currently store ${ladder.game_count} games`);
 
-    for (let i = ladder.game_count; i < games.length; i++) {
-        newGameData.push(fetchGameData(games[i], ladder.lid));
-    }
+    // Do a set difference between the games from the WZ API and database
+    db.any("SELECT gid FROM games WHERE lid=$1;", [ladder.lid]).then((ladderGames) => {
+        for (const game of ladderGames) {
+            games.splice(games.indexOf(game.gid), 1);
+        }
 
-    updateLadderDatabase(ladder, newGameData);
+        for (const game of games) {
+            newGameData.push(fetchGameData(game, ladder.lid));
+        }
+
+        updateLadderDatabase(ladder, newGameData);
+    }).catch((err) => {
+        console.log(err);
+    });
 }
 
 function updateLadders() {
