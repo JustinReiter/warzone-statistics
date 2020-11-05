@@ -1,8 +1,8 @@
 const db = require('./database');
-const warzoneAPI = require('./warzoneAPI').default;
+const { getLadderGameIDs, getLadderGameData } = require('./warzoneAPI');
 
 function fetchGameData(gameid, ladderid) {
-    let gameData = warzoneAPI.getLadderGameData(gameid);
+    let gameData = getLadderGameData(gameid);
 
     let gameObj = {
         gid: Number(gameData.id),
@@ -83,7 +83,7 @@ function updateLadderDatabase(ladder, ladderData) {
 }
 
 function updateLadder(ladder) {
-    const games = warzoneAPI.getLadderGameIDs(ladder.lid);
+    const games = getLadderGameIDs(ladder.lid);
     let newGameData = [];
 
     console.log(`!!!!!!!!!!!!!!!!!! Found ${games.length} games and we need to process ${games.length - ladder.game_count} games`);
