@@ -21,7 +21,7 @@ function LandingPage() {
         <div className="App">
         
         <header className="App-header">
-        <Container maxWidth="sm">
+        <Container maxWidth="md">
             <Card title={"HI"} body={"Test"} />
             <LadderTable ladders={ladders} />
         </Container>

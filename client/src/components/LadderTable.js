@@ -1,20 +1,26 @@
 import React from 'react';
 import { Card as BootstrapCard } from 'react-bootstrap';
+import { Grid } from '@material-ui/core';
+import LadderCard from './LadderCard';
 import './LadderTable.css';
 
 function LadderTable(props) {
     // const classes = useStyles();
     console.log(props);
     return (
-        <BootstrapCard>
-            { props.header && <BootstrapCard.Header>{props.header}</BootstrapCard.Header> }
-            <BootstrapCard.Body>
-                <BootstrapCard.Title>{props.title}</BootstrapCard.Title>
-                <BootstrapCard.Text>{props.body}</BootstrapCard.Text>
-                {/* <Button variant="primary">Go somewhere</Button> */}
-            </BootstrapCard.Body>
-            { props.footer && <BootstrapCard.Footer>{props.footer}</BootstrapCard.Footer> }
-        </BootstrapCard>
+        <div className="LadderTable">
+            <Grid
+                container
+                spacing={1}
+            >
+                { props.ladders.map((ladder) => {
+                    return (
+                    <Grid item xs={6}>
+                        <LadderCard ladder={ladder} />
+                    </Grid>
+                );})}
+            </Grid>
+        </div>
     );
 }
 

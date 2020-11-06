@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
-import { Container} from '@material-ui/core';
+import { Container } from '@material-ui/core';
 import './LaddersPage.css';
 import { getLadders } from './api';
 import Card from './components/Card';
