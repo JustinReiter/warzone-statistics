@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getLadders } from './api';
 import logo from './logo.svg';
 import { Container } from '@material-ui/core';
 import './LandingPage.css';
 import Card from './components/Card';
+import LadderTable from './components/LadderTable';
 
 function LandingPage() {
+
+    const [ ladders, setLadders ] = useState([]);
+
+    useEffect(() => {
+        getLadders().then((res) => {
+            setLadders(res.data.ladders);
+            console.log(res.data);
+        });
+    }, []);
 
     return (
         <div className="App">
@@ -12,7 +23,8 @@ function LandingPage() {
         <header className="App-header">
         <Container maxWidth="sm">
             <Card title={"HI"} body={"Test"} />
-            </Container>
+            <LadderTable ladders={ladders} />
+        </Container>
 
             <img src={logo} className="App-logo" alt="logo" />
             <p>
