@@ -50,12 +50,12 @@ function updateLadderDatabase(ladder, ladderData) {
         .then((players) => {
             if (players.length == 0 || !players[0] || players[0].name != game.player0_name) {
                 db.none('INSERT INTO players (pid, name) VALUES ($1, $2);',
-                    [game.player0_id])
+                    [game.player0_id, game.player0_name])
                     .then(() => {
                         console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully added (${game.player0_id}, ${game.player0_name})`);
                     })
                     .catch((err) => {
-                        console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Attempted to insert: " + game.player0_name + " (ID: " + game.player0_id + ")`);
+                        console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Attempted to insert: ${game.player0_name} (ID: ${game.player0_id$})`);
                         console.log(err);
                     });
             }
@@ -74,7 +74,7 @@ function updateLadderDatabase(ladder, ladderData) {
                         console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully added (${game.player1_id}, ${game.player1_name})`);
                     })
                     .catch((err) => {
-                        console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Attempted to insert: " + game.player1_name + " (ID: " + game.player1_id + ")`);
+                        console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Attempted to insert: ${game.player0_name} (ID: ${game.player0_id$})`);
                         console.log(err);
                     });
             }
@@ -134,11 +134,13 @@ function updateDailyStandings() {
             db.none('INSERT INTO daily_standing (lid, date, games) VALUES ($1, $2, $3);',
                 [ladder.lid, dateString, ladder.count])
             .catch((err) => {
-                console.log(`[UpdateDailyStandings] Err: ${ladder.name} (ID: ${ladder.lid}) Failed to insert new standing`);
+                console.log(`[UpdateDailyStandings] Err: (ID: ${ladder.lid}) Failed to insert new standing`);
+                console.log(err);
             });
         }
     }).catch((err) => {
         console.log("[UpdateDailyStandings] Err: Unable to grab ladders");
+        console.log(err);
     });
 }
 

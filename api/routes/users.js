@@ -1,5 +1,4 @@
 var express = require('express');
-const { TransactionMode } = require('pg-promise');
 var router = express.Router();
 
 const db = require('../database');
@@ -23,13 +22,17 @@ router.get('/id/:userId', function(req, res, next) {
                     res.json({users: users, games: games});
                 }).catch((err) => {
                     console.log(err);
+                    res.json({error: "Error while processing query"});
                 });
             } else {
                 res.json({users: users, games: []});
             }
         }).catch((err) => {
             console.log(err);
+            res.json({error: "Error while processing query"});
         });
+    } else {
+        res.json({error: "Invalid player ID provided"});
     }
 });
 
@@ -46,13 +49,17 @@ router.get('/name/:userName', function(req, res, next) {
                     res.json({users: users, games: games});
                 }).catch((err) => {
                     console.log(err);
+                    res.json({error: "Error while processing query"});
                 });
             } else {
                 res.json({users: users, games: []});
             }
         }).catch((err) => {
             console.log(err);
+            res.json({error: "Error while processing query"});
         });
+    } else {
+        res.json({error: "Invalid player name provided"});
     }
 });
 

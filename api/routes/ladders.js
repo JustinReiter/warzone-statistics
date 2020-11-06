@@ -10,6 +10,7 @@ router.get('/', function(req, res, next) {
             res.json({ladders: ladders});
     }).catch((err) => {
         console.log(err);
+        res.json({error: "Error while processing query"});
     });
 });
 

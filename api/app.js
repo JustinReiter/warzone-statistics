@@ -7,11 +7,11 @@ var cors = require('cors');
 require('dotenv').config();
 
 const { updateLadders, updateDailyStandings } = require('./updateLadders');
-const populateDailyStandings = require('./initializeDatabases');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var laddersRouter = require('./routes/ladders');
+var gamesRouter = require('./routes/games');
 
 var app = express();
 
@@ -32,6 +32,7 @@ app.use(cors());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use("/ladders", laddersRouter);
+app.use("/games", gamesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -60,5 +61,7 @@ var updateDailyStandingsJob = schedule.scheduleJob('10 4 * * *', () => {
 	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Starting process to update daily standings`);
 	updateDailyStandings();
 });
+
+console.log(`Starting running back-end process at ${new Date().toISOString()}`);
 
 module.exports = app;
