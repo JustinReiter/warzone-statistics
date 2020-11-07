@@ -36,7 +36,7 @@ router.get('/ladder/:ladderId', function(req, res, next) {
 router.get('/ladder/:ladderId/page/:page', function(req, res, next) {
     if (req.params.ladderId && !isNaN(req.params.ladderId) && req.params.page && !isNaN(req.params.page) && Number(req.params.page) > 0) {
         db.any('SELECT * FROM games WHERE lid=$1 ORDER BY end_date DESC LIMIT $2 OFFSET $3;',
-            [req.params.ladderId, GAME_QUERY_LIMIT, GAME_QUERY_LIMIT * (page-1)])
+            [req.params.ladderId, GAME_QUERY_LIMIT, GAME_QUERY_LIMIT * (Number(req.params.page)-1)])
         .then((games) => {
                 res.json({games: games});
         }).catch((err) => {

@@ -49,6 +49,17 @@ CREATE TABLE games
     FOREIGN KEY (lid) REFERENCES ladders(lid)
 );
 
+CREATE TABLE player_results
+(
+    pid BIGINT NOT NULL,
+    lid INTEGER NOT NULL,
+    wins SMALLINT NOT NULL DEFAULT 0,
+    losses SMALLINT NOT NULL DEFAULT 0,
+    elo SMALLINT NOT NULL DEFAULT 1500,
+    PRIMARY KEY (pid, lid),
+    FOREIGN KEY (lid) REFERENCES ladders(lid)
+);
+
 CREATE TABLE daily_standing
 (
     lid BIGINT NOT NULL,

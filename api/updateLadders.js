@@ -131,7 +131,7 @@ function updateDailyStandings() {
         [dateString, dateString + ' 23:59:59'])
     .then((ladders) => {
         for (const ladder of ladders) {
-            db.none('INSERT INTO daily_standing (lid, date, games) VALUES ($1, $2, $3);',
+            db.none('INSERT INTO daily_standings (lid, date, games) VALUES ($1, $2, $3);',
                 [ladder.lid, dateString, ladder.count])
             .catch((err) => {
                 console.log(`[UpdateDailyStandings] Err: (ID: ${ladder.lid}) Failed to insert new standing`);
