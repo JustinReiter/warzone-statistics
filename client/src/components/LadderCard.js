@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
 import './LadderCard.css';
 
 const formatDateString = (date) => {
@@ -12,8 +13,10 @@ const formatDateTimeString = (date) => {
 
 function LadderCard(props) {
     console.log(props);
+    const history = useHistory();
+
     return (
-        <Card>
+        <Card onClick={() => {history.push("/ladder?ladder=" + props.ladder.lid)}}>
             <Card.Header>{props.ladder.ladder_name}</Card.Header>
             <Card.Body>
                 <Card.Text>Games: {props.ladder.game_count}</Card.Text>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Card as BootstrapCard } from 'react-bootstrap';
 import { Grid } from '@material-ui/core';
 import LadderCard from './LadderCard';
 import './LadderTable.css';
