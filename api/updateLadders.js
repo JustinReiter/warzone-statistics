@@ -133,20 +133,20 @@ function updateLadderDatabase(ladder, ladderData) {
         });
 
         // Update the player data in player_results
-        db.any('SELECT * FROM player_results WHERE pid=$1 OR pid=$2;', [game.player0_id, game.player1_id])
+        db.any('SELECT * FROM player_results WHERE lid=$1 AND (pid=$2 OR pid=$3);', [ladder.lid, game.player0_id, game.player1_id])
         .then((players) => {
-            let player0 = players.filter((player) => player.pid === game.player0_id);
-            let player1 = players.filter((player) => player.pid === game.player1_id);
+            let player0 = players.filter((player) => Number(player.pid) === game.player0_id);
+            let player1 = players.filter((player) => Number(player.pid) === game.player1_id);
             
             // Create new record for player 0 if needed
-            if (!player0) {
+            if (player0.length === 0) {
                 player0 = {pid: game.player0_id, wins: 0, losses: 0, elo: STARTING_ELO};
             } else {
                 player0 = player0[0];
             }
 
             // Create new record for player 1 if needed
-            if (!player1) {
+            if (player1.length === 0) {
                 player1 = {pid: game.player1_id, wins: 0, losses: 0, elo: STARTING_ELO};
             } else {
                 player1 = player1[0];
@@ -167,7 +167,7 @@ function updateLadderDatabase(ladder, ladderData) {
 
 
             // Update or insert new results for player 0
-            if (players.filter((player) => player.pid === game.player0_id)) {
+            if (players.filter((player) => Number(player.pid) === game.player0_id).length) {
                 // Was in db already... Update
                 db.none('UPDATE player_results SET wins=$1, losses=$2, elo=$3 WHERE lid=$4 AND pid=$5;',
                     [player0.wins, player0.losses, player0.elo, game.lid, game.player0_id])
@@ -188,7 +188,7 @@ function updateLadderDatabase(ladder, ladderData) {
             }
 
             // Update or insert new results for player 1
-            if (players.filter((player) => player.pid === game.player1_id)) {
+            if (players.filter((player) => Number(player.pid) === game.player1_id).length) {
                 // Was in db already... Update
                 db.none('UPDATE player_results SET wins=$1, losses=$2, elo=$3 WHERE lid=$4 AND pid=$5;',
                     [player1.wins, player1.losses, player1.elo, game.lid, game.player1_id])
