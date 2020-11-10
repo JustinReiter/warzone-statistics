@@ -60,6 +60,16 @@ CREATE TABLE player_results
     FOREIGN KEY (lid) REFERENCES ladders(lid)
 );
 
+CREATE TABLE colour_results
+(
+    colour CHAR(6) NOT NULL,
+    lid INTEGER NOT NULL,
+    wins SMALLINT NOT NULL DEFAULT 0,
+    losses SMALLINT NOT NULL DEFAULT 0,
+    PRIMARY KEY (colour, lid),
+    FOREIGN KEY (lid) REFERENCES ladders(lid)
+);
+
 CREATE TABLE daily_standing
 (
     lid BIGINT NOT NULL,

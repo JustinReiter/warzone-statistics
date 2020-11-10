@@ -26,13 +26,19 @@ router.get('/id/:ladderId', function(req, res, next) {
                     db.any('SELECT * FROM games WHERE lid=$1 ORDER BY end_date DESC LIMIT 20;',
                         [req.params.ladderId])
                     .then((games) => {
-                        db.any('SELECT * FROM daily_standings WHERE lid=$1 ORDER BY date DESC LIMIT 30',
+                        db.any('SELECT date, games FROM daily_standings WHERE lid=$1 ORDER BY date DESC LIMIT 30',
                             [req.params.ladderId])
                         .then ((standings) => {
-                            res.json({
-                                ladder: ladder,
-                                games: games,
-                                standings: standings
+                            db.any('SELECT colour, wins, losses FROM colour_results WHERE lid=$1', req.params.ladderId)
+                            .then((colourData) => {
+                                res.json({
+                                    ladder: ladder[0],
+                                    games: games,
+                                    standings: standings,
+                                    colourData: colourData
+                                });
+                            }).catch((err) => {
+                                console.log(err);
                             });
                         }).catch((err) => {
                             console.log(err);

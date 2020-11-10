@@ -45,7 +45,7 @@ function ReadGameFiles() {
             dataToOutput.push({
                 gid: gameData.id,
                 lid: ladderIds[i],
-                winner: Number(gameData.players[0].state === "Won"),
+                winner: Number(gameData.players[1].state === "Won"),
                 booted: Number(gameData.players.filter((player) => player.state === "Booted").length),
                 turns: gameData.numberOfTurns,
                 start_date: new Date(gameData.created + "Z").toISOString().slice(0, 19).replace('T', ' '),

@@ -7,16 +7,19 @@ var cors = require('cors');
 require('dotenv').config();
 
 const { updateLadders, updateDailyStandings } = require('./updateLadders');
+const { populateColourResults, populateEloRatings} = require('./initializeDatabases');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var laddersRouter = require('./routes/ladders');
 var gamesRouter = require('./routes/games');
+var coloursRouter = require('./routes/colours');
 
 var app = express();
 
 // Used for finding new games
 var schedule = require('node-schedule');
+const db = require('./database');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,6 +36,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use("/ladders", laddersRouter);
 app.use("/games", gamesRouter);
+app.use("/colours", coloursRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -63,5 +67,19 @@ var updateDailyStandingsJob = schedule.scheduleJob('10 4 * * *', () => {
 });
 
 console.log(`Starting running back-end process at ${new Date().toISOString()}`);
+
+
+// Run single-use scripts
+db.any('SELECT * FROM colour_results;').then((colours) =>{
+	if (colours.length === 0) {
+		populateColourResults();
+	}
+});
+
+db.any('SELECT * FROM player_results;').then((players) =>{
+	if (players.length === 0) {
+		populateEloRatings();
+	}
+});
 
 module.exports = app;

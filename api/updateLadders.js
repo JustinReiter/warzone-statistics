@@ -1,5 +1,7 @@
 const db = require('./database');
 const { getLadderGameIDs, getLadderGameData } = require('./warzoneAPI');
+const STARTING_ELO = 1500;
+const K = 32;
 
 function fetchGameData(gameid, ladderid) {
     let gameData = getLadderGameData(gameid);
@@ -8,7 +10,7 @@ function fetchGameData(gameid, ladderid) {
         gid: Number(gameData.id),
         lid: ladderid,
         turns: Number(gameData.numberOfTurns),
-        winner: Number(gameData.players[0].state === "Won"),
+        winner: Number(gameData.players[1].state === "Won"),
         booted: gameData.players.filter((player) => player.state === "Booted").length > 0,
         start_date: new Date(gameData.created).toISOString().slice(0, 19).replace('T', ' '),
         end_date: new Date(gameData.lastTurnTime).toISOString().slice(0, 19).replace('T', ' '),
@@ -44,7 +46,7 @@ function updateLadderDatabase(ladder, ladderData) {
             console.log(err);
         });
 
-        // Check if player name already exists
+        // Check if first player exists in player database
         db.any('SELECT * FROM players WHERE pid=$1 ORDER BY version DESC;',
             [game.player0_id, game.player0_name])
         .then((players) => {
@@ -64,6 +66,7 @@ function updateLadderDatabase(ladder, ladderData) {
             console.log(err);
         });
 
+        // Check if second player exists in player database
         db.any('SELECT * FROM players WHERE pid=$1 ORDER BY version DESC;',
             [game.player1_id])
         .then((players) => {
@@ -81,6 +84,130 @@ function updateLadderDatabase(ladder, ladderData) {
         })
         .catch((err) => {
             console.log(err);
+        });
+
+
+        // Update the colour data
+        db.any('SELECT * FROM colour_results WHERE lid=$1 AND (colour=$2 OR colour=$3);',
+            [game.lid, game.player0_colour, game.player1_colour])
+        .then((colourData) => {
+            let colourObj = {};
+            for (const colour of colourData) {
+                colourObj[colour.colour] = {wins: colour.wins, losses: colour.losses};
+            }
+
+            if (!(game.player0_colour in colourObj)) {
+                colourObj[game.player0_colour] = {wins: 0, losses: 0};
+            }
+            if (!(game.player1_colour in colourObj)) {
+                colourObj[game.player1_colour] = {wins: 0, losses: 0};
+            }
+
+            colourObj[game.player0_colour].wins += !game.winner;
+            colourObj[game.player0_colour].losses += game.winner;
+            colourObj[game.player1_colour].wins += game.winner;
+            colourObj[game.player1_colour].losses += !game.winner;
+
+            for (const [colour, data] of Object.entries(colourObj)) {
+                if (colourData.filter((entry) => entry.colour === colour).length) {
+                    db.none('UPDATE colour_results SET wins=$1, losses=$2 WHERE colour=$3 AND lid=$4;',
+                        [data.wins, data.losses, colour, ladder.lid])
+                    .then(() => {
+                        console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully updated the colour entry (${colour}, ${data.wins}, ${data.losses})`);
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                } else {
+                    db.none('INSERT INTO colour_results (colour, lid, wins, losses) VALUES ($1, $2, $3, $4);',
+                        [colour, ladder.lid, data.wins, data.losses])
+                    .then(() => {
+                        console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully inserted the colour entry (${colour}, ${data.wins}, ${data.losses})`);
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                }
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+
+        // Update the player data in player_results
+        db.any('SELECT * FROM player_results WHERE pid=$1 OR pid=$2;', [game.player0_id, game.player1_id])
+        .then((players) => {
+            let player0 = players.filter((player) => player.pid === game.player0_id);
+            let player1 = players.filter((player) => player.pid === game.player1_id);
+            
+            // Create new record for player 0 if needed
+            if (!player0) {
+                player0 = {pid: game.player0_id, wins: 0, losses: 0, elo: STARTING_ELO};
+            } else {
+                player0 = player0[0];
+            }
+
+            // Create new record for player 1 if needed
+            if (!player1) {
+                player1 = {pid: game.player1_id, wins: 0, losses: 0, elo: STARTING_ELO};
+            } else {
+                player1 = player1[0];
+            }
+
+            // Update records
+            player0.wins += !game.winner;
+            player0.losses += game.winner;
+            player1.wins += game.winner;
+            player1.losses += !game.winner;
+
+            // Update elo
+            const expectedPlayer0Score = 1 / (1 + Math.pow(10, (player1.elo-player0.elo) / 400));
+            const actualPlayer0Score = !game.winner;
+            player0.elo += K * (actualPlayer0Score - expectedPlayer0Score);
+            player1.elo += K * (expectedPlayer0Score - actualPlayer0Score);
+
+
+
+            // Update or insert new results for player 0
+            if (players.filter((player) => player.pid === game.player0_id)) {
+                // Was in db already... Update
+                db.none('UPDATE player_results SET wins=$1, losses=$2, elo=$3 WHERE lid=$4 AND pid=$5;',
+                    [player0.wins, player0.losses, player0.elo, game.lid, game.player0_id])
+                .then(() => {
+                    console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully updated player results (${game.player0_id}, ${player0.wins}, ${player0.losses}, ${player0.elo})`)
+                }).catch((err) => {
+                    console.log(err);
+                });
+            } else {
+                // Was not in db already... Insert
+                db.none('INSERT INTO player_results (lid, pid, wins, losses, elo) VALUES ($1, $2, $3, $4, $5);',
+                    [game.lid, player0.pid, player0.wins, player0.losses, player0.elo])
+                .then(() => {
+                    console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully inserted player results (${game.player0_id}, ${player0.wins}, ${player0.losses}, ${player0.elo})`)
+                }).catch((err) => {
+                    console.log(err);
+                });
+            }
+
+            // Update or insert new results for player 1
+            if (players.filter((player) => player.pid === game.player1_id)) {
+                // Was in db already... Update
+                db.none('UPDATE player_results SET wins=$1, losses=$2, elo=$3 WHERE lid=$4 AND pid=$5;',
+                    [player1.wins, player1.losses, player1.elo, game.lid, game.player1_id])
+                .then(() => {
+                    console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully updated player results (${game.player1_id}, ${player1.wins}, ${player1.losses}, ${player1.elo})`)
+                }).catch((err) => {
+                    console.log(err);
+                });
+            } else {
+                // Was not in db already... Insert
+                db.none('INSERT INTO player_results (lid, pid, wins, losses, elo) VALUES ($1, $2, $3, $4, $5);',
+                    [game.lid, player1.pid, player1.wins, player1.losses, player1.elo])
+                .then(() => {
+                    console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully inserted player results (${game.player1_id}, ${player1.wins}, ${player1.losses}, ${player1.elo})`)
+                }).catch((err) => {
+                    console.log(err);
+                });
+            }
+
         });
     }
 }
@@ -133,6 +260,9 @@ function updateDailyStandings() {
         for (const ladder of ladders) {
             db.none('INSERT INTO daily_standings (lid, date, games) VALUES ($1, $2, $3);',
                 [ladder.lid, dateString, ladder.count])
+            .then(() => {
+                console.log(`[UpdateDailyStandings] Successfully added new entry (${ladder.lid}, ${dateString}, ${ladder.count})`);
+            })
             .catch((err) => {
                 console.log(`[UpdateDailyStandings] Err: (ID: ${ladder.lid}) Failed to insert new standing`);
                 console.log(err);
