@@ -25,7 +25,7 @@ function fetchGameData(gameid, ladderid) {
     return gameObj;
 }
 
-function updateLadderDatabase(ladder, ladderData) {
+async function updateLadderDatabase(ladder, ladderData) {
     // Update ladder game count
     db.none('UPDATE ladders SET game_count=$1, last_updated=NOW() WHERE lid=$2;',
         [ladder.game_count+ladderData.length, ladder.lid])
@@ -88,7 +88,7 @@ function updateLadderDatabase(ladder, ladderData) {
 
 
         // Update the colour data
-        db.any('SELECT * FROM colour_results WHERE lid=$1 AND (colour=$2 OR colour=$3);',
+        await db.any('SELECT * FROM colour_results WHERE lid=$1 AND (colour=$2 OR colour=$3);',
             [game.lid, game.player0_colour, game.player1_colour])
         .then((colourData) => {
             let colourObj = {};
@@ -133,7 +133,7 @@ function updateLadderDatabase(ladder, ladderData) {
         });
 
         // Update the player data in player_results
-        db.any('SELECT * FROM player_results WHERE lid=$1 AND (pid=$2 OR pid=$3);', [ladder.lid, game.player0_id, game.player1_id])
+        await db.any('SELECT * FROM player_results WHERE lid=$1 AND (pid=$2 OR pid=$3);', [ladder.lid, game.player0_id, game.player1_id])
         .then((players) => {
             let player0 = players.filter((player) => Number(player.pid) === game.player0_id);
             let player1 = players.filter((player) => Number(player.pid) === game.player1_id);
@@ -208,6 +208,9 @@ function updateLadderDatabase(ladder, ladderData) {
                 });
             }
 
+        })
+        .catch((err) => {
+            console.log(err);
         });
     }
 }
