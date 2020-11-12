@@ -17,7 +17,7 @@ function LaddersPage(props) {
             history.push("/ladders");
         }
         getLadder(qs.ladder).then((res) => {
-            if (res.data.ladder.length === 0) {
+            if (!res.data.ladder || res.data.ladder.length === 0) {
                 history.push("/ladders");
             }
 
@@ -29,7 +29,7 @@ function LaddersPage(props) {
         <div className="App">
             <header className="App-header">
                 <Container maxWidth="md">
-                    <LadderOverview ladder={(ladder.ladder && ladder.ladder[0]) || {}} standings={ladder.standings} games={ladder.games} />
+                    <LadderOverview ladder={(ladder.ladder && ladder.ladder) || {}} standings={ladder.standings} games={ladder.games} players={ladder.players}/>
                     {/* <Card className="Page-Header" title={LaddersPageTitle} body={LaddersPageDescription} />
                     <LadderTable ladders={ladders} /> */}
                 </Container>

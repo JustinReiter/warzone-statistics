@@ -39,7 +39,8 @@ router.get('/id/:ladderId', function(req, res, next) {
                                 // Join the player_results and player tables
                                 db.any(`SELECT player_results.pid, p.name, wins, losses, elo FROM player_results, 
                                     (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS p 
-                                    WHERE player_results.pid=p.pid ORDER BY player_results.wins DESC, player_results.losses ASC LIMIT 10;`)
+                                    WHERE lid=$1 AND player_results.pid=p.pid ORDER BY player_results.wins DESC, player_results.losses ASC, player_results.elo DESC;`,
+                                    [req.params.ladderId])
                                 .then((players) => {
                                     res.json({
                                         ladder: ladder[0],

@@ -3,6 +3,8 @@ const home = ``;
 const LaddersPageTitle = `Ladders`;
 const LaddersPageDescription = `This page contains information about all ladders. Click on a specific ladder to explore more statistics`;
 
+const warzoneGameUrl = 'https://www.warzone.com/MultiPlayer?GameID=';
+const warzoneProfileUrl = 'https://www.warzone.com/Profile?p=';
 
 // Warzone colour mapping
 const colourMapping = {
@@ -41,5 +43,7 @@ export {
     home,
     LaddersPageTitle,
     LaddersPageDescription,
-    colourMapping
+    colourMapping,
+    warzoneGameUrl,
+    warzoneProfileUrl
 };

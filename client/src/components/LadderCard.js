@@ -16,7 +16,7 @@ function LadderCard(props) {
     const history = useHistory();
 
     return (
-        <Card onClick={() => {history.push("/ladder?ladder=" + props.ladder.lid)}}>
+        <Card onClick={() => {props.clickable && history.push("/ladder?ladder=" + props.ladder.lid)}}>
             <Card.Header>{props.ladder.ladder_name}</Card.Header>
             <Card.Body>
                 <Card.Text>Games: {props.ladder.game_count}</Card.Text>
