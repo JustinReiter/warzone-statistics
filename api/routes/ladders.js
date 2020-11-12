@@ -23,19 +23,33 @@ router.get('/id/:ladderId', function(req, res, next) {
                 if (!ladder) {
                     res.json({error: "No ladder found with ID"});
                 } else {
-                    db.any('SELECT * FROM games WHERE lid=$1 ORDER BY end_date DESC LIMIT 20;',
+                    // Join the games table with the player tables to grab the player names
+                    db.any(`SELECT gid, player0_id, player1_id, p0.name AS player0_name, p1.name AS player1_name, winner, booted, start_date, end_date, turns
+                        FROM games, 
+                        (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS p0, 
+                        (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS p1 
+                        WHERE lid=$1 AND games.player0_id=p0.pid AND games.player1_id=p1.pid ORDER BY end_date DESC;`,
                         [req.params.ladderId])
                     .then((games) => {
                         db.any('SELECT date, games FROM daily_standings WHERE lid=$1 ORDER BY date DESC LIMIT 30',
                             [req.params.ladderId])
                         .then ((standings) => {
-                            db.any('SELECT colour, wins, losses FROM colour_results WHERE lid=$1', req.params.ladderId)
+                            db.any('SELECT colour, wins, losses FROM colour_results WHERE lid=$1 ORDER BY wins DESC, losses ASC', req.params.ladderId)
                             .then((colourData) => {
-                                res.json({
-                                    ladder: ladder[0],
-                                    games: games,
-                                    standings: standings,
-                                    colourData: colourData
+                                // Join the player_results and player tables
+                                db.any(`SELECT player_results.pid, p.name, wins, losses, elo FROM player_results, 
+                                    (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS p 
+                                    WHERE player_results.pid=p.pid ORDER BY player_results.wins DESC, player_results.losses ASC LIMIT 10;`)
+                                .then((players) => {
+                                    res.json({
+                                        ladder: ladder[0],
+                                        games: games,
+                                        standings: standings.reverse(),
+                                        colourData: colourData,
+                                        players: players
+                                    });
+                                }).catch((err) => {
+                                    console.log(err);
                                 });
                             }).catch((err) => {
                                 console.log(err);
