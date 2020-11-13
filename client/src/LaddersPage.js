@@ -18,13 +18,11 @@ function LadderPage() {
     }, []);
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <Container maxWidth="md">
-                    <Card className="Page-Header" title={LaddersPageTitle} body={LaddersPageDescription} />
-                    <LadderTable ladders={ladders} />
-                </Container>
-            </header>
+        <div className="ladders-page">
+            <Container maxWidth="md">
+                <Card className="ladders=header" title={LaddersPageTitle} body={LaddersPageDescription} />
+                <LadderTable ladders={ladders} />
+            </Container>
         </div>
     );
 }

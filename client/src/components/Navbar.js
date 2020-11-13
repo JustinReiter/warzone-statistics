@@ -12,38 +12,36 @@ import './Navbar.css';
 function NavbarComponent() {
     return (
         <Router>
-            <div className="header">
-                <Navbar bg="light" expand="lg">
-                    <Navbar.Brand as={Link} to="/">Warzone Statistics</Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="mr-auto">
-                            <Nav.Link as={Link} to="/">Home</Nav.Link>
-                            <Nav.Link as={Link} to="/ladders">Ladders</Nav.Link>
-                            <Nav.Link as={Link} to="/players">Players</Nav.Link>
-                            <Nav.Link as={Link} to="/contact">Contact</Nav.Link>
-                        </Nav>
-                    </Navbar.Collapse>
-                </Navbar>
+            <Navbar bg="dark" expand="lg" fixed="top">
+                <Navbar.Brand as={Link} to="/">Warzone Statistics</Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="mr-auto">
+                        <Nav.Link as={Link} to="/">Home</Nav.Link>
+                        <Nav.Link as={Link} to="/ladders">Ladders</Nav.Link>
+                        <Nav.Link as={Link} to="/players">Players</Nav.Link>
+                        <Nav.Link as={Link} to="/contact">Contact</Nav.Link>
+                    </Nav>
+                </Navbar.Collapse>
+            </Navbar>
 
-                <Switch>
-                    <Route exact path="/">
-                        <LandingPage />
-                    </Route>
-                    <Route path="/ladders">
-                        <LaddersPage />
-                    </Route>
-                    <Route path="/ladder">
-                        <LadderPage />
-                    </Route>
-                    <Route path="/players">
-                        <LandingPage />
-                    </Route>
-                    <Route path="/contact">
-                        <ContactPage />
-                    </Route>
-                </Switch>
-            </div>
+            <Switch>
+                <Route exact path="/">
+                    <LandingPage />
+                </Route>
+                <Route path="/ladders">
+                    <LaddersPage />
+                </Route>
+                <Route path="/ladder">
+                    <LadderPage />
+                </Route>
+                <Route path="/players">
+                    <LandingPage />
+                </Route>
+                <Route path="/contact">
+                    <ContactPage />
+                </Route>
+            </Switch>
         </Router>
     );
 }

@@ -3,10 +3,8 @@ import { Card as BootstrapCard } from 'react-bootstrap';
 import './Card.css';
 
 function Card(props) {
-    // const classes = useStyles();
-    console.log(props);
     return (
-        <BootstrapCard>
+        <BootstrapCard className="card-div">
             { props.header && <BootstrapCard.Header>{props.header}</BootstrapCard.Header> }
             <BootstrapCard.Body>
                 <BootstrapCard.Title>{props.title}</BootstrapCard.Title>

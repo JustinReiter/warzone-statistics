@@ -85,7 +85,14 @@ function PlayersTable(props) {
     
     return (
         <div className="PlayersTable">
+            <h3>Player Standings</h3>
             <TableContainer component={Paper}>
+                <colgroup>
+                    <col width="60%" />
+                    <col width="10%" />
+                    <col width="10%" />
+                    <col width="20%" />
+                </colgroup>
                 <TableHead>
                     <TableRow>
                         <TableCell>Player</TableCell>
@@ -116,7 +123,7 @@ function PlayersTable(props) {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[10]}
-                            colSpan={3}
+                            colSpan={4}
                             count={playerRows.length}
                             page={page}
                             rowsPerPage={10}
@@ -129,6 +136,7 @@ function PlayersTable(props) {
                         />
                     </TableRow>
                 </TableFooter>
+                {/* <p>* Note: Elo Rating is independent of Warzone Rating</p> */}
             </TableContainer>
         </div>
     );

@@ -26,14 +26,12 @@ function LaddersPage(props) {
     }, [history, qs.ladder]);
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <Container maxWidth="md">
-                    <LadderOverview ladder={(ladder.ladder && ladder.ladder) || {}} standings={ladder.standings} games={ladder.games} players={ladder.players}/>
-                    {/* <Card className="Page-Header" title={LaddersPageTitle} body={LaddersPageDescription} />
-                    <LadderTable ladders={ladders} /> */}
-                </Container>
-            </header>
+        <div className="ladder-page">
+            <Container maxWidth="lg">
+                <LadderOverview ladder={(ladder.ladder && ladder.ladder) || {}} standings={ladder.standings} games={ladder.games} players={ladder.players}/>
+                {/* <Card className="Page-Header" title={LaddersPageTitle} body={LaddersPageDescription} />
+                <LadderTable ladders={ladders} /> */}
+            </Container>
         </div>
     );
 }

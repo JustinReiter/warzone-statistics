@@ -92,7 +92,15 @@ function GamesTable(props) {
     
     return (
         <div className="GamesTable">
+            <h3>Recent Games</h3>
             <TableContainer component={Paper}>
+                <colgroup>
+                    <col width="25%" />
+                    <col width="25%" />
+                    <col width="20%" />
+                    <col width="20%" />
+                    <col width="10%" />
+                </colgroup>
                 <TableHead>
                     <TableRow>
                         <TableCell>Winner</TableCell>
@@ -141,7 +149,7 @@ function GamesTable(props) {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[10]}
-                            colSpan={3}
+                            colSpan={5}
                             count={gameRows.length}
                             page={page}
                             rowsPerPage={10}
