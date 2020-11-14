@@ -45,11 +45,10 @@ const renderCardText = (props) => {
 };
 
 function LadderCard(props) {
-    console.log(props);
     const history = useHistory();
 
     return (
-        <Card className="ladder-card" onClick={() => {props.clickable && history.push("/ladder?ladder=" + props.ladder.lid)}}>
+        <Card key={props.ladder.lid} className="ladder-card" onClick={() => {props.clickable && history.push("/ladder?ladder=" + props.ladder.lid)}}>
             { renderCardContainer(props) }
         </Card>
     );

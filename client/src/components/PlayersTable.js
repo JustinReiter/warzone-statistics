@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
 import { warzoneProfileUrl } from '../Constants';
@@ -71,11 +71,11 @@ function PlayersTable(props) {
 
     useEffect(() => {
       setPlayers(props.players);
-    }, props.players);
+    }, [props.players]);
 
-    const playerRows = (players && players.map((player) => {
+    const playerRows = ((players && players.map((player) => {
         return {player: player.name, id: player.pid, wins: player.wins, losses: player.losses, elo: player.elo};
-    }) || []);
+    })) || []);
 
     const emptyRows = 10 - Math.min(10, playerRows.length - page * 10);
 
@@ -86,7 +86,7 @@ function PlayersTable(props) {
     return (
         <div className="PlayersTable">
             <h3>Player Standings</h3>
-            <TableContainer component={Paper}>
+            <Table component={Paper} width="100%">
                 <colgroup>
                     <col width="60%" />
                     <col width="10%" />
@@ -98,12 +98,12 @@ function PlayersTable(props) {
                         <TableCell>Player</TableCell>
                         <TableCell align="right">Wins</TableCell>
                         <TableCell align="right">Losses</TableCell>
-                        <TableCell align="right">Elo Rating</TableCell>
+                        <TableCell align="right">Elo</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                 {playerRows && (playerRows.slice(page * 10, (page+1) * 10)).map((row) => (
-                    <TableRow key={row.name}>
+                    <TableRow hover={true} key={row.id}>
                         <TableCell component="th" scope="row">
                             <Link
                                 target="_blank"
@@ -118,6 +118,11 @@ function PlayersTable(props) {
                         <TableCell align="right">{row.elo}</TableCell>
                     </TableRow>
                 ))}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: 53 * emptyRows }}>
+                    <TableCell colSpan={4} />
+                  </TableRow>
+                )}
                 </TableBody>
                 <TableFooter>
                     <TableRow>
@@ -137,7 +142,7 @@ function PlayersTable(props) {
                     </TableRow>
                 </TableFooter>
                 {/* <p>* Note: Elo Rating is independent of Warzone Rating</p> */}
-            </TableContainer>
+            </Table>
         </div>
     );
 }

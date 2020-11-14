@@ -13,7 +13,6 @@ function LandingPage() {
     useEffect(() => {
         getLadders().then((res) => {
             setLadders(res.data.ladders);
-            console.log(res.data);
         });
     }, []);
 

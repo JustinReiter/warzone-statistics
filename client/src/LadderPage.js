@@ -11,7 +11,6 @@ function LaddersPage(props) {
     const qs = queryString.parse(useLocation().search);
     const history = useHistory();
 
-    console.log(props);
     useEffect(() => {
         if (!qs.ladder || isNaN(qs.ladder)) {
             history.push("/ladders");
@@ -28,7 +27,13 @@ function LaddersPage(props) {
     return (
         <div className="ladder-page">
             <Container maxWidth="lg">
-                <LadderOverview ladder={(ladder.ladder && ladder.ladder) || {}} standings={ladder.standings} games={ladder.games} players={ladder.players}/>
+                <LadderOverview 
+                    ladder={(ladder.ladder && ladder.ladder) || {}} 
+                    standings={ladder.standings} 
+                    games={ladder.games} 
+                    players={ladder.players}
+                    colourData={ladder.colourData}
+                />
                 {/* <Card className="Page-Header" title={LaddersPageTitle} body={LaddersPageDescription} />
                 <LadderTable ladders={ladders} /> */}
             </Container>

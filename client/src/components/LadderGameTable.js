@@ -6,7 +6,6 @@ import './LadderTable.css';
 
 function LadderTable(props) {
     // const classes = useStyles();
-    console.log(props);
     return (
         <div className="LadderTable">
             <Grid

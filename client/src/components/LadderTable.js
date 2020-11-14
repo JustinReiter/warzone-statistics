@@ -5,7 +5,6 @@ import './LadderTable.css';
 
 function LadderTable(props) {
     // const classes = useStyles();
-    console.log(props);
     return (
         <div className="LadderTable">
             <Grid
@@ -14,7 +13,7 @@ function LadderTable(props) {
             >
                 { props.ladders.map((ladder) => {
                     return (
-                    <Grid item xs={6}>
+                    <Grid item xs={6} key={ladder.lid}>
                         <LadderCard clickable={true} ladder={ladder} />
                     </Grid>
                 );})}

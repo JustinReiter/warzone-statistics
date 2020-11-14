@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
 import { warzoneGameUrl, warzoneProfileUrl } from '../Constants';
@@ -71,9 +71,9 @@ function GamesTable(props) {
 
     useEffect(() => {
         setGames(props.games);
-    }, props.games);
+    }, [props.games]);
 
-    const gameRows = (games && games.map((game) => {
+    const gameRows = ((games && games.map((game) => {
         let winnerId = game['player' + game.winner + '_id'];
         let winnerName = game['player' + game.winner + '_name'];
         winnerName = winnerName || "winner";
@@ -81,8 +81,8 @@ function GamesTable(props) {
         let loserName = winnerId === game.player0_id ? game.player1_name : game.player0_name;
         loserName = loserName || "loser";
 
-        return {winnerId, winnerName, loserId, loserName, gid: game.gid, startDate: new Date(game.start_date).toLocaleString(), endDate: new Date(game.end_date).toLocaleString()};
-    }) || []);
+        return {winnerId, winnerName, loserId, loserName, gid: game.gid, startDate: new Date(game.start_date).toLocaleString().slice(0, -3).replace(",", ""), endDate: new Date(game.end_date).toLocaleString().slice(0, -3).replace(",", "")};
+    })) || []);
 
     const emptyRows = 10 - Math.min(10, gameRows.length - page * 10);
 
@@ -93,12 +93,12 @@ function GamesTable(props) {
     return (
         <div className="GamesTable">
             <h3>Recent Games</h3>
-            <TableContainer component={Paper}>
+            <Table component={Paper}>
                 <colgroup>
-                    <col width="25%" />
-                    <col width="25%" />
-                    <col width="20%" />
-                    <col width="20%" />
+                    <col width="23%" />
+                    <col width="23%" />
+                    <col width="22%" />
+                    <col width="22%" />
                     <col width="10%" />
                 </colgroup>
                 <TableHead>
@@ -112,7 +112,7 @@ function GamesTable(props) {
                 </TableHead>
                 <TableBody>
                 {gameRows && (gameRows.slice(page * 10, (page+1) * 10)).map((row) => (
-                    <TableRow key={row.name}>
+                    <TableRow hover={true} key={row.gid}>
                         <TableCell component="th" scope="row">
                             <Link
                                 target="_blank"
@@ -131,8 +131,8 @@ function GamesTable(props) {
                                 {row.loserName}
                             </Link>    
                         </TableCell>
-                        <TableCell align="right">{row.startDate}</TableCell>
-                        <TableCell align="right">{row.endDate}</TableCell>
+                        <TableCell align="right" style={{whiteSpace: 'normal', wordWrap: 'break-word'}}>{row.startDate}</TableCell>
+                        <TableCell align="right" style={{whiteSpace: 'normal', wordWrap: 'break-word'}}>{row.endDate}</TableCell>
                         <TableCell align="right">
                             <Link
                                 target="_blank"
@@ -144,6 +144,12 @@ function GamesTable(props) {
                         </TableCell>
                     </TableRow>
                 ))}
+
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: 53 * emptyRows }}>
+                    <TableCell colSpan={5} />
+                  </TableRow>
+                )}
                 </TableBody>
                 <TableFooter>
                     <TableRow>
@@ -162,7 +168,7 @@ function GamesTable(props) {
                         />
                     </TableRow>
                 </TableFooter>
-            </TableContainer>
+            </Table>
         </div>
     );
 }
