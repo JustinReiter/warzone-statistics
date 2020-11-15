@@ -3,11 +3,33 @@ var router = express.Router();
 
 const db = require('../database');
 
+async function getExtraLadderStats(ladder) {
+    let obj = {};
+
+    [obj.players, obj.boots, obj.avgTurns, obj.top5, obj.gamesToday] = await Promise.all([
+        db.any('SELECT COUNT(*) FROM player_results WHERE lid=$1', [ladder.lid]),
+        db.any('SELECT COUNT(*) FROM games WHERE lid=$1 AND booted=true;', [ladder.lid]),
+        db.any('SELECT AVG(turns) FROM games WHERE lid=$1;', [ladder.lid]),
+        db.any(`SELECT player_results.pid, name, wins, losses FROM player_results,
+                    (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS players 
+                    WHERE lid=$1 AND player_results.pid=players.pid ORDER BY wins DESC, losses ASC, elo DESC LIMIT 5;`, [ladder.lid]),
+        db.any('SELECT COUNT(*) FROM games WHERE end_date::date=CURRENT_DATE AND lid=$1;', [ladder.lid])
+    ]);
+
+    return obj;
+}
+
 // Get general ladder data from all ladders
 router.get('/', function(req, res, next) {
     db.any('SELECT ladders.name AS ladder_name, templates.name AS template_name, * FROM ladders, templates WHERE ladders.tid=templates.tid')
-    .then((ladders) => {
-            res.json({ladders: ladders});
+    .then(async (ladders) => {
+            let ladderArray = [];
+            for (const ladder of ladders) {
+                ladder.stats = await getExtraLadderStats(ladder);
+                ladderArray.push(ladder);
+            }
+
+            res.json({ladders: ladderArray});
     }).catch((err) => {
         console.log(err);
         res.json({error: "Error while processing query"});
@@ -41,13 +63,14 @@ router.get('/id/:ladderId', function(req, res, next) {
                                     (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS p 
                                     WHERE lid=$1 AND player_results.pid=p.pid ORDER BY player_results.wins DESC, player_results.losses ASC, player_results.elo DESC;`,
                                     [req.params.ladderId])
-                                .then((players) => {
+                                .then(async (players) => {
+                                    ladder[0].stats = await getExtraLadderStats(ladder);
                                     res.json({
                                         ladder: ladder[0],
                                         games: games,
                                         standings: standings.reverse(),
                                         colourData: colourData,
-                                        players: players
+                                        players: players,
                                     });
                                 }).catch((err) => {
                                     console.log(err);

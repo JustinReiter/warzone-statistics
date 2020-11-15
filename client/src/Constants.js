@@ -1,5 +1,8 @@
 const home = ``;
 
+const LandingPageTitle = 'Warzone Statistics';
+const LandingPageDescription = 'Warzone Statistics';
+
 const LaddersPageTitle = `Ladders`;
 const LaddersPageDescription = `This page contains information about all ladders. Click on a specific ladder to explore more statistics`;
 
@@ -41,6 +44,8 @@ const colourMapping = {
 
 export {
     home,
+    LandingPageTitle,
+    LandingPageDescription,
     LaddersPageTitle,
     LaddersPageDescription,
     colourMapping,
