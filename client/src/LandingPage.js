@@ -19,7 +19,7 @@ function LandingPage() {
 
     return (
         <div className="App">
-            <Container maxWidth="md">
+            <Container maxWidth="lg">
                 <Card title={LandingPageTitle} body={LandingPageDescription} />
                 <LadderTable ladders={ladders} />
             </Container>

@@ -56,7 +56,7 @@ function LadderOverview(props) {
                 alignItems="center"
             >
                 <Grid item xs={12} md={6}>
-                    <LadderCard clickable={false} ladder={props.ladder || {}} />
+                    <LadderCard clickable={false} ladder={props.ladder || {}} showStats={true} />
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <div className="games-graph">

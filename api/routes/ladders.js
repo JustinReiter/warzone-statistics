@@ -7,13 +7,13 @@ async function getExtraLadderStats(ladder) {
     let obj = {};
 
     [obj.players, obj.boots, obj.avgTurns, obj.top5, obj.gamesToday] = await Promise.all([
-        db.any('SELECT COUNT(*) FROM player_results WHERE lid=$1', [ladder.lid]),
-        db.any('SELECT COUNT(*) FROM games WHERE lid=$1 AND booted=true;', [ladder.lid]),
-        db.any('SELECT AVG(turns) FROM games WHERE lid=$1;', [ladder.lid]),
+        db.any('SELECT COUNT(*) FROM player_results WHERE lid=$1;', [ladder]),
+        db.any('SELECT COUNT(*) FROM games WHERE lid=$1 AND booted=true;', [ladder]),
+        db.any('SELECT AVG(turns) FROM games WHERE lid=$1;', [ladder]),
         db.any(`SELECT player_results.pid, name, wins, losses FROM player_results,
                     (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS players 
-                    WHERE lid=$1 AND player_results.pid=players.pid ORDER BY wins DESC, losses ASC, elo DESC LIMIT 5;`, [ladder.lid]),
-        db.any('SELECT COUNT(*) FROM games WHERE end_date::date=CURRENT_DATE AND lid=$1;', [ladder.lid])
+                    WHERE lid=$1 AND player_results.pid=players.pid ORDER BY wins DESC, losses ASC, elo DESC LIMIT 5;`, [ladder]),
+        db.any('SELECT COUNT(*) FROM games WHERE end_date::date=CURRENT_DATE AND lid=$1;', [ladder])
     ]);
 
     return obj;
@@ -25,7 +25,7 @@ router.get('/', function(req, res, next) {
     .then(async (ladders) => {
             let ladderArray = [];
             for (const ladder of ladders) {
-                ladder.stats = await getExtraLadderStats(ladder);
+                ladder.stats = await getExtraLadderStats(ladder.lid);
                 ladderArray.push(ladder);
             }
 
@@ -64,7 +64,7 @@ router.get('/id/:ladderId', function(req, res, next) {
                                     WHERE lid=$1 AND player_results.pid=p.pid ORDER BY player_results.wins DESC, player_results.losses ASC, player_results.elo DESC;`,
                                     [req.params.ladderId])
                                 .then(async (players) => {
-                                    ladder[0].stats = await getExtraLadderStats(ladder);
+                                    ladder[0].stats = await getExtraLadderStats(Number(req.params.ladderId));
                                     res.json({
                                         ladder: ladder[0],
                                         games: games,

@@ -18,8 +18,8 @@ function LadderPage() {
 
     return (
         <div className="ladders-page">
-            <Container maxWidth="md">
-                <Card className="ladders=header" title={LaddersPageTitle} body={LaddersPageDescription} />
+            <Container maxWidth="lg">
+                <Card className="ladders=header" title={LaddersPageTitle} body={LaddersPageDescription} showTop5={true} />
                 <LadderTable ladders={ladders} />
             </Container>
         </div>
