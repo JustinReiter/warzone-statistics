@@ -88,9 +88,9 @@ function PlayersTable(props) {
             <h3>Player Standings</h3>
             <Table component={Paper} width="100%">
                 <colgroup>
-                    <col width="60%" />
-                    <col width="10%" />
-                    <col width="10%" />
+                    <col width="50%" />
+                    <col width="15%" />
+                    <col width="15%" />
                     <col width="20%" />
                 </colgroup>
                 <TableHead>
@@ -104,7 +104,7 @@ function PlayersTable(props) {
                 <TableBody>
                 {playerRows && (playerRows.slice(page * 10, (page+1) * 10)).map((row) => (
                     <TableRow hover={true} key={row.id}>
-                        <TableCell component="th" scope="row">
+                        <TableCell className="player-cell" component="th" scope="row">
                             <Link
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -113,9 +113,9 @@ function PlayersTable(props) {
                                 {row.player}
                             </Link>
                         </TableCell>
-                        <TableCell align="right">{row.wins}</TableCell>
-                        <TableCell align="right">{row.losses}</TableCell>
-                        <TableCell align="right">{row.elo}</TableCell>
+                        <TableCell className="player-cell" align="right">{row.wins}</TableCell>
+                        <TableCell className="player-cell" align="right">{row.losses}</TableCell>
+                        <TableCell className="player-cell" align="right">{row.elo}</TableCell>
                     </TableRow>
                 ))}
                 {emptyRows > 0 && (
@@ -141,8 +141,8 @@ function PlayersTable(props) {
                         />
                     </TableRow>
                 </TableFooter>
-                {/* <p>* Note: Elo Rating is independent of Warzone Rating</p> */}
             </Table>
+            <p>* Note: Elo Rating is independent of Warzone Rating</p>
         </div>
     );
 }

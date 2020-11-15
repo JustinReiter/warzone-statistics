@@ -1,3 +1,10 @@
 .GamesTable {
   width: "100%"
 }
+
+.game-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0;
+}

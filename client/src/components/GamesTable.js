@@ -81,7 +81,7 @@ function GamesTable(props) {
         let loserName = winnerId === game.player0_id ? game.player1_name : game.player0_name;
         loserName = loserName || "loser";
 
-        return {winnerId, winnerName, loserId, loserName, gid: game.gid, startDate: new Date(game.start_date).toLocaleString().slice(0, -3).replace(",", ""), endDate: new Date(game.end_date).toLocaleString().slice(0, -3).replace(",", "")};
+        return {winnerId, winnerName, loserId, loserName, gid: Number(game.gid), turns: Number(game.turns), startDate: new Date(game.start_date).toLocaleString().slice(0, -3).replace(",", ""), endDate: new Date(game.end_date).toLocaleString().slice(0, -3).replace(",", "")};
     })) || []);
 
     const emptyRows = 10 - Math.min(10, gameRows.length - page * 10);
@@ -95,25 +95,27 @@ function GamesTable(props) {
             <h3>Recent Games</h3>
             <Table component={Paper}>
                 <colgroup>
-                    <col width="23%" />
-                    <col width="23%" />
-                    <col width="22%" />
-                    <col width="22%" />
-                    <col width="10%" />
+                    <col width="25%" />
+                    <col width="25%" />
+                    <col width="20%" />
+                    <col width="20%" />
+                    <col width="5%" />
+                    <col width="5%" />
                 </colgroup>
                 <TableHead>
                     <TableRow>
                         <TableCell>Winner</TableCell>
-                        <TableCell align="right">Loser</TableCell>
-                        <TableCell align="right">Start Date</TableCell>
-                        <TableCell align="right">End Date</TableCell>
+                        <TableCell>Loser</TableCell>
+                        <TableCell>Start Date</TableCell>
+                        <TableCell>End Date</TableCell>
+                        <TableCell align="right">Turns</TableCell>
                         <TableCell align="right"></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                 {gameRows && (gameRows.slice(page * 10, (page+1) * 10)).map((row) => (
                     <TableRow hover={true} key={row.gid}>
-                        <TableCell component="th" scope="row">
+                        <TableCell className="game-cell" component="th" scope="row">
                             <Link
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -122,25 +124,26 @@ function GamesTable(props) {
                                 {row.winnerName}
                             </Link>
                         </TableCell>
-                        <TableCell align="right">
+                        <TableCell className="game-cell">
                             <Link
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 href={warzoneProfileUrl + row.loserId}
                             >
                                 {row.loserName}
-                            </Link>    
-                        </TableCell>
-                        <TableCell align="right" style={{whiteSpace: 'normal', wordWrap: 'break-word'}}>{row.startDate}</TableCell>
-                        <TableCell align="right" style={{whiteSpace: 'normal', wordWrap: 'break-word'}}>{row.endDate}</TableCell>
-                        <TableCell align="right">
-                            <Link
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                href={warzoneGameUrl + row.gid}
-                            >
-                                {"Link"}
                             </Link>
+                        </TableCell>
+                        <TableCell className="game-cell">{row.startDate}</TableCell>
+                        <TableCell className="game-cell">{row.endDate}</TableCell>
+                        <TableCell className="game-cell" align="right">{row.turns}</TableCell>
+                        <TableCell align="right">
+                          <Link
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              href={warzoneGameUrl + row.gid}
+                          >
+                              {"Link"}
+                          </Link>
                         </TableCell>
                     </TableRow>
                 ))}
@@ -155,7 +158,7 @@ function GamesTable(props) {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[10]}
-                            colSpan={5}
+                            colSpan={6}
                             count={gameRows.length}
                             page={page}
                             rowsPerPage={10}
@@ -169,6 +172,7 @@ function GamesTable(props) {
                     </TableRow>
                 </TableFooter>
             </Table>
+            <p>* Note: -1 turn games end before picks; 0 turn games end after picks</p>
         </div>
     );
 }

@@ -53,7 +53,7 @@ const renderRightGrid = (props) => {
                     <Table size="small" aria-label="a dense table">
                         <TableHead>
                         <TableRow>
-                            <TableCell>Player</TableCell>
+                            <TableCell>Top 5</TableCell>
                             <TableCell align="right">Wins</TableCell>
                             <TableCell align="right">Losses</TableCell>
                         </TableRow>

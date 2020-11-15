@@ -12,6 +12,7 @@ function LadderOverview(props) {
     let [games, setGames] = useState([]);
     let [players, setPlayers] = useState([]);
     let [colourData, setColourData] = useState([]);
+    let [turnData, setTurnData] = useState([]);
 
     useEffect(() => {
         setStandings(props.standings && props.standings.map((day) => {
@@ -41,6 +42,27 @@ function LadderOverview(props) {
 
     useEffect(() => {
         setGames(props.games);
+        
+        if (props.games) {
+            let turnMap = {};
+            for (const game of props.games) {
+                if (!(game.turns in turnMap)) {
+                    turnMap[game.turns] = 1;
+                } else {
+                    turnMap[game.turns]++;
+                }
+            }
+
+            let turnArr = [];
+            for (const [turn, games] of Object.entries(turnMap)) {
+                turnArr.push({Turns: Number(turn), Games: games});
+            }
+            turnArr.sort((a, b) => {
+                return a.Turns > b.Turns ? 1 : -1;
+            });
+            setTurnData(turnArr);
+        }
+        
     }, [props.games]);
 
     useEffect(() => {
@@ -107,6 +129,23 @@ function LadderOverview(props) {
                                 <Legend wrapperStyle={{top: 10}} />
                                 <Bar dataKey="Wins" fill="#8884d8" />
                                 <Bar dataKey="Losses" fill="#82ca9d" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </Grid>
+                <Grid item xs={12}>
+                    <div className="games-graph">
+                        <h4 className="games-chart-title">Game Length Distribution</h4>
+                        <ResponsiveContainer width="100%" height={600}>
+                            <BarChart width={1000} height={250} data={turnData}
+                                margin={{top: 10, right: 20, left: 20, bottom: 50}}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis interval={0} dataKey="Turns" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend wrapperStyle={{top: 10}} />
+                                <Bar dataKey="Games" fill="#8884d8" />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
