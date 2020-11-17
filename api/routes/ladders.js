@@ -19,9 +19,29 @@ async function getExtraLadderStats(ladder) {
     return obj;
 }
 
+async function getAllLadderStats(ladder) {
+    let obj = {};
+
+    [obj.players, obj.boots, obj.games, obj.avgTurns, obj.top5, obj.active5, obj.gamesToday] = await Promise.all([
+        db.any('SELECT COUNT(*) FROM player_results;'),
+        db.any('SELECT COUNT(*) FROM games WHERE booted=true;'),
+        db.any('SELECT COUNT(*) FROM games;'),
+        db.any('SELECT AVG(turns) FROM games'),
+        db.any(`SELECT player_results.pid, name, wins, losses FROM player_results,
+                    (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS players 
+                    WHERE player_results.pid=players.pid ORDER BY wins DESC, losses ASC, elo DESC LIMIT 5;`),
+        db.any(`SELECT player_results.pid, players.name, COUNT(*) AS count FROM player_results,
+                    (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS players 
+                    WHERE player_results.pid=players.pid GROUP BY player_results.pid, players.name ORDER BY count DESC LIMIT 5;`),
+        db.any('SELECT COUNT(*) FROM games WHERE end_date::date=CURRENT_DATE;')
+    ]);
+
+    return obj;
+}
+
 // Get general ladder data from all ladders
 router.get('/', function(req, res, next) {
-    db.any('SELECT ladders.name AS ladder_name, templates.name AS template_name, * FROM ladders, templates WHERE ladders.tid=templates.tid')
+    db.any('SELECT ladders.name AS ladder_name, templates.name AS template_name, * FROM ladders, templates WHERE ladders.tid=templates.tid ORDER BY ladders.lid DESC;')
     .then(async (ladders) => {
             let ladderArray = [];
             for (const ladder of ladders) {
@@ -29,7 +49,7 @@ router.get('/', function(req, res, next) {
                 ladderArray.push(ladder);
             }
 
-            res.json({ladders: ladderArray});
+            res.json({ladders: ladderArray, stats: await getAllLadderStats()});
     }).catch((err) => {
         console.log(err);
         res.json({error: "Error while processing query"});

@@ -12,6 +12,12 @@ function getLadder(ladderId) {
     });
 }
 
+function getUsers() {
+    return axios.get("/users", {
+        baseURL: "https://warzone-statistics-backend.herokuapp.com/"
+    });
+}
+
 function getUserById(userId) {
     return axios.get("/users/id/" + userId, {
         baseURL: "https://warzone-statistics-backend.herokuapp.com/"
@@ -27,6 +33,7 @@ function getUserByName(userName) {
 export {
     getLadders,
     getLadder,
+    getUsers,
     getUserById,
     getUserByName
 };

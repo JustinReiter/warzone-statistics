@@ -5,7 +5,14 @@ const db = require('../database');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-    res.send('respond with a resource');
+    db.any(`SELECT * FROM player_results, 
+        (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS pname 
+        WHERE player_results.pid=pname.pid;`)
+    .then((users) => {
+        res.json({users: users});
+    }).catch((err) => {
+        console.log(err);
+    });
 });
 
 
