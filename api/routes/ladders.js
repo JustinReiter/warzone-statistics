@@ -27,9 +27,9 @@ async function getAllLadderStats(ladder) {
         db.any('SELECT COUNT(*) FROM games WHERE booted=true;'),
         db.any('SELECT COUNT(*) FROM games;'),
         db.any('SELECT AVG(turns) FROM games'),
-        db.any(`SELECT player_results.pid, name, wins, losses FROM player_results,
+        db.any(`SELECT player_results.pid, name, SUM(wins) AS wins, SUM(losses) AS losses FROM player_results,
                     (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS players 
-                    WHERE player_results.pid=players.pid ORDER BY wins DESC, losses ASC, elo DESC LIMIT 5;`),
+                    WHERE player_results.pid=players.pid GROUP BY player_results.pid, name ORDER BY SUM(wins) DESC, SUM(losses) ASC LIMIT 5;`),
         db.any(`SELECT player_results.pid, players.name, COUNT(*) AS count FROM player_results,
                     (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS players 
                     WHERE player_results.pid=players.pid GROUP BY player_results.pid, players.name ORDER BY count DESC LIMIT 5;`),

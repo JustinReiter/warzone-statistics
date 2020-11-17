@@ -3,6 +3,9 @@ const home = ``;
 const LandingPageTitle = 'Warzone Statistics';
 const LandingPageDescription = 'Warzone Statistics';
 
+const LandingPageSeasonalTitle = 'Recent Seasonals';
+const LandingPageSeasonalDescription = 'Here are the 4 last seasonals. To view any seasonal, visit the \'Ladders\' page';
+
 const LaddersPageTitle = `Ladders`;
 const LaddersPageDescription = `This page contains information about all ladders. Click on a specific ladder to explore more statistics`;
 
@@ -46,6 +49,8 @@ export {
     home,
     LandingPageTitle,
     LandingPageDescription,
+    LandingPageSeasonalTitle,
+    LandingPageSeasonalDescription,
     LaddersPageTitle,
     LaddersPageDescription,
     colourMapping,

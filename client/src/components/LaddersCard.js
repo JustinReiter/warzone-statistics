@@ -41,7 +41,7 @@ function LaddersCard(props) {
                             <Card.Text>Total Players: {props.stats.players && props.stats.players[0].count}</Card.Text>
                         </Grid>
                         <Grid item xs={12}>
-                            <Card.Text>Average Game Length: {props.stats.avgTurns && props.stats.avgTurns[0].count} turns</Card.Text>
+                            <Card.Text>Average Turns: {props.stats.avgTurns && Math.round(props.stats.avgTurns[0].avg * 100) / 100}</Card.Text>
                         </Grid>
                     </Grid>
 
