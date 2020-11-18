@@ -1,7 +1,11 @@
 const fs = require('fs');
 
-const ladders = ["Seasonal XLI", "Seasonal XLII"];
-const ladderIds = [4075, 4076];
+const ladders = ["Seasonal I", "Seasonal II", "Seasonal III", "Seasonal IV", "Seasonal V", "Seasonal VI", "Seasonal VII", "Seasonal VIII", "Seasonal IX", "Seasonal X", 
+                    "Seasonal XI", "Seasonal XII", "Seasonal XIII", "Seasonal XIV", "Seasonal XV", "Seasonal XVI", "Seasonal XVII", "Seasonal XVIII", "Seasonal XIX", "Seasonal XX",
+                    "Seasonal XXI", "Seasonal XXII", "Seasonal XXIII", "Seasonal XXIV", "Seasonal XXV", "Seasonal XXVI", "Seasonal XXVII", "Seasonal XXVIII", "Seasonal XXIX", "Seasonal XXX", 
+                    "Seasonal XXXI", "Seasonal XXXII", "Seasonal XXXIII", "Seasonal XXXIV", "Seasonal XXXV", "Seasonal XXXVI", "Seasonal XXXVII", "Seasonal XXXVIII", "Seasonal XXXIX", "Seasonal XL"];
+const ladderIds = [4000, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010, 4011, 4012, 4013, 4014, 4015, 4016, 4017, 4018, 4019, 
+                    4020, 4021, 4022, 4023, 4024, 4025, 4026, 4027, 4028, 4029, 4030, 4031, 4032, 4065, 4066, 4067, 4068, 4069, 4070, 4074];
 
 // Returns list of file names
 function GetAllGameFiles() {
@@ -11,14 +15,14 @@ function GetAllGameFiles() {
 }
 
 function writeSQLToFile(games, players) {
-    let logger = fs.createWriteStream('init_update_game_data.sql');
-    let hasSeenSecondLadder = false;
-
-    logger.write(`-- Insert ${ladders[0]} games to database\n`);
+    let logger = fs.createWriteStream('init_full_game_data.sql');
+    
+    let ladderPointer = 0;
+    logger.write(`-- Insert ${ladders[ladderPointer]} games to database\n`);
     for (const game of games) {
-        if (!hasSeenSecondLadder && game.lid == 4076) {
-            logger.write(`\n-- Insert ${ladders[1]} games to database\n`);
-            hasSeenSecondLadder = true;
+        if (game.lid != ladderIds[ladderPointer]) {
+            ladderPointer++;
+            logger.write(`\n-- Insert ${ladders[ladderPointer]} games to database\n`);
         }
 
         // logger.write(`UPDATE games SET start_date='${game.start_date}', end_date='${game.end_date}' WHERE gid=${game.gid};\n`);
@@ -37,10 +41,10 @@ function ReadGameFiles() {
     let dataToOutput = [];
     let playerNamesToOutput = {};
     for (let i = 0; i < ladders.length; i++) {
-        let games = fs.readdirSync("./GameData/" + ladders[i]);
+        let games = fs.readdirSync("./GameData/" + (i+1) + "SeasonalGames");
         
         for (const game of games) {
-            let gameData = JSON.parse(fs.readFileSync("./GameData/" + ladders[i] + "/" + game));
+            let gameData = JSON.parse(fs.readFileSync("./GameData/" + (i+1) + "SeasonalGames" + "/" + game));
 
             dataToOutput.push({
                 gid: gameData.id,
