@@ -7,7 +7,7 @@ var cors = require('cors');
 require('dotenv').config();
 
 const { updateLadders, updateDailyStandings } = require('./updateLadders');
-const { populateColourResults, populateEloRatings} = require('./initializeDatabases');
+const { populateColourResults, populateDailyStandings, populateEloRatings} = require('./initializeDatabases');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -73,6 +73,12 @@ console.log(`Starting running back-end process at ${new Date().toISOString()}`);
 db.any('SELECT * FROM colour_results;').then((colours) =>{
 	if (colours.length === 0) {
 		populateColourResults();
+	}
+});
+
+db.any('SELECT * FROM daily_standings;').then((standings) =>{
+	if (standings.length === 0) {
+		populateDailyStandings();
 	}
 });
 
