@@ -40,15 +40,15 @@ function LandingPage() {
 
                 <Grid item xs={12} style={{paddingTop: "2%"}}>
                     <div className="games-graph">
-                        <h4 className="games-chart-title">Number of Games by Seasonal</h4>
+                        <h4 className="games-chart-title">Number of Games by Season</h4>
                         <ResponsiveContainer width="100%" height={500}>
                             <LineChart data={games || []}
-                                margin={{top: 30, right: 20, left: 20, bottom: 30}}
+                                margin={{top: 30, right: 20, left: 20, bottom: 50}}
                                 width={500} height={500}
                             >
                                 <Label value="Number of Games by Seasonal" offset={0} position="top" />
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis angle={-45} textAnchor='end' dataKey="Seasonal" />
+                                <XAxis angle={-60} textAnchor='end' dataKey="Seasonal" />
                                 <YAxis />
                                 <Tooltip />
                                 <Legend wrapperStyle={{top: 10}}/>
@@ -59,15 +59,15 @@ function LandingPage() {
                 </Grid>
                 <Grid item xs={12} style={{paddingTop: "2%"}}>
                     <div className="games-graph">
-                        <h4 className="games-chart-title">Number of Players by Seasonal</h4>
+                        <h4 className="games-chart-title">Number of Players by Season</h4>
                         <ResponsiveContainer width="100%" height={500}>
                             <LineChart data={players || []}
-                                margin={{top: 30, right: 20, left: 20, bottom: 30}}
+                                margin={{top: 30, right: 20, left: 20, bottom: 50}}
                                 width={500} height={500}
                             >
                                 <Label value="Number of Players by Seasonal" offset={0} position="top" />
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis angle={-45} textAnchor='end' dataKey="Seasonal" />
+                                <XAxis angle={-60} textAnchor='end' dataKey="Seasonal" />
                                 <YAxis />
                                 <Tooltip />
                                 <Legend wrapperStyle={{top: 10}}/>
@@ -78,7 +78,7 @@ function LandingPage() {
                 </Grid>
 
                 <Card title={LandingPageSeasonalTitle} body={LandingPageSeasonalDescription} />
-                <LadderTable ladders={ladders} />
+                <LadderTable ladders={ladders.slice(0, 4)} />
             </Container>
         </div>
     );

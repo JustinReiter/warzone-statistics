@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
-import { warzoneProfileUrl } from '../Constants';
 import './PlayersTable.css';
 
 const useStyles1 = makeStyles((theme) => ({
@@ -106,9 +105,7 @@ function PlayersTable(props) {
                     <TableRow hover={true} key={row.id}>
                         <TableCell className="player-cell" component="th" scope="row">
                             <Link
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                href={warzoneProfileUrl + row.id}
+                                href={"/player?pid=" + row.id}
                             >
                                 {row.player}
                             </Link>

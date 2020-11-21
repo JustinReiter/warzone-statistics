@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
-import { warzoneGameUrl, warzoneProfileUrl } from '../Constants';
+import { warzoneGameUrl } from '../Constants';
 import './GamesTable.css';
 
 const useStyles1 = makeStyles((theme) => ({
@@ -117,18 +117,14 @@ function GamesTable(props) {
                     <TableRow hover={true} key={row.gid}>
                         <TableCell className="game-cell" component="th" scope="row">
                             <Link
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                href={warzoneProfileUrl + row.winnerId}
+                                href={"/player?pid=" + row.winnerId}
                             >
                                 {row.winnerName}
                             </Link>
                         </TableCell>
                         <TableCell className="game-cell">
                             <Link
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                href={warzoneProfileUrl + row.loserId}
+                                href={"/player?pid=" + row.loserId}
                             >
                                 {row.loserName}
                             </Link>

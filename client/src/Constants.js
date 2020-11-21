@@ -11,6 +11,7 @@ const LaddersPageDescription = `This page contains information about all ladders
 
 const warzoneGameUrl = 'https://www.warzone.com/MultiPlayer?GameID=';
 const warzoneProfileUrl = 'https://www.warzone.com/Profile?p=';
+const warzoneTemplateURL = 'https://www.warzone.com/MultiPlayer?TemplateID=';
 
 // Warzone colour mapping
 const colourMapping = {
@@ -55,5 +56,6 @@ export {
     LaddersPageDescription,
     colourMapping,
     warzoneGameUrl,
-    warzoneProfileUrl
+    warzoneProfileUrl,
+    warzoneTemplateURL
 };

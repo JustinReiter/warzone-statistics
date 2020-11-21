@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
+import queryString from 'query-string';
 import { Container, Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
-import { getUsers } from './api';
-import './PlayersPage.css';
+import PlayerCard from './components/PlayerCard';
+import { warzoneProfileUrl } from './Constants';
+import { getUserById } from './api';
+import './PlayerPage.css';
 
 const useStyles1 = makeStyles((theme) => ({
     root: {
@@ -64,24 +68,36 @@ function TablePaginationActions(props) {
     );
 }
 
-function PlayersPage(props) {
+function PlayerPage(props) {
     // const classes = useStyles();
-    const [players, setPlayers] = useState([]);
+    const [player, setPlayer] = useState([]);
+    const [games, setGames] = useState([]);
     const [page, setPage] = useState(0);
 
+    const qs = queryString.parse(useLocation().search);
+    const history = useHistory();
+
     useEffect(() => {
-      getUsers().then((players) => {
-        console.log(players);
-        setPlayers(players.data.users);
-      });
-    }, []);
+        if (!qs.pid || isNaN(qs.pid)) {
+            history.push("/players");
+        }
+        getUserById(qs.pid).then((res) => {
+            if (!res.data.users.length) {
+                history.push("/players");
+            }
 
-    console.log(players);
-    const playerRows = ((players && players.map((player) => {
-        return {player: player.name, id: player.pid, wins: player.wins, losses: player.losses, count: player.count};
-    })) || []);
+            setPlayer(res.data.users[0]);
+            setGames(res.data.games)
+        });
+    }, [history, qs.pid]);
 
-    const emptyRows = 10 - Math.min(10, playerRows.length - page * 10);
+    const playerRows = 0;
+    // const playerRows = ((players && players.map((player) => {
+    //     return {player: player.name, id: player.pid, wins: player.wins, losses: player.losses, count: player.count};
+    // })) || []);
+
+    const emptyRows = 10;
+    // const emptyRows = 10 - Math.min(10, playerRows.length - page * 10);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -91,6 +107,7 @@ function PlayersPage(props) {
       <div className="players-page">
         <Container maxWidth="lg">
           <div className="PlayersTable">
+              <PlayerCard player={player} games={games} />
               <h3>Player Standings</h3>
               <Table component={Paper} width="100%">
                   <colgroup>
@@ -112,7 +129,9 @@ function PlayersPage(props) {
                       <TableRow hover={true} key={row.id}>
                           <TableCell className="player-cell" component="th" scope="row">
                               <Link
-                                  href={"/player?pid=" + row.id}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  href={warzoneProfileUrl + row.id}
                               >
                                   {row.player}
                               </Link>
@@ -153,4 +172,4 @@ function PlayersPage(props) {
     );
 }
 
-export default PlayersPage;
+export default PlayerPage;

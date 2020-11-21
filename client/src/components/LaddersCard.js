@@ -1,13 +1,10 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
 import { Grid, Table, TableContainer, TableHead, TableCell, TableBody, TableRow, Paper, Link } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
-import { warzoneProfileUrl } from '../Constants';
 import './LaddersCard.css';
 
 
 function LaddersCard(props) {
-    const history = useHistory();
 
     return (
         <Card className="ladders-card">
@@ -29,16 +26,16 @@ function LaddersCard(props) {
                         xs={12} md={4}
                     >
                         <Grid item xs={12}>
-                            <Card.Text>Total Games: {props.stats.games && props.stats.games[0].count}</Card.Text>
+                            <Card.Text>Total Games: {props.stats.games && Number(props.stats.games[0].count).toLocaleString()}</Card.Text>
                         </Grid>
                         <Grid item xs={12}>
-                            <Card.Text>Games Today: {props.stats.gamesToday && props.stats.gamesToday[0].count}</Card.Text>
+                            <Card.Text>Games Today: {props.stats.gamesToday && Number(props.stats.gamesToday[0].count).toLocaleString()}</Card.Text>
                         </Grid>
                         <Grid item xs={12}>
-                            <Card.Text>Total Boots: {props.stats.boots && props.stats.boots[0].count}</Card.Text>
+                            <Card.Text>Total Boots: {props.stats.boots && Number(props.stats.boots[0].count).toLocaleString()}</Card.Text>
                         </Grid>
                         <Grid item xs={12}>
-                            <Card.Text>Total Players: {props.stats.players && props.stats.players[0].count}</Card.Text>
+                            <Card.Text>Total Players: {props.stats.players && Number(props.stats.players[0].count).toLocaleString()}</Card.Text>
                         </Grid>
                         <Grid item xs={12}>
                             <Card.Text>Average Turns: {props.stats.avgTurns && Math.round(props.stats.avgTurns[0].avg * 100) / 100}</Card.Text>
@@ -68,9 +65,7 @@ function LaddersCard(props) {
                                         <TableRow key={player.name}>
                                             <TableCell component="th" scope="row">
                                                 <Link
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    href={warzoneProfileUrl + player.pid}
+                                                    href={"/player?pid=" + player.pid}
                                                 >
                                                     {player.name}
                                                 </Link>
@@ -107,9 +102,7 @@ function LaddersCard(props) {
                                         <TableRow key={player.name}>
                                             <TableCell component="th" scope="row">
                                                 <Link
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    href={warzoneProfileUrl + player.pid}
+                                                    href={"/player?pid=" + player.pid}
                                                 >
                                                     {player.name}
                                                 </Link>

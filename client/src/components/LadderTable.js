@@ -13,7 +13,7 @@ function LadderTable(props) {
             >
                 { props.ladders.map((ladder) => {
                     return (
-                    <Grid item xs={6} key={ladder.lid}>
+                    <Grid item xs={12} md={6} key={ladder.lid}>
                         <LadderCard clickable={true} ladder={ladder} />
                     </Grid>
                 );})}

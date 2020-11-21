@@ -2,8 +2,8 @@ import React, { Fragment } from 'react';
 import { Badge, Card } from 'react-bootstrap';
 import { CardActionArea, Grid, Table, TableHead, TableCell, TableBody, TableRow, Paper, Link } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { warzoneTemplateURL } from '../Constants';
-import './LadderCard.css';
+import { warzoneProfileUrl } from '../Constants';
+import './PlayerCard.css';
 
 const formatDateString = (date) => {
     return new Date(date).toLocaleString().slice(0, 10);
@@ -83,7 +83,7 @@ const renderTemplateName = (props) => {
             <Link 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                href={warzoneTemplateURL + props.ladder.tid}
+                href={props.ladder.tid}
             >
                 {props.ladder.template_name}
             </Link>
@@ -96,7 +96,7 @@ const renderCardText = (props) => {
     
     return (
         <Fragment>
-            <Card.Header>{props.ladder.ladder_name}</Card.Header>
+            <Card.Header>{props.player.name} <Link target="_blank" rel="noopener noreferrer" href={warzoneProfileUrl + props.player.pid}>(Warzone Profile)</Link> </Card.Header>
             <Card.Body>
             <Grid
                 container
@@ -114,16 +114,16 @@ const renderCardText = (props) => {
                     xs={12} md={6}
                 >
                     <Grid item xs={12}>
-                        <Card.Text>Games: {Number(props.ladder.game_count).toLocaleString()}</Card.Text>
+                        <Card.Text>Games: {Number(props.games && props.games.length).toLocaleString()}</Card.Text>
                     </Grid>
                     <Grid item xs={12}>
-                        <Card.Text>Template: { renderTemplateName(props) }</Card.Text>
+                        <Card.Text>Seasons: { Number(props.results && props.results.length).toLocaleString() }</Card.Text>
                     </Grid>
                     <Grid item xs={12}>
-                        <Card.Text>Start Date: {formatDateString(props.ladder.start_date)}</Card.Text>
+                        <Card.Text>Wins: {}</Card.Text>
                     </Grid>
                     <Grid item xs={12}>
-                        <Card.Text>End Date: {formatDateString(props.ladder.end_date)}</Card.Text>
+                        <Card.Text>Losses: {}</Card.Text>
                     </Grid>
                 </Grid>
 
@@ -135,30 +135,22 @@ const renderCardText = (props) => {
                     justify="flex-start"
                     xs={12} md={6}
                 >
-                    { props.ladder.stats && renderRightGrid(props) }
+                    { props.player.stats && renderRightGrid(props) }
                 </Grid>
             </Grid>
-                
-                
-                
-                
             </Card.Body>
-            <Card.Footer className="text-muted footer-row">
-                <Card.Text>Last Updated: {formatDateTimeString(props.ladder.last_updated)}</Card.Text>
-                <Card.Subtitle className="active-badge">{props.ladder.active ? <Badge variant="success">Active</Badge> : <Badge variant="danger">Inactive</Badge> }</Card.Subtitle>
-            </Card.Footer>
         </Fragment>
     )
 };
 
-function LadderCard(props) {
+function PlayerCard(props) {
     const history = useHistory();
 
     return (
-        <Card key={props.ladder.lid} className="ladder-card" onClick={() => {props.clickable && history.push("/ladder?ladder=" + props.ladder.lid)}}>
+        <Card key={props.player.pid} className="ladder-card" >
             { renderCardContainer(props) }
         </Card>
     );
 }
 
-export default LadderCard;
+export default PlayerCard;

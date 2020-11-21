@@ -8,6 +8,7 @@ import LadderPage from '../LadderPage';
 import LaddersPage from '../LaddersPage';
 import ContactPage from '../ContactPage';
 import PlayersPage from '../PlayersPage';
+import PlayerPage from '../PlayerPage';
 import './Navbar.css';
 
 function NavbarComponent() {
@@ -38,6 +39,9 @@ function NavbarComponent() {
                 </Route>
                 <Route path="/players">
                     <PlayersPage />
+                </Route>
+                <Route path="/player">
+                    <PlayerPage />
                 </Route>
                 <Route path="/contact">
                     <ContactPage />
