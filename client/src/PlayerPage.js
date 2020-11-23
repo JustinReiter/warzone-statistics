@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { Container, Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton } from '@material-ui/core';
+import { Container, Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, Grid } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
 import PlayerCard from './components/PlayerCard';
-import { warzoneProfileUrl } from './Constants';
+import GamesTable from './components/GamesTable';
 import { getUserById } from './api';
 import './PlayerPage.css';
 
@@ -72,6 +72,7 @@ function PlayerPage(props) {
     // const classes = useStyles();
     const [player, setPlayer] = useState([]);
     const [games, setGames] = useState([]);
+    const [standings, setStandings] = useState([]);
     const [page, setPage] = useState(0);
 
     const qs = queryString.parse(useLocation().search);
@@ -88,16 +89,15 @@ function PlayerPage(props) {
 
             setPlayer(res.data.users[0]);
             setGames(res.data.games)
+            setStandings(res.data.standings);
         });
     }, [history, qs.pid]);
 
-    const playerRows = 0;
-    // const playerRows = ((players && players.map((player) => {
-    //     return {player: player.name, id: player.pid, wins: player.wins, losses: player.losses, count: player.count};
-    // })) || []);
-
-    const emptyRows = 10;
-    // const emptyRows = 10 - Math.min(10, playerRows.length - page * 10);
+    const playerRows = ((standings && standings.map((record) => {
+        return {lid: record.lid, season: record.season || record.lid, wins: record.wins, losses: record.losses, elo: record.elo};
+    })) || []);
+    
+    const emptyRows = 10 - Math.min(10, playerRows.length - page * 10);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -107,8 +107,8 @@ function PlayerPage(props) {
       <div className="players-page">
         <Container maxWidth="lg">
           <div className="PlayersTable">
-              <PlayerCard player={player} games={games} />
-              <h3>Player Standings</h3>
+              <PlayerCard player={player} games={games} standings={standings} />
+              <h3>Season Results</h3>
               <Table component={Paper} width="100%">
                   <colgroup>
                       <col width="50%" />
@@ -118,10 +118,10 @@ function PlayerPage(props) {
                   </colgroup>
                   <TableHead>
                       <TableRow>
-                          <TableCell>Player</TableCell>
+                          <TableCell>Season</TableCell>
                           <TableCell align="right">Wins</TableCell>
                           <TableCell align="right">Losses</TableCell>
-                          <TableCell align="right">Seasonals Played</TableCell>
+                          <TableCell align="right">Elo</TableCell>
                       </TableRow>
                   </TableHead>
                   <TableBody>
@@ -129,16 +129,14 @@ function PlayerPage(props) {
                       <TableRow hover={true} key={row.id}>
                           <TableCell className="player-cell" component="th" scope="row">
                               <Link
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  href={warzoneProfileUrl + row.id}
+                                  href={"/ladder?ladder=" + row.lid}
                               >
-                                  {row.player}
+                                  {row.season}
                               </Link>
                           </TableCell>
                           <TableCell className="player-cell" align="right">{row.wins}</TableCell>
                           <TableCell className="player-cell" align="right">{row.losses}</TableCell>
-                          <TableCell className="player-cell" align="right">{row.count}</TableCell>
+                          <TableCell className="player-cell" align="right">{row.elo}</TableCell>
                       </TableRow>
                   ))}
                   {emptyRows > 0 && (
@@ -166,6 +164,16 @@ function PlayerPage(props) {
                   </TableFooter>
               </Table>
               <p>* Note: Elo Rating is independent of Warzone Rating</p>
+
+              <Grid 
+                container
+                spacing={3}
+                alignItems="flex-start"
+            >
+                <Grid item xs={12}>
+                    <GamesTable games={games} showSeason={true} playerId={player.pid} />
+                </Grid>
+            </Grid>
           </div>
         </Container>
       </div>

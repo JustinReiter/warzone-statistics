@@ -1,17 +1,8 @@
 import React, { Fragment } from 'react';
-import { Badge, Card } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 import { CardActionArea, Grid, Table, TableHead, TableCell, TableBody, TableRow, Paper, Link } from '@material-ui/core';
-import { useHistory } from 'react-router-dom';
 import { warzoneProfileUrl } from '../Constants';
 import './PlayerCard.css';
-
-const formatDateString = (date) => {
-    return new Date(date).toLocaleString().slice(0, 10);
-};
-
-const formatDateTimeString = (date) => {
-    return new Date(date).toLocaleString().slice(0, 17).replace(",", "");
-};
 
 // Render the card container dependent on if card should be clickable
 const renderCardContainer = (props) => {
@@ -75,20 +66,20 @@ const renderRightGrid = (props) => {
     }
 }
 
-const renderTemplateName = (props) => {
-    if (props.clickable) {
-        return props.ladder.template_name;
-    } else {
-        return (
-            <Link 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                href={props.ladder.tid}
-            >
-                {props.ladder.template_name}
-            </Link>
-        )
+let seasonalWins = (standings) => {
+    let wins = 0;
+    for (const record of standings) {
+        wins += record.wins;
     }
+    return wins;
+}
+
+let seasonalLosses = (standings) => {
+    let losses = 0;
+    for (const record of standings) {
+        losses += record.losses;
+    }
+    return losses;
 }
 
 // Render card text into the component
@@ -96,7 +87,7 @@ const renderCardText = (props) => {
     
     return (
         <Fragment>
-            <Card.Header>{props.player.name} <Link target="_blank" rel="noopener noreferrer" href={warzoneProfileUrl + props.player.pid}>(Warzone Profile)</Link> </Card.Header>
+            <Card.Header>{props.player.name} (<Link target="_blank" rel="noopener noreferrer" href={warzoneProfileUrl + props.player.pid}>Warzone Profile</Link>) </Card.Header>
             <Card.Body>
             <Grid
                 container
@@ -117,13 +108,13 @@ const renderCardText = (props) => {
                         <Card.Text>Games: {Number(props.games && props.games.length).toLocaleString()}</Card.Text>
                     </Grid>
                     <Grid item xs={12}>
-                        <Card.Text>Seasons: { Number(props.results && props.results.length).toLocaleString() }</Card.Text>
+                        <Card.Text>Seasons: { Number(props.standings && props.standings.length).toLocaleString() }</Card.Text>
                     </Grid>
                     <Grid item xs={12}>
-                        <Card.Text>Wins: {}</Card.Text>
+                        <Card.Text>Wins: {seasonalWins(props.standings)}</Card.Text>
                     </Grid>
                     <Grid item xs={12}>
-                        <Card.Text>Losses: {}</Card.Text>
+                        <Card.Text>Losses: {seasonalLosses(props.standings)}</Card.Text>
                     </Grid>
                 </Grid>
 
@@ -144,10 +135,9 @@ const renderCardText = (props) => {
 };
 
 function PlayerCard(props) {
-    const history = useHistory();
 
     return (
-        <Card key={props.player.pid} className="ladder-card" >
+        <Card key={props.player.pid} className="player-card" >
             { renderCardContainer(props) }
         </Card>
     );

@@ -90,7 +90,7 @@ function PlayersPage(props) {
     return (
       <div className="players-page">
         <Container maxWidth="lg">
-          <div className="PlayersTable">
+          <div className="FullPlayersTable">
               <h3>Player Standings</h3>
               <Table component={Paper} width="100%">
                   <colgroup>

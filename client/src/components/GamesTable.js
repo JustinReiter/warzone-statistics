@@ -81,7 +81,12 @@ function GamesTable(props) {
         let loserName = winnerId === game.player0_id ? game.player1_name : game.player0_name;
         loserName = loserName || "loser";
 
-        return {winnerId, winnerName, loserId, loserName, gid: Number(game.gid), turns: Number(game.turns), startDate: new Date(game.start_date).toLocaleString().slice(0, -3).replace(",", ""), endDate: new Date(game.end_date).toLocaleString().slice(0, -3).replace(",", "")};
+        let colour;
+        if (props.playerId) {
+          colour = winnerId === props.playerId ? "rgb(205, 229, 182)" : "rgb(251, 223, 223)";
+        }
+
+        return {lid: game.lid, colour, winnerId, winnerName, loserId, loserName, gid: Number(game.gid), turns: Number(game.turns), startDate: new Date(game.start_date).toLocaleString().slice(0, -3).replace(",", ""), endDate: new Date(game.end_date).toLocaleString().slice(0, -3).replace(",", "")};
     })) || []);
 
     const emptyRows = 10 - Math.min(10, gameRows.length - page * 10);
@@ -95,6 +100,7 @@ function GamesTable(props) {
             <h3>Recent Games</h3>
             <Table component={Paper}>
                 <colgroup>
+                    { props.showSeason && <col width="20" /> }
                     <col width="25%" />
                     <col width="25%" />
                     <col width="20%" />
@@ -104,6 +110,7 @@ function GamesTable(props) {
                 </colgroup>
                 <TableHead>
                     <TableRow>
+                        { props.showSeason && <TableCell>Season</TableCell> }
                         <TableCell>Winner</TableCell>
                         <TableCell>Loser</TableCell>
                         <TableCell>Start Date</TableCell>
@@ -114,7 +121,17 @@ function GamesTable(props) {
                 </TableHead>
                 <TableBody>
                 {gameRows && (gameRows.slice(page * 10, (page+1) * 10)).map((row) => (
-                    <TableRow hover={true} key={row.gid}>
+                    <TableRow hover={true} key={row.gid} style={{backgroundColor: row.colour}}>
+                        {
+                          props.showSeason &&
+                          <TableCell className="game-cell">
+                            <Link
+                              href={"/ladder?ladder=" + row.lid}
+                            >
+                              {row.season || row.lid}
+                            </Link>
+                          </TableCell>
+                        }
                         <TableCell className="game-cell" component="th" scope="row">
                             <Link
                                 href={"/player?pid=" + row.winnerId}
