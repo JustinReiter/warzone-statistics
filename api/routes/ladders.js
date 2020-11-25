@@ -44,9 +44,15 @@ router.get('/', function(req, res, next) {
     db.any('SELECT ladders.name AS ladder_name, templates.name AS template_name, * FROM ladders, templates WHERE ladders.tid=templates.tid ORDER BY ladders.lid DESC;')
     .then(async (ladders) => {
             let ladderArray = [];
+            let promiseArray = [];
             for (const ladder of ladders) {
-                ladder.stats = await getExtraLadderStats(ladder.lid);
+                promiseArray.push(getExtraLadderStats(ladder.lid));
                 ladderArray.push(ladder);
+            }
+
+            let resolvedArray = await Promise.all(promiseArray);
+            for (let i = 0; i < ladderArray.length; i++) {
+                ladderArray[i].stats = resolvedArray[i];
             }
 
             res.json({ladders: ladderArray, stats: await getAllLadderStats()});
@@ -61,48 +67,35 @@ router.get('/id/:ladderId', function(req, res, next) {
     if (req.params.ladderId && !isNaN(req.params.ladderId))  {
         db.any('SELECT ladders.name AS ladder_name, templates.name AS template_name, * FROM ladders, templates WHERE ladders.lid=$1 AND ladders.tid=templates.tid;',
             [req.params.ladderId])
-        .then((ladder) => {
+        .then(async (ladder) => {
                 if (!ladder) {
                     res.json({error: "No ladder found with ID"});
                 } else {
                     // Join the games table with the player tables to grab the player names
-                    db.any(`SELECT gid, player0_id, player1_id, p0.name AS player0_name, p1.name AS player1_name, winner, booted, start_date, end_date, turns
+                    let games, standings, colourData, players = [];
+                    [games, standings, colourData, players, ladder[0].stats] = await Promise.all([
+                        db.any(`SELECT gid, player0_id, player1_id, p0.name AS player0_name, p1.name AS player1_name, winner, booted, start_date, end_date, turns
                         FROM games, 
                         (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS p0, 
                         (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS p1 
                         WHERE lid=$1 AND games.player0_id=p0.pid AND games.player1_id=p1.pid ORDER BY end_date DESC;`,
-                        [req.params.ladderId])
-                    .then((games) => {
+                        [req.params.ladderId]),
                         db.any('SELECT date, games FROM daily_standings WHERE lid=$1 ORDER BY date DESC LIMIT 30',
-                            [req.params.ladderId])
-                        .then ((standings) => {
-                            db.any('SELECT colour, wins, losses FROM colour_results WHERE lid=$1 ORDER BY wins DESC, losses ASC', req.params.ladderId)
-                            .then((colourData) => {
-                                // Join the player_results and player tables
-                                db.any(`SELECT player_results.pid, p.name, wins, losses, elo FROM player_results, 
-                                    (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS p 
-                                    WHERE lid=$1 AND player_results.pid=p.pid ORDER BY player_results.wins DESC, player_results.losses ASC, player_results.elo DESC;`,
-                                    [req.params.ladderId])
-                                .then(async (players) => {
-                                    ladder[0].stats = await getExtraLadderStats(Number(req.params.ladderId));
-                                    res.json({
-                                        ladder: ladder[0],
-                                        games: games,
-                                        standings: standings.reverse(),
-                                        colourData: colourData,
-                                        players: players,
-                                    });
-                                }).catch((err) => {
-                                    console.log(err);
-                                });
-                            }).catch((err) => {
-                                console.log(err);
-                            });
-                        }).catch((err) => {
-                            console.log(err);
-                        });
-                    }).catch((err) => {
-                        console.log(err);
+                            [req.params.ladderId]),
+                        db.any('SELECT colour, wins, losses FROM colour_results WHERE lid=$1 ORDER BY wins DESC, losses ASC', req.params.ladderId),
+                        db.any(`SELECT player_results.pid, p.name, wins, losses, elo FROM player_results, 
+                                (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS p 
+                                WHERE lid=$1 AND player_results.pid=p.pid ORDER BY player_results.wins DESC, player_results.losses ASC, player_results.elo DESC;`,
+                                [req.params.ladderId]),
+                        getExtraLadderStats(Number(req.params.ladderId))
+                    ]);
+                    
+                    res.json({
+                        ladder: ladder[0],
+                        games: games,
+                        standings: standings.reverse(),
+                        colourData: colourData,
+                        players: players,
                     });
                 }
             }

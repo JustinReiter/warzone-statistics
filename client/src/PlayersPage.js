@@ -104,7 +104,7 @@ function PlayersPage(props) {
                           <TableCell>Player</TableCell>
                           <TableCell align="right">Wins</TableCell>
                           <TableCell align="right">Losses</TableCell>
-                          <TableCell align="right">Seasonals Played</TableCell>
+                          <TableCell align="right">Seasons Played</TableCell>
                       </TableRow>
                   </TableHead>
                   <TableBody>

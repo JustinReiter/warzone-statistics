@@ -23,10 +23,10 @@ router.get('/id/:userId', function(req, res, next) {
             [req.params.userId])
         .then((users) => {
             if (users.length) {
-                db.any('SELECT * FROM games WHERE player0_id=$1 OR player1_id=$1 ORDER BY end_date DESC LIMIT 20;',
+                db.any('SELECT * FROM games WHERE player0_id=$1 OR player1_id=$1 ORDER BY end_date DESC;',
                     [users[0].pid])
                 .then((games) => {
-                    db.any(`SELECT pid, player_results.lid, wins, losses, elo FROM player_results, ladders WHERE pid=$1 AND player_results.lid=ladders.lid 
+                    db.any(`SELECT pid, player_results.lid, ladders.name AS season, wins, losses, elo FROM player_results, ladders WHERE pid=$1 AND player_results.lid=ladders.lid 
                         ORDER BY player_results.lid DESC;`, [users[0].pid])
                     .then((standings) => {
                         res.json({users: users, games: games, standings: standings});
@@ -57,10 +57,10 @@ router.get('/name/:userName', function(req, res, next) {
             [req.params.userName.trim()])
             .then((users) => {
                 if (users.length) {
-                    db.any('SELECT * FROM games WHERE player0_id=$1 OR player1_id=$1 ORDER BY end_date DESC LIMIT 20;',
+                    db.any('SELECT * FROM games WHERE player0_id=$1 OR player1_id=$1 ORDER BY end_date DESC;',
                         [users[0].pid])
                     .then((games) => {
-                        db.any(`SELECT pid, player_results.lid, wins, losses, elo FROM player_results, ladders WHERE pid=$1 AND player_results.lid=ladders.lid 
+                        db.any(`SELECT pid, player_results.lid, ladders.name AS season, wins, losses, elo FROM player_results, ladders WHERE pid=$1 AND player_results.lid=ladders.lid 
                             ORDER BY player_results.lid DESC;`, [users[0].pid])
                         .then((standings) => {
                             res.json({users: users, games: games, standings: standings});
