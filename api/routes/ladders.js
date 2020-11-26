@@ -41,7 +41,9 @@ async function getAllLadderStats(ladder) {
 
 // Get general ladder data from all ladders
 router.get('/', function(req, res, next) {
-    db.any('SELECT ladders.name AS ladder_name, templates.name AS template_name, * FROM ladders, templates WHERE ladders.tid=templates.tid ORDER BY ladders.lid DESC;')
+    db.any(`SELECT ladders.name AS ladder_name, templates.name AS template_name, players.name, * FROM ladders, templates, 
+        (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS players 
+        WHERE ladders.tid=templates.tid AND (ladders.winner=players.pid OR ladders.winner is NULL) ORDER BY ladders.lid DESC;`)
     .then(async (ladders) => {
             let ladderArray = [];
             let promiseArray = [];
@@ -65,7 +67,9 @@ router.get('/', function(req, res, next) {
 // Get general ladder data from all ladders
 router.get('/id/:ladderId', function(req, res, next) {
     if (req.params.ladderId && !isNaN(req.params.ladderId))  {
-        db.any('SELECT ladders.name AS ladder_name, templates.name AS template_name, * FROM ladders, templates WHERE ladders.lid=$1 AND ladders.tid=templates.tid;',
+        db.any(`SELECT ladders.name AS ladder_name, templates.name AS template_name, players.name, * FROM ladders, templates, 
+            (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS players 
+            WHERE ladders.tid=templates.tid AND (ladders.winner=players.pid OR ladders.winner is NULL) ORDER BY ladders.lid DESC;`,
             [req.params.ladderId])
         .then(async (ladder) => {
                 if (!ladder) {

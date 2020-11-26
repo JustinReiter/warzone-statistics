@@ -98,10 +98,6 @@ const renderCardText = (props) => {
             >
                 <Grid
                     item
-                    spacing={1}
-                    alignItems="flex-start"
-                    direction="column"
-                    justify="flex-start"
                     xs={12} md={6}
                 >
                     <Grid item xs={12}>
@@ -120,10 +116,6 @@ const renderCardText = (props) => {
 
                 <Grid
                     item
-                    spacing={1}
-                    alignItems="flex-start"
-                    direction="column"
-                    justify="flex-start"
                     xs={12} md={6}
                 >
                     { props.player.stats && renderRightGrid(props) }

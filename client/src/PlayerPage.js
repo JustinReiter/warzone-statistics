@@ -93,11 +93,11 @@ function PlayerPage(props) {
         });
     }, [history, qs.pid]);
 
-    const playerRows = ((standings && standings.map((record) => {
+    const seasonRows = ((standings && standings.map((record) => {
         return {lid: record.lid, season: record.season || record.lid, wins: record.wins, losses: record.losses, elo: record.elo};
     })) || []);
     
-    const emptyRows = 10 - Math.min(10, playerRows.length - page * 10);
+    const emptyRows = 10 - Math.min(10, seasonRows.length - page * 10);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -125,8 +125,8 @@ function PlayerPage(props) {
                       </TableRow>
                   </TableHead>
                   <TableBody>
-                  {playerRows && (playerRows.slice(page * 10, (page+1) * 10)).map((row) => (
-                      <TableRow hover={true} key={row.id}>
+                  {seasonRows && (seasonRows.slice(page * 10, (page+1) * 10)).map((row) => (
+                      <TableRow hover={true} key={row.lid}>
                           <TableCell className="player-cell" component="th" scope="row">
                               <Link
                                   href={"/ladder?ladder=" + row.lid}
@@ -150,7 +150,7 @@ function PlayerPage(props) {
                           <TablePagination
                               rowsPerPageOptions={[10]}
                               colSpan={4}
-                              count={playerRows.length}
+                              count={seasonRows.length}
                               page={page}
                               rowsPerPage={10}
                               SelectProps={{

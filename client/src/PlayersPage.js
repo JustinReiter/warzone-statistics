@@ -90,64 +90,62 @@ function PlayersPage(props) {
     return (
       <div className="players-page">
         <Container maxWidth="lg">
-          <div className="FullPlayersTable">
-              <h3>Player Standings</h3>
-              <Table component={Paper} width="100%">
-                  <colgroup>
-                      <col width="50%" />
-                      <col width="15%" />
-                      <col width="15%" />
-                      <col width="20%" />
-                  </colgroup>
-                  <TableHead>
-                      <TableRow>
-                          <TableCell>Player</TableCell>
-                          <TableCell align="right">Wins</TableCell>
-                          <TableCell align="right">Losses</TableCell>
-                          <TableCell align="right">Seasons Played</TableCell>
-                      </TableRow>
-                  </TableHead>
-                  <TableBody>
-                  {playerRows && (playerRows.slice(page * 10, (page+1) * 10)).map((row) => (
-                      <TableRow hover={true} key={row.id}>
-                          <TableCell className="player-cell" component="th" scope="row">
-                              <Link
-                                  href={"/player?pid=" + row.id}
-                              >
-                                  {row.player}
-                              </Link>
-                          </TableCell>
-                          <TableCell className="player-cell" align="right">{row.wins}</TableCell>
-                          <TableCell className="player-cell" align="right">{row.losses}</TableCell>
-                          <TableCell className="player-cell" align="right">{row.count}</TableCell>
-                      </TableRow>
-                  ))}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={4} />
-                    </TableRow>
-                  )}
-                  </TableBody>
-                  <TableFooter>
-                      <TableRow>
-                          <TablePagination
-                              rowsPerPageOptions={[10]}
-                              colSpan={4}
-                              count={playerRows.length}
-                              page={page}
-                              rowsPerPage={10}
-                              SelectProps={{
-                                  inputProps: { 'aria-label': 'rows per page'},
-                                  native: true
-                              }}
-                              onChangePage={handleChangePage}
-                              ActionsComponent={TablePaginationActions}
-                          />
-                      </TableRow>
-                  </TableFooter>
-              </Table>
-              <p>* Note: Elo Rating is independent of Warzone Rating</p>
-          </div>
+          <h3>Player Standings</h3>
+          <Table component={Paper} width="100%">
+              <colgroup>
+                  <col width="50%" />
+                  <col width="15%" />
+                  <col width="15%" />
+                  <col width="20%" />
+              </colgroup>
+              <TableHead>
+                  <TableRow>
+                      <TableCell>Player</TableCell>
+                      <TableCell align="right">Wins</TableCell>
+                      <TableCell align="right">Losses</TableCell>
+                      <TableCell align="right">Seasons Played</TableCell>
+                  </TableRow>
+              </TableHead>
+              <TableBody>
+              {playerRows && (playerRows.slice(page * 10, (page+1) * 10)).map((row) => (
+                  <TableRow hover={true} key={row.id}>
+                      <TableCell className="player-cell" component="th" scope="row">
+                          <Link
+                              href={"/player?pid=" + row.id}
+                          >
+                              {row.player}
+                          </Link>
+                      </TableCell>
+                      <TableCell className="player-cell" align="right">{row.wins}</TableCell>
+                      <TableCell className="player-cell" align="right">{row.losses}</TableCell>
+                      <TableCell className="player-cell" align="right">{row.count}</TableCell>
+                  </TableRow>
+              ))}
+              {emptyRows > 0 && (
+                <TableRow style={{ height: 53 * emptyRows }}>
+                  <TableCell colSpan={4} />
+                </TableRow>
+              )}
+              </TableBody>
+              <TableFooter>
+                  <TableRow>
+                      <TablePagination
+                          rowsPerPageOptions={[10]}
+                          colSpan={4}
+                          count={playerRows.length}
+                          page={page}
+                          rowsPerPage={10}
+                          SelectProps={{
+                              inputProps: { 'aria-label': 'rows per page'},
+                              native: true
+                          }}
+                          onChangePage={handleChangePage}
+                          ActionsComponent={TablePaginationActions}
+                      />
+                  </TableRow>
+              </TableFooter>
+          </Table>
+          <p>* Note: Elo Rating is independent of Warzone Rating</p>
         </Container>
       </div>
     );
