@@ -1,16 +1,11 @@
 .players-page {
-  background-color: #282c34;
+  background-color: rgb(32, 35, 42);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: white;
-  padding-top: 4%;
+  padding-top: 8%;
   padding-bottom: 2%;
-}
-
-#root {
-  background-color: #282c34;
-  padding-top: 4%;
 }

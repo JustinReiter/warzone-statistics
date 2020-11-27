@@ -1,10 +1,14 @@
 .App {
   display: flex;
-  background-color: #282c34;
+  background-color: rgb(32, 35, 42);
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding-top: 6%;
+  padding-top: 7%;
   padding-bottom: 4%;
+}
+
+.games-chart-title {
+  color: rgba(232, 230, 227, 0.87);
 }

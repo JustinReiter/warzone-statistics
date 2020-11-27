@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { getLadders } from './api';
-import { Container, Grid } from '@material-ui/core';
+import { Container, Grid, createMuiTheme } from '@material-ui/core';
 import { ResponsiveContainer, LineChart, Label, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line } from 'recharts';
 import './LandingPage.css';
 import Card from './components/Card';
 import LadderTable from './components/LadderTable';
 import LaddersCard from './components/LaddersCard';
 import { LandingPageTitle, LandingPageDescription, LandingPageSeasonalTitle, LandingPageSeasonalDescription } from './Constants';
+
+const darkTheme = createMuiTheme({
+    palette: {
+      type: 'dark',
+    },
+  });
 
 function LandingPage() {
 
@@ -47,11 +53,11 @@ function LandingPage() {
                                 width={500} height={500}
                             >
                                 <Label value="Number of Games by Seasonal" offset={0} position="top" />
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis angle={-60} textAnchor='end' dataKey="Seasonal" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend wrapperStyle={{top: 10}}/>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#3e4446" />
+                                <XAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} angle={-60} textAnchor='end' dataKey="Seasonal" />
+                                <YAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} />
+                                <Tooltip cursor={{stroke: "#6a6357"}} contentStyle={{backgroundColor: "rgb(32, 35, 42)", color: "rgba(232, 230, 227, 0.87)"}} />
+                                <Legend wrapperStyle={{top: 10, color: "rgba(232, 230, 227, 0.87)"}}/>
                                 <Line type="monotone" dataKey="Games" stroke="#8884d8" />
                             </LineChart>
                         </ResponsiveContainer>
@@ -66,11 +72,11 @@ function LandingPage() {
                                 width={500} height={500}
                             >
                                 <Label value="Number of Players by Seasonal" offset={0} position="top" />
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis angle={-60} textAnchor='end' dataKey="Seasonal" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend wrapperStyle={{top: 10}}/>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#3e4446" />
+                                <XAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} angle={-60} textAnchor='end' dataKey="Seasonal" />
+                                <YAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} />
+                                <Tooltip cursor={{stroke: "#6a6357"}} contentStyle={{backgroundColor: "rgb(32, 35, 42)", color: "rgba(232, 230, 227, 0.87)"}} />
+                                <Legend wrapperStyle={{top: 10, color: "rgba(232, 230, 227, 0.87)"}}/>
                                 <Line type="monotone" dataKey="Players" stroke="#8884d8" />
                             </LineChart>
                         </ResponsiveContainer>

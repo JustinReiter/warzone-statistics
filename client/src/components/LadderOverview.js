@@ -89,11 +89,11 @@ function LadderOverview(props) {
                                 width={500} height={500}
                             >
                                 <Label value="Number of Games Completed by Day" offset={0} position="top" />
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis angle={-45} textAnchor='end' dataKey="name" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend wrapperStyle={{top: 10}}/>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#3e4446" />
+                                <XAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} angle={-60} textAnchor='end' dataKey="name" />
+                                <YAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} />
+                                <Tooltip cursor={{stroke: "#6a6357"}} contentStyle={{backgroundColor: "rgb(32, 35, 42)", color: "rgba(232, 230, 227, 0.87)"}} />
+                                <Legend wrapperStyle={{top: 10, color: "rgba(232, 230, 227, 0.87)"}}/>
                                 <Line type="monotone" dataKey="Games" stroke="#8884d8" />
                             </LineChart>
                         </ResponsiveContainer>
@@ -122,11 +122,11 @@ function LadderOverview(props) {
                                 barGap={3}
                                 barCategoryGap={6}
                             >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis interval={0} dataKey="Colour" textAnchor='end' angle={-60} />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend wrapperStyle={{top: 10}} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#3e4446" />
+                                <XAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} angle={-60} textAnchor='end' interval={0} dataKey="Colour" />
+                                <YAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} />
+                                <Tooltip cursor={{fill: "#35393b"}} contentStyle={{backgroundColor: "rgb(32, 35, 42)", color: "rgba(232, 230, 227, 0.87)"}} />
+                                <Legend wrapperStyle={{top: 10, color: "rgba(232, 230, 227, 0.87)"}}/>
                                 <Bar dataKey="Wins" fill="#8884d8" />
                                 <Bar dataKey="Losses" fill="#82ca9d" />
                             </BarChart>
@@ -140,11 +140,11 @@ function LadderOverview(props) {
                             <BarChart width={1000} height={250} data={turnData}
                                 margin={{top: 10, right: 20, left: 20, bottom: 50}}
                             >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis interval={0} dataKey="Turns" />
-                                <YAxis />
-                                <Tooltip />
-                                <Legend wrapperStyle={{top: 10}} />
+                                <CartesianGrid strokeDasharray="3 3" stroke="#3e4446" />
+                                <XAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} angle={-60} textAnchor='end' interval={0} dataKey="Turns" />
+                                <YAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} />
+                                <Tooltip cursor={{fill: "#35393b"}} contentStyle={{backgroundColor: "rgb(32, 35, 42)", color: "rgba(232, 230, 227, 0.87)"}} />
+                                <Legend wrapperStyle={{top: 10, color: "rgba(232, 230, 227, 0.87)"}}/>
                                 <Bar dataKey="Games" fill="#8884d8" />
                             </BarChart>
                         </ResponsiveContainer>

@@ -19,7 +19,7 @@ function ContactCard() {
     const classes = useStyles();
     return (
         <Container maxWidth="sm">
-            <MaterialCard>
+            <MaterialCard className="card-div">
                 <CardContent>
                     <Typography variant="h4" component="h2">
                         Warzone Statistics by JustinR17

@@ -116,6 +116,7 @@ function EnhancedTableHead(props) {
             align={headCell.numeric ? 'right' : 'left'}
             padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.id ? order : false}
+            className="game-header"
           >
             <TableSortLabel
               active={orderBy === headCell.id}
@@ -158,7 +159,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     top: 20,
     width: 1,
-  },
+  }
 }));
 
 function GamesTable(props) {
@@ -212,7 +213,7 @@ function GamesTable(props) {
     return (
         <div className="GamesTable">
             <h3>Recent Games</h3>
-            <Table component={Paper}>
+            <Table component={Paper} classes={classes} style={{backgroundColor: "rgb(24, 26, 27)"}}>
                 <colgroup>
                     { props.showSeason && <col width="20" /> }
                     <col width={nameWidths} />
@@ -294,6 +295,7 @@ function GamesTable(props) {
                             }}
                             onChangePage={handleChangePage}
                             ActionsComponent={TablePaginationActions}
+                            style={{color: "rgba(232, 230, 227, 0.87)"}}
                         />
                     </TableRow>
                 </TableFooter>

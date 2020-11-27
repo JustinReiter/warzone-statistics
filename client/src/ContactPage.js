@@ -4,10 +4,8 @@ import ContactCard from './components/ContactCard';
 
 function ContactPage() {
   return (
-    <div className="App">
-      <header className="App-header">
+    <div className="contact-page">
         <ContactCard />
-      </header>
     </div>
   );
 }
