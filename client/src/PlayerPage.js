@@ -109,7 +109,7 @@ function PlayerPage(props) {
           <div className="PlayersTable">
               <PlayerCard player={player} games={games} standings={standings} />
               <h3>Season Results</h3>
-              <Table component={Paper} width="100%">
+              <Table component={Paper} width="100%" style={{backgroundColor: "rgb(24, 26, 27)"}}>
                   <colgroup>
                       <col width="50%" />
                       <col width="15%" />
@@ -118,10 +118,10 @@ function PlayerPage(props) {
                   </colgroup>
                   <TableHead>
                       <TableRow>
-                          <TableCell>Season</TableCell>
-                          <TableCell align="right">Wins</TableCell>
-                          <TableCell align="right">Losses</TableCell>
-                          <TableCell align="right">Elo</TableCell>
+                          <TableCell className="player-header">Season</TableCell>
+                          <TableCell className="player-header" align="right">Wins</TableCell>
+                          <TableCell className="player-header" align="right">Losses</TableCell>
+                          <TableCell className="player-header" align="right">Elo</TableCell>
                       </TableRow>
                   </TableHead>
                   <TableBody>
@@ -159,6 +159,7 @@ function PlayerPage(props) {
                               }}
                               onChangePage={handleChangePage}
                               ActionsComponent={TablePaginationActions}
+                              style={{color: "rgba(232, 230, 227, 0.87)"}}
                           />
                       </TableRow>
                   </TableFooter>

@@ -2,9 +2,35 @@
   width: "100%"
 }
 
+.player-header {
+  color: rgba(232, 230, 227, 0.87) !important;
+}
+
+.MuiTableSortLabel-root {
+  color: rgba(232, 230, 227, 0.87) !important;
+}
+
+.MuiTableSortLabel-icon {
+  color: rgba(232, 230, 227, 0.54) !important;
+}
+
+.MuiButtonBase-root {
+  color: rgba(232, 230, 227, 0.87) !important;
+}
+
+.MuiTableCell-root {
+  border-bottom-color: rgb(57, 61, 64) !important;
+  background-color: "rgb(24, 26, 27)" !important;
+}
+
+.MuiTypography-colorPrimary {
+  color:rgb(109, 149, 204) !important;
+}
+
 .player-cell {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 0;
+  color: rgba(232, 230, 227, 0.87) !important;
 }

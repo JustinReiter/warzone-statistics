@@ -195,7 +195,7 @@ function GamesTable(props) {
 
         let colour;
         if (props.playerId) {
-          colour = winnerId === props.playerId ? "rgb(205, 229, 182)" : "rgb(251, 223, 223)";
+          colour = winnerId === props.playerId ? "#3d511d" : "#410808";
         }
 
         return {lid: game.lid, season: seasonMapping[Number(game.lid)], colour, winnerId, winnerName, loserId, loserName, gid: Number(game.gid), turns: Number(game.turns), startDate: new Date(game.start_date).toLocaleString().slice(0, -3).replace(",", ""), endDate: new Date(game.end_date).toLocaleString().slice(0, -3).replace(",", "")};

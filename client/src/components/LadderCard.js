@@ -55,17 +55,17 @@ const renderRightGrid = (props) => {
                     </colgroup>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Top 5</TableCell>
-                            <TableCell align="right">Wins</TableCell>
-                            <TableCell align="right">Losses</TableCell>
+                            <TableCell className="top-players-card-header">Top 5</TableCell>
+                            <TableCell className="top-players-card-header" align="right">Wins</TableCell>
+                            <TableCell className="top-players-card-header" align="right">Losses</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {props.ladder.stats.top5.map((player) => (
                             <TableRow key={player.name}>
-                                <TableCell className="top-player-cell" component="th" scope="row">{player.name}</TableCell>
-                                <TableCell className="top-player-cell" align="right">{player.wins}</TableCell>
-                                <TableCell className="top-player-cell" align="right">{player.losses}</TableCell>
+                                <TableCell className="top-players-card-cell" component="th" scope="row">{player.name}</TableCell>
+                                <TableCell className="top-players-card-cell" align="right">{player.wins}</TableCell>
+                                <TableCell className="top-players-card-cell" align="right">{player.losses}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

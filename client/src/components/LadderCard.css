@@ -24,9 +24,14 @@
   align-items: center;
 }
 
-.top-player-cell {
+.top-players-card-header {
+  color: rgba(232, 230, 227, 0.87) !important;
+}
+
+.top-players-card-cell {
   white-space: pre;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 8ch;
+  color: rgba(232, 230, 227, 0.87) !important;
 }

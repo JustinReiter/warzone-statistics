@@ -57,26 +57,26 @@ function LaddersCard(props) {
                     >
                         <Grid item xs={12}>
                             <TableContainer component={Paper}>
-                                <Table size="small" aria-label="a dense table" >
+                                <Table size="small" aria-label="a dense table"  style={{backgroundColor: "rgb(24, 26, 27)"}}>
                                     <TableHead>
                                     <TableRow>
-                                        <TableCell>Top 5</TableCell>
-                                        <TableCell align="right">Wins</TableCell>
-                                        <TableCell align="right">Losses</TableCell>
+                                        <TableCell className="top-players-header" >Top 5</TableCell>
+                                        <TableCell className="top-players-header" align="right">Wins</TableCell>
+                                        <TableCell className="top-players-header" align="right">Losses</TableCell>
                                     </TableRow>
                                     </TableHead>
                                     <TableBody>
                                     {props.stats.top5 && props.stats.top5.map((player) => (
                                         <TableRow key={player.name}>
-                                            <TableCell component="th" scope="row">
+                                            <TableCell component="th" scope="row"className="top-players-cell" >
                                                 <Link
                                                     href={"/player?pid=" + player.pid}
                                                 >
                                                     {player.name}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell align="right">{player.wins}</TableCell>
-                                            <TableCell align="right">{player.losses}</TableCell>
+                                            <TableCell className="top-players-cell" align="right">{player.wins}</TableCell>
+                                            <TableCell className="top-players-cell" align="right">{player.losses}</TableCell>
                                         </TableRow>
                                     ))}
                                     </TableBody>
@@ -95,24 +95,24 @@ function LaddersCard(props) {
                     >
                         <Grid item xs={12}>
                             <TableContainer component={Paper}>
-                                <Table size="small" aria-label="a dense table">
+                                <Table size="small" aria-label="a dense table"  style={{backgroundColor: "rgb(24, 26, 27)"}}>
                                     <TableHead>
                                     <TableRow>
-                                        <TableCell>Top 5</TableCell>
-                                        <TableCell align="right">Seasonals</TableCell>
+                                        <TableCell className="top-players-header" >Top 5</TableCell>
+                                        <TableCell className="top-players-header" align="right">Seasonals</TableCell>
                                     </TableRow>
                                     </TableHead>
                                     <TableBody>
                                     {props.stats.active5 && props.stats.active5.map((player) => (
                                         <TableRow key={player.name}>
-                                            <TableCell component="th" scope="row">
+                                            <TableCell component="th" scope="row" className="top-players-cell" >
                                                 <Link
                                                     href={"/player?pid=" + player.pid}
                                                 >
                                                     {player.name}
                                                 </Link>
                                             </TableCell>
-                                            <TableCell align="right">{player.count}</TableCell>
+                                            <TableCell className="top-players-cell" align="right">{player.count}</TableCell>
                                         </TableRow>
                                     ))}
                                     </TableBody>
