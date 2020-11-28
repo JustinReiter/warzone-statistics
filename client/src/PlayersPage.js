@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
+import EnhancedTableHeader from './components/EnhancedTableHeader';
 import { getUsers } from './api';
 import './PlayersPage.css';
 
@@ -64,10 +65,70 @@ function TablePaginationActions(props) {
     );
 }
 
+const headCells = [
+  { id: 'player', numeric: false, disablePadding: false, label: 'Player' },
+  { id: 'wins', numeric: true, disablePadding: false, label: 'Wins' },
+  { id: 'losses', numeric: true, disablePadding: false, label: 'Losses' },
+  { id: 'seasonsPlayed', numeric: true, disablePadding: false, label: 'Seasons Played' },
+];
+
+function descendingComparator(a, b, column) {
+  if (column === "player") {
+    return a[column] > b[column] ? 1 : -1;
+  } else {
+    return Number(a[column]) < Number(b[column]) ? 1 : -1;
+  }
+}
+
+function getComparator(order, column) {
+  if (order === "desc") {
+    return (a, b) => descendingComparator(a, b, column);
+  } else {
+    return (a, b) => -descendingComparator(a, b, column);
+  }
+}
+
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map((el) => el[0]);
+}
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+  },
+  paper: {
+    width: '100%',
+    marginBottom: theme.spacing(2),
+  },
+  table: {
+    minWidth: 750,
+  },
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+  }
+}));
+
+
 function PlayersPage(props) {
-    // const classes = useStyles();
+    const classes = useStyles();
     const [players, setPlayers] = useState([]);
     const [page, setPage] = useState(0);
+    const [order, setOrder] = React.useState('desc');
+    const [orderBy, setOrderBy] = React.useState('wins');
 
     useEffect(() => {
       getUsers().then((players) => {
@@ -78,7 +139,7 @@ function PlayersPage(props) {
 
     console.log(players);
     const playerRows = ((players && players.map((player) => {
-        return {player: player.name, id: player.pid, wins: player.wins, losses: player.losses, count: player.count};
+        return {player: player.name, id: player.pid, wins: player.wins, losses: player.losses, seasonsPlayed: player.count};
     })) || []);
 
     const emptyRows = 10 - Math.min(10, playerRows.length - page * 10);
@@ -86,6 +147,12 @@ function PlayersPage(props) {
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
+
+    const handleSort = (event, property) => {
+      const isAsc = orderBy === property && order === 'asc';
+      setOrder(isAsc ? 'desc' : 'asc');
+      setOrderBy(property);
+    }
     
     return (
       <div className="players-page">
@@ -98,16 +165,16 @@ function PlayersPage(props) {
                   <col width="15%" />
                   <col width="20%" />
               </colgroup>
-              <TableHead>
-                  <TableRow>
-                      <TableCell className="player-header" >Player</TableCell>
-                      <TableCell className="player-header" align="right">Wins</TableCell>
-                      <TableCell className="player-header" align="right">Losses</TableCell>
-                      <TableCell className="player-header" align="right">Seasons Played</TableCell>
-                  </TableRow>
-              </TableHead>
+              <EnhancedTableHeader
+                  classes={classes}
+                  order={order}
+                  orderBy={orderBy}
+                  onRequestSort={handleSort}
+                  headerCells={headCells}
+                  padEmptyCell={false}
+                />
               <TableBody>
-              {playerRows && (playerRows.slice(page * 10, (page+1) * 10)).map((row) => (
+              {playerRows && (stableSort(playerRows, getComparator(order, orderBy)).slice(page * 10, (page+1) * 10)).map((row) => (
                   <TableRow hover={true} key={row.id}>
                       <TableCell className="player-cell" component="th" scope="row">
                           <Link
@@ -118,7 +185,7 @@ function PlayersPage(props) {
                       </TableCell>
                       <TableCell className="player-cell" align="right">{row.wins}</TableCell>
                       <TableCell className="player-cell" align="right">{row.losses}</TableCell>
-                      <TableCell className="player-cell" align="right">{row.count}</TableCell>
+                      <TableCell className="player-cell" align="right">{row.seasonsPlayed}</TableCell>
                   </TableRow>
               ))}
               {emptyRows > 0 && (

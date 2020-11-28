@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Badge, Card } from 'react-bootstrap';
 import { CardActionArea, Grid, Table, TableHead, TableCell, TableBody, TableRow, Paper, Link } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { warzoneTemplateURL } from '../Constants';
+import { warzoneSeasonUrl, warzoneTemplateURL } from '../Constants';
 import './LadderCard.css';
 
 const formatDateString = (date) => {
@@ -96,7 +96,7 @@ const renderCardText = (props) => {
     
     return (
         <Fragment>
-            <Card.Header>{props.ladder.ladder_name}</Card.Header>
+            <Card.Header>{ props.ladder.ladder_name } {!props.clickable && <Link target="_blank" rel="noopener noreferrer" href={warzoneSeasonUrl + props.ladder.lid}>(Season Page)</Link>}</Card.Header>
             <Card.Body>
             <Grid
                 container

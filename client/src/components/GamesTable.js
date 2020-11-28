@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton,
-  TableSortLabel } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
+import EnhancedTableHeader from './EnhancedTableHeader';
 import { warzoneGameUrl, seasonMapping } from '../Constants';
 import './GamesTable.css';
 
@@ -101,43 +101,6 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-function EnhancedTableHead(props) {
-  const { classes, order, orderBy, onRequestSort } = props;
-  const createSortHandler = (property) => (event) => {
-    onRequestSort(event, property);
-  };
-
-  return (
-    <TableHead>
-      <TableRow>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'default'}
-            sortDirection={orderBy === headCell.id ? order : false}
-            className="game-header"
-          >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </span>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-        <TableCell/>
-      </TableRow>
-    </TableHead>
-  );
-}
-
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -223,11 +186,13 @@ function GamesTable(props) {
                     <col width="5%" />
                     <col width="5%" />
                 </colgroup>
-                <EnhancedTableHead
+                <EnhancedTableHeader
                   classes={classes}
                   order={order}
                   orderBy={orderBy}
                   onRequestSort={handleSort}
+                  headerCells={headCells}
+                  padEmptyCell={true}
                 />
                 <TableBody>
                 {stableSort(gameRows, getComparator(order, orderBy))

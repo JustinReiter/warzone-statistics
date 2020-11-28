@@ -87,7 +87,7 @@ const renderCardText = (props) => {
     
     return (
         <Fragment>
-            <Card.Header>{props.player.name} (<Link target="_blank" rel="noopener noreferrer" href={warzoneProfileUrl + props.player.pid}>Warzone Profile</Link>) </Card.Header>
+            <Card.Header>{props.player.name} <Link target="_blank" rel="noopener noreferrer" href={warzoneProfileUrl + props.player.pid}>(Warzone Profile)</Link> </Card.Header>
             <Card.Body>
             <Grid
                 container
