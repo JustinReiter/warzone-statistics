@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton } from '@material-ui/core';
+import { Container, Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, TextField } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
 import EnhancedTableHeader from './components/EnhancedTableHeader';
@@ -98,6 +98,16 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+function queryFilter(array, searchString) {
+  if (!searchString || !searchString.trim()) {
+      return array;
+  }
+
+  return array.filter((player) => {
+      return headCells.filter((header) => new String(player[header.id]).toLowerCase().indexOf(searchString.trim().toLowerCase()) >= 0).length > 0;
+  });
+}
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -129,20 +139,20 @@ function PlayersPage(props) {
     const [page, setPage] = useState(0);
     const [order, setOrder] = React.useState('desc');
     const [orderBy, setOrderBy] = React.useState('wins');
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
       getUsers().then((players) => {
-        console.log(players);
         setPlayers(players.data.users);
       });
     }, []);
 
-    console.log(players);
     const playerRows = ((players && players.map((player) => {
         return {player: player.name, id: player.pid, wins: player.wins, losses: player.losses, seasonsPlayed: player.count};
     })) || []);
 
-    const emptyRows = 10 - Math.min(10, playerRows.length - page * 10);
+    const queriedPlayerRows = queryFilter(playerRows, search);
+    const emptyRows = 10 - Math.min(10, queriedPlayerRows.length - page * 10);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -157,7 +167,6 @@ function PlayersPage(props) {
     return (
       <div className="players-page">
         <Container maxWidth="lg">
-          <h3>Player Standings</h3>
           <Table component={Paper} width="100%" style={{backgroundColor: "rgb(24, 26, 27)"}}>
               <colgroup>
                   <col width="50%" />
@@ -165,6 +174,12 @@ function PlayersPage(props) {
                   <col width="15%" />
                   <col width="20%" />
               </colgroup>
+              <TableHead>
+                <TableRow>
+                    <TableCell className="player-cell" colSpan={3}><h3>Player Standings</h3></TableCell>
+                    <TableCell className="player-cell" colSpan={1}><TextField id="players-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                </TableRow>
+              </TableHead>
               <EnhancedTableHeader
                   classes={classes}
                   order={order}
@@ -174,7 +189,7 @@ function PlayersPage(props) {
                   padEmptyCell={false}
                 />
               <TableBody>
-              {playerRows && (stableSort(playerRows, getComparator(order, orderBy)).slice(page * 10, (page+1) * 10)).map((row) => (
+              {playerRows && (stableSort(queriedPlayerRows, getComparator(order, orderBy)).slice(page * 10, (page+1) * 10)).map((row) => (
                   <TableRow hover={true} key={row.id}>
                       <TableCell className="player-cell" component="th" scope="row">
                           <Link
@@ -199,7 +214,7 @@ function PlayersPage(props) {
                       <TablePagination
                           rowsPerPageOptions={[10]}
                           colSpan={4}
-                          count={playerRows.length}
+                          count={queriedPlayerRows.length}
                           page={page}
                           rowsPerPage={10}
                           SelectProps={{

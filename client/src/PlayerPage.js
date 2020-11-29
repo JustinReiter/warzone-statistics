@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { Container, Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, Grid } from '@material-ui/core';
+import { Container, Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, Grid, TextField } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
 import PlayerCard from './components/PlayerCard';
@@ -102,6 +102,16 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+function queryFilter(array, searchString) {
+  if (!searchString || !searchString.trim()) {
+      return array;
+  }
+
+  return array.filter((player) => {
+      return headCells.filter((header) => new String(player[header.id]).toLowerCase().indexOf(searchString.trim().toLowerCase()) >= 0).length > 0;
+  });
+}
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -132,8 +142,9 @@ function PlayerPage(props) {
     const [games, setGames] = useState([]);
     const [standings, setStandings] = useState([]);
     const [page, setPage] = useState(0);
-    const [order, setOrder] = React.useState('desc');
-    const [orderBy, setOrderBy] = React.useState('season');
+    const [order, setOrder] = useState('desc');
+    const [orderBy, setOrderBy] = useState('season');
+    const [search, setSearch] = useState("");
 
     const qs = queryString.parse(useLocation().search);
     const history = useHistory();
@@ -157,7 +168,8 @@ function PlayerPage(props) {
         return {lid: record.lid, season: record.season || record.lid, wins: record.wins, losses: record.losses, elo: record.elo};
     })) || []);
     
-    const emptyRows = 10 - Math.min(10, seasonRows.length - page * 10);
+    const queriedSeasonRows = queryFilter(seasonRows, search);
+    const emptyRows = 10 - Math.min(10, queriedSeasonRows.length - page * 10);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -174,7 +186,6 @@ function PlayerPage(props) {
         <Container maxWidth="lg">
           <div className="PlayersTable">
               <PlayerCard player={player} games={games} standings={standings} />
-              <h3>Season Results</h3>
               <Table component={Paper} width="100%" style={{backgroundColor: "rgb(24, 26, 27)"}}>
                   <colgroup>
                       <col width="50%" />
@@ -182,6 +193,12 @@ function PlayerPage(props) {
                       <col width="15%" />
                       <col width="20%" />
                   </colgroup>
+                  <TableHead>
+                      <TableRow>
+                          <TableCell className="player-cell" colSpan={3}><h3>Season Results</h3></TableCell>
+                          <TableCell className="player-cell" colSpan={2}><TextField id="seasons-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                      </TableRow>
+                  </TableHead>
                   <EnhancedTableHeader
                     classes={classes}
                     order={order}
@@ -191,7 +208,7 @@ function PlayerPage(props) {
                     padEmptyCell={false}
                   />
                   <TableBody>
-                  {seasonRows && (stableSort(seasonRows, getComparator(order, orderBy)).slice(page * 10, (page+1) * 10)).map((row) => (
+                  {seasonRows && (stableSort(queriedSeasonRows, getComparator(order, orderBy)).slice(page * 10, (page+1) * 10)).map((row) => (
                       <TableRow hover={true} key={row.lid}>
                           <TableCell className="player-cell" component="th" scope="row">
                               <Link
@@ -216,7 +233,7 @@ function PlayerPage(props) {
                           <TablePagination
                               rowsPerPageOptions={[10]}
                               colSpan={4}
-                              count={seasonRows.length}
+                              count={queriedSeasonRows.length}
                               page={page}
                               rowsPerPage={10}
                               SelectProps={{

@@ -1,13 +1,7 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
-import { Grid, Table, TableContainer, TableHead, TableCell, TableBody, TableRow, Paper, Link, createMuiTheme } from '@material-ui/core';
+import { Grid, Table, TableContainer, TableHead, TableCell, TableBody, TableRow, Paper, Link } from '@material-ui/core';
 import './LaddersCard.css';
-
-const darkTheme = createMuiTheme({
-    palette: {
-      type: 'dark',
-    },
-});
 
 function LaddersCard(props) {
 

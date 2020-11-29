@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { getLadders } from './api';
-import { Container, Grid, createMuiTheme } from '@material-ui/core';
+import { Container, Grid } from '@material-ui/core';
 import { ResponsiveContainer, LineChart, Label, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line } from 'recharts';
 import './LandingPage.css';
 import Card from './components/Card';
 import LadderTable from './components/LadderTable';
 import LaddersCard from './components/LaddersCard';
 import { LandingPageTitle, LandingPageDescription, LandingPageSeasonalTitle, LandingPageSeasonalDescription } from './Constants';
-
-const darkTheme = createMuiTheme({
-    palette: {
-      type: 'dark',
-    },
-  });
 
 function LandingPage() {
 

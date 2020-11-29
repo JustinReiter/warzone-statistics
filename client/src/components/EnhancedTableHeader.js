@@ -8,8 +8,6 @@ function EnhancedTableHeader(props) {
     onRequestSort(event, property);
   };
 
-  console.log(headerCells);
-
   return (
     <TableHead>
       <TableRow>

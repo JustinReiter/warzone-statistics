@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, TextField } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
 import EnhancedTableHeader from './EnhancedTableHeader';
@@ -68,13 +68,13 @@ function TablePaginationActions(props) {
 const headCells = [
   { id: 'winnerName', numeric: false, disablePadding: false, label: 'Winner' },
   { id: 'loserName', numeric: false, disablePadding: false, label: 'Loser' },
-  { id: 'start_date', numeric: true, disablePadding: false, label: 'Start Date' },
-  { id: 'end_date', numeric: true, disablePadding: false, label: 'End Date' },
+  { id: 'startDate', numeric: true, disablePadding: false, label: 'Start Date' },
+  { id: 'endDate', numeric: true, disablePadding: false, label: 'End Date' },
   { id: 'turns', numeric: true, disablePadding: false, label: 'Turns' },
 ];
 
 function descendingComparator(a, b, column) {
-  if (column.indexOf('date') >= 0) {
+  if (column.indexOf('Date') >= 0) {
     return new Date(a[column]) > new Date(b[column]) ? 1 : -1;
   } else if (column === 'turns') {
     return a[column] < b[column] ? 1 : -1;
@@ -99,6 +99,16 @@ function stableSort(array, comparator) {
     return a[1] - b[1];
   });
   return stabilizedThis.map((el) => el[0]);
+}
+
+function queryFilter(array, searchString) {
+    if (!searchString || !searchString.trim()) {
+        return array;
+    }
+
+    return array.filter((game) => {
+        return headCells.filter((header) => new String(game[header.id]).toLowerCase().indexOf(searchString.trim().toLowerCase()) >= 0).length > 0;
+    });
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -129,8 +139,9 @@ function GamesTable(props) {
     const classes = useStyles();
     const [games, setGames] = useState([]);
     const [page, setPage] = useState(0);
-    const [order, setOrder] = React.useState('asc');
-    const [orderBy, setOrderBy] = React.useState('end_date');
+    const [order, setOrder] = useState('asc');
+    const [orderBy, setOrderBy] = useState('endDate');
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
         setGames(props.games);
@@ -138,7 +149,7 @@ function GamesTable(props) {
 
     useEffect(() => {
       if (props.showSeason) {
-        headCells.splice(0, 0, { id: 'lid', numeric: false, disablePadding: false, label: 'Season' })
+        headCells.splice(0, 0, { id: 'season', numeric: false, disablePadding: false, label: 'Season' })
       }
     }, [props.showSeason]);
 
@@ -164,7 +175,8 @@ function GamesTable(props) {
         return {lid: game.lid, season: seasonMapping[Number(game.lid)], colour, winnerId, winnerName, loserId, loserName, gid: Number(game.gid), turns: Number(game.turns), startDate: new Date(game.start_date).toLocaleString().slice(0, -3).replace(",", ""), endDate: new Date(game.end_date).toLocaleString().slice(0, -3).replace(",", "")};
     })) || []);
 
-    const emptyRows = 10 - Math.min(10, gameRows.length - page * 10);
+    const queriedGameRows = queryFilter(gameRows, search);
+    const emptyRows = 10 - Math.min(10, queriedGameRows.length - page * 10);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -172,10 +184,9 @@ function GamesTable(props) {
 
     let nameWidths = props.showSeason ? "20%" : "25%";
     let dateWidths = props.showSeason ? "15%" : "20%";
-    
+
     return (
         <div className="GamesTable">
-            <h3>Recent Games</h3>
             <Table component={Paper} classes={classes} style={{backgroundColor: "rgb(24, 26, 27)"}}>
                 <colgroup>
                     { props.showSeason && <col width="20" /> }
@@ -186,6 +197,12 @@ function GamesTable(props) {
                     <col width="5%" />
                     <col width="5%" />
                 </colgroup>
+                <TableHead>
+                    <TableRow>
+                        <TableCell className="game-cell" colSpan={props.showSeason ? 4 : 3}><h3>Recent Games</h3></TableCell>
+                        <TableCell className="game-cell" colSpan={3}><TextField id="game-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                    </TableRow>
+                </TableHead>
                 <EnhancedTableHeader
                   classes={classes}
                   order={order}
@@ -195,7 +212,7 @@ function GamesTable(props) {
                   padEmptyCell={true}
                 />
                 <TableBody>
-                {stableSort(gameRows, getComparator(order, orderBy))
+                {stableSort(queriedGameRows, getComparator(order, orderBy))
                   .slice(page * 10, (page+1) * 10)
                   .map((row, index) => {
                     return (
@@ -251,7 +268,7 @@ function GamesTable(props) {
                         <TablePagination
                             rowsPerPageOptions={[10]}
                             colSpan={props.showSeason ? 7 : 6}
-                            count={gameRows.length}
+                            count={queriedGameRows.length}
                             page={page}
                             rowsPerPage={10}
                             SelectProps={{

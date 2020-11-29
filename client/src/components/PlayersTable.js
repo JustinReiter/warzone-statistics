@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, TextField } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
 import EnhancedTableHeader from './EnhancedTableHeader';
@@ -97,6 +97,16 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
+function queryFilter(array, searchString) {
+  if (!searchString || !searchString.trim()) {
+      return array;
+  }
+
+  return array.filter((game) => {
+      return headCells.filter((header) => new String(game[header.id]).toLowerCase().indexOf(searchString.trim().toLowerCase()) >= 0).length > 0;
+  });
+}
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -127,6 +137,7 @@ function PlayersTable(props) {
     const [page, setPage] = useState(0);
     const [order, setOrder] = React.useState('desc');
     const [orderBy, setOrderBy] = React.useState('wins');
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
       setPlayers(props.players);
@@ -142,7 +153,8 @@ function PlayersTable(props) {
         return {player: player.name, id: player.pid, wins: player.wins, losses: player.losses, elo: player.elo};
     })) || []);
 
-    const emptyRows = 10 - Math.min(10, playerRows.length - page * 10);
+    const queriedPlayerRows = queryFilter(playerRows, search);
+    const emptyRows = 10 - Math.min(10, queriedPlayerRows.length - page * 10);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -150,7 +162,6 @@ function PlayersTable(props) {
     
     return (
         <div className="PlayersTable">
-            <h3>Player Standings</h3>
             <Table component={Paper} width="100%" style={{backgroundColor: "rgb(24, 26, 27)"}}>
                 <colgroup>
                     <col width="50%" />
@@ -158,6 +169,12 @@ function PlayersTable(props) {
                     <col width="15%" />
                     <col width="20%" />
                 </colgroup>
+                <TableHead>
+                <TableRow>
+                    <TableCell className="player-cell" colSpan={2}><h3>Standings</h3></TableCell>
+                    <TableCell className="player-cell" colSpan={2}><TextField id="player-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                </TableRow>
+                </TableHead>
                 <EnhancedTableHeader
                   classes={classes}
                   order={order}
@@ -167,7 +184,7 @@ function PlayersTable(props) {
                   padEmptyCell={false}
                 />
                 <TableBody>
-                {playerRows && (stableSort(playerRows, getComparator(order, orderBy)).slice(page * 10, (page+1) * 10)).map((row) => (
+                {playerRows && (stableSort(queriedPlayerRows, getComparator(order, orderBy)).slice(page * 10, (page+1) * 10)).map((row) => (
                     <TableRow hover={true} key={row.id}>
                         <TableCell className="player-cell" component="th" scope="row">
                             <Link
@@ -192,7 +209,7 @@ function PlayersTable(props) {
                         <TablePagination
                             rowsPerPageOptions={[10]}
                             colSpan={4}
-                            count={playerRows.length}
+                            count={queriedPlayerRows.length}
                             page={page}
                             rowsPerPage={10}
                             SelectProps={{
