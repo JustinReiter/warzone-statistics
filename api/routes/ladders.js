@@ -64,8 +64,9 @@ router.get('/', function(req, res, next) {
 // Get general ladder data from all ladders
 router.get('/id/:ladderId', function(req, res, next) {
     if (req.params.ladderId && !isNaN(req.params.ladderId))  {
-        db.any(`SELECT ladders.name AS ladder_name, templates.name AS template_name, players.name, * FROM ladders, templates, players 
-            WHERE ladders.tid=templates.tid AND (ladders.winner=players.pid OR ladders.winner is NULL) ORDER BY ladders.lid DESC;`,
+        db.any(`SELECT ladder_name, winner_name, templates.name AS template_name, * FROM templates, 
+            (SELECT ladders.name AS ladder_name, players.name AS winner_name, ladders.winner, * FROM ladders LEFT JOIN players ON ladders.winner=players.pid) AS ladders
+            WHERE ladders.tid=templates.tid AND ladders.lid=$1;`,
             [req.params.ladderId])
         .then(async (ladder) => {
                 if (!ladder) {
