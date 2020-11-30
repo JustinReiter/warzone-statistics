@@ -47,12 +47,24 @@ async function updateLadderDatabase(ladder, ladderData) {
         });
 
         // Check if first player exists in player database
-        db.any('SELECT * FROM players WHERE pid=$1 ORDER BY version DESC;',
+        db.any('SELECT * FROM players WHERE pid=$1;',
             [game.player0_id, game.player0_name])
         .then((players) => {
-            if (players.length == 0 || !players[0] || players[0].name != game.player0_name) {
+            if (players.length === 0) {
+                // Insert new player if none exist prior
                 db.none('INSERT INTO players (pid, name) VALUES ($1, $2);',
                     [game.player0_id, game.player0_name])
+                .then(() => {
+                    console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully added (${game.player0_id}, ${game.player0_name})`);
+                })
+                .catch((err) => {
+                    console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Attempted to insert: ${game.player0_name} (ID: ${game.player0_id$})`);
+                    console.log(err);
+                });
+            } else {
+                // Update name of new player if changed from prior record
+                if (!players[0] || players[0].name !== game.player0_name) {
+                    db.none('UPDATE players SET name=$1 WHERE pid=$2;', [game.player0_name, game.player0_id])
                     .then(() => {
                         console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully added (${game.player0_id}, ${game.player0_name})`);
                     })
@@ -60,6 +72,7 @@ async function updateLadderDatabase(ladder, ladderData) {
                         console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Attempted to insert: ${game.player0_name} (ID: ${game.player0_id$})`);
                         console.log(err);
                     });
+                }
             }
         })
         .catch((err) => {
@@ -67,19 +80,32 @@ async function updateLadderDatabase(ladder, ladderData) {
         });
 
         // Check if second player exists in player database
-        db.any('SELECT * FROM players WHERE pid=$1 ORDER BY version DESC;',
+        db.any('SELECT * FROM players WHERE pid=$1;',
             [game.player1_id])
         .then((players) => {
-            if (players.length == 0 || !players[0] || players[0].name != game.player1_name) {
+            if (players.length === 0) {
+                // Insert new player if none exist prior
                 db.none('INSERT INTO players (pid, name) VALUES ($1, $2);',
                     [game.player1_id, game.player1_name])
+                .then(() => {
+                    console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully added (${game.player1_id}, ${game.player1_name})`);
+                })
+                .catch((err) => {
+                    console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Attempted to insert: ${game.player1_name} (ID: ${game.player1_id$})`);
+                    console.log(err);
+                });
+            } else {
+                // Update name of new player if changed from prior record
+                if (!players[0] || players[0].name !== game.player1_name) {
+                    db.none('UPDATE players SET name=$1 WHERE pid=$2;', [game.player1_name, game.player1_id])
                     .then(() => {
                         console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Successfully added (${game.player1_id}, ${game.player1_name})`);
                     })
                     .catch((err) => {
-                        console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Attempted to insert: ${game.player0_name} (ID: ${game.player0_id$})`);
+                        console.log(`[UpdateLadderGames] ${ladder.name} (ID: ${ladder.lid}) Attempted to insert: ${game.player1_name} (ID: ${game.player1_id$})`);
                         console.log(err);
                     });
+                }
             }
         })
         .catch((err) => {

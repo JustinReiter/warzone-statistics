@@ -119,8 +119,39 @@ function populateEloRatings() {
     });
 }
 
+function collapsePlayerNames() {
+    db.any('SELECT * FROM players;').then((players) => {
+        let playersFinal = {};
+
+        // Grab most recent name
+        for (const player of players) {
+            if (Number(player.pid) in playersFinal && Number(player.version) > playersFinal[Number(player.pid)].version) {
+                playersFinal[Number(player.pid)].name = player.name;
+                playersFinal[Number(player.pid)].version = Number(player.version);
+            } else if (!(Number(player.pid) in playersFinal)) {
+                playersFinal[Number(player.pid)] = { name: player.name, version: Number(player.version)};
+            }
+        }
+
+        // Reset the table
+        db.none('DELETE FROM players;').then(async () => {
+            console.log("[CollapsePlayerNames] Successfully deleted all rows from players");
+
+            let increment = 0;
+            for (const [pid, player] of Object.entries(playersFinal)) {
+                await db.none('INSERT INTO players (pid, name, version) VALUES ($1, $2, 1)', [pid, player.name]);
+                console.log(`[CollapsePlayerNames] Successfully inserted (${pid}, ${player.name}) into players`);
+                increment++;
+            }
+
+            console.log(`[CollapsePlayerNames] Successfully inserted ${increment} players into the players db.`);
+        });
+    });
+}
+
 module.exports = {
     populateDailyStandings,
     populateColourResults,
-    populateEloRatings
+    populateEloRatings,
+    collapsePlayerNames
 };

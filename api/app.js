@@ -7,7 +7,7 @@ var cors = require('cors');
 require('dotenv').config();
 
 const { updateLadders, updateDailyStandings } = require('./updateLadders');
-const { populateColourResults, populateDailyStandings, populateEloRatings} = require('./initializeDatabases');
+const { populateColourResults, populateDailyStandings, populateEloRatings } = require('./initializeDatabases');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -87,5 +87,9 @@ db.any('SELECT * FROM player_results;').then((players) =>{
 		populateEloRatings();
 	}
 });
+
+
+// Single-use script to reset players database
+// collapsePlayerNames();
 
 module.exports = app;

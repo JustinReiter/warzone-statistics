@@ -5,9 +5,8 @@ const db = require('../database');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-    db.any(`SELECT player_results.pid, pname.name, SUM(wins) AS wins, SUM(losses) AS losses, COUNT(*) FROM player_results, 
-        (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS pname 
-        WHERE player_results.pid=pname.pid GROUP BY player_results.pid, pname.name ORDER BY SUM(wins) DESC, SUM(losses) ASC;`)
+    db.any(`SELECT player_results.pid, players.name, SUM(wins) AS wins, SUM(losses) AS losses, COUNT(*) FROM player_results, players
+        WHERE player_results.pid=players.pid GROUP BY player_results.pid, players.name ORDER BY SUM(wins) DESC, SUM(losses) ASC;`)
     .then((users) => {
         res.json({users: users});
     }).catch((err) => {
@@ -25,11 +24,11 @@ router.get('/id/:userId', function(req, res, next) {
             if (users.length) {
                 let [games, standings] = await Promise.all([
                     db.any(`SELECT gid, lid, winner, booted, turns, start_date, end_date, player0_id, player1_id, p0.name AS player0_name, p1.name AS player1_name FROM games,
-                        (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS p0, 
-                        (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS p1 
+                        players AS p0, players AS p1 
                         WHERE (player0_id=$1 OR player1_id=$1) AND p0.pid=player0_id AND p1.pid=player1_id ORDER BY end_date DESC;`,
                         [users[0].pid]),
-                    db.any(`SELECT pid, player_results.lid, ladders.name AS season, wins, losses, elo FROM player_results, ladders WHERE pid=$1 AND player_results.lid=ladders.lid 
+                    db.any(`SELECT pid, player_results.lid, ladders.name AS season, ladders.tid, templates.name AS template, wins, losses, elo FROM player_results, ladders, templates 
+                        WHERE pid=$1 AND player_results.lid=ladders.lid AND ladders.tid=templates.tid
                         ORDER BY player_results.lid DESC;`, [users[0].pid])
                 ]);
                 res.json({users: users, games: games, standings: standings});
@@ -54,8 +53,7 @@ router.get('/name/:userName', function(req, res, next) {
                 if (users.length) {
                     let [games, standings] = await Promise.all([
                         db.any(`SELECT gid, lid, winner, booted, turns, start_date, end_date, player0_id, player1_id, p0.name AS player0_name, p1.name AS player1_name FROM games,
-                            (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS p0, 
-                            (SELECT p1.pid, p1.name FROM players AS p1 LEFT OUTER JOIN players AS p2 ON p1.pid=p2.pid AND p1.version < p2.version WHERE p2.pid is null) AS p1 
+                            players AS p0, players AS p1 
                             WHERE (player0_id=$1 OR player1_id=$1) AND p0.pid=player0_id AND p1.pid=player1_id ORDER BY end_date DESC;`,
                             [users[0].pid]),
                         db.any(`SELECT pid, player_results.lid, ladders.name AS season, wins, losses, elo FROM player_results, ladders WHERE pid=$1 AND player_results.lid=ladders.lid 
