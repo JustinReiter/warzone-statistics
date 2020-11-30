@@ -10,7 +10,7 @@ async function getExtraLadderStats(ladder) {
         db.any('SELECT COUNT(*) FROM player_results WHERE lid=$1;', [ladder]),
         db.any('SELECT COUNT(*) FROM games WHERE lid=$1 AND booted=true;', [ladder]),
         db.any('SELECT AVG(turns) FROM games WHERE lid=$1;', [ladder]),
-        db.any(`SELECT player_results.pid, name, wins, losses FROM player_results, players 
+        db.any(`SELECT player_results.pid, players.name, wins, losses FROM player_results, players 
                     WHERE lid=$1 AND player_results.pid=players.pid ORDER BY wins DESC, losses ASC, elo DESC LIMIT 5;`, [ladder]),
         db.any('SELECT COUNT(*) FROM games WHERE end_date::date=CURRENT_DATE AND lid=$1;', [ladder])
     ]);
@@ -26,7 +26,7 @@ async function getAllLadderStats(ladder) {
         db.any('SELECT COUNT(*) FROM games WHERE booted=true;'),
         db.any('SELECT COUNT(*) FROM games;'),
         db.any('SELECT AVG(turns) FROM games'),
-        db.any(`SELECT player_results.pid, name, SUM(wins) AS wins, SUM(losses) AS losses FROM player_results, players 
+        db.any(`SELECT player_results.pid, players.name, SUM(wins) AS wins, SUM(losses) AS losses FROM player_results, players 
                     WHERE player_results.pid=players.pid GROUP BY player_results.pid, name ORDER BY SUM(wins) DESC, SUM(losses) ASC LIMIT 5;`),
         db.any(`SELECT player_results.pid, players.name, COUNT(*) AS count FROM player_results, players 
                     WHERE player_results.pid=players.pid GROUP BY player_results.pid, players.name ORDER BY count DESC LIMIT 5;`),
@@ -38,8 +38,9 @@ async function getAllLadderStats(ladder) {
 
 // Get general ladder data from all ladders
 router.get('/', function(req, res, next) {
-    db.any(`SELECT ladders.name AS ladder_name, templates.name AS template_name, players.name, * FROM ladders, templates, players
-        WHERE ladders.tid=templates.tid AND (ladders.winner=players.pid OR ladders.winner is NULL) ORDER BY ladders.lid DESC;`)
+    db.any(`SELECT ladder_name, winner_name, templates.name AS template_name, * FROM templates, 
+        (SELECT ladders.name AS ladder_name, players.name AS winner_name, * FROM ladders LEFT JOIN players ON ladders.winner=players.pid) AS ladders
+        WHERE ladders.tid=templates.tid ORDER BY lid DESC;`)
     .then(async (ladders) => {
             let ladderArray = [];
             let promiseArray = [];

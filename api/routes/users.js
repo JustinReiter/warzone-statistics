@@ -18,7 +18,7 @@ router.get('/', function(req, res, next) {
 // GET request for users by ID
 router.get('/id/:userId', function(req, res, next) {
     if (req.params.userId && !isNaN(req.params.userId))  {
-        db.any('SELECT * FROM players WHERE pid=$1 ORDER BY version DESC;',
+        db.any('SELECT * FROM players WHERE pid=$1;',
             [req.params.userId])
         .then(async (users) => {
             if (users.length) {
