@@ -5,6 +5,10 @@
   color: rgba(232, 230, 227, 0.87) !important;
 }
 
+.player-header {
+  display: flex;
+}
+
 .footer-row {
   display: flex;
   flex-direction: row;

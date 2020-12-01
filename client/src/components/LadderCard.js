@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Badge, Card } from 'react-bootstrap';
 import { CardActionArea, Grid, Table, TableHead, TableCell, TableBody, TableRow, Paper, Link } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { warzoneSeasonUrl, warzoneTemplateURL } from '../Constants';
+import { warzoneSeasonUrl, warzoneTemplateURL, warzoneProfileUrl } from '../Constants';
 import './LadderCard.css';
 
 const formatDateString = (date) => {
@@ -75,6 +75,20 @@ const renderRightGrid = (props) => {
     }
 }
 
+const renderWinnerName = (props) => {
+    if (props.clickable || !props.ladder.winner_name) {
+        return props.ladder.winner_name || "In-Progress";
+    } else {
+        return (
+            <Link 
+                href={"/player?pid=" + props.ladder.winner}
+            >
+                {props.ladder.winner_name}
+            </Link>
+        )
+    }
+}
+
 const renderTemplateName = (props) => {
     if (props.clickable) {
         return props.ladder.template_name;
@@ -93,10 +107,9 @@ const renderTemplateName = (props) => {
 
 // Render card text into the component
 const renderCardText = (props) => {
-    
     return (
         <Fragment>
-            <Card.Header>{ props.ladder.ladder_name } {!props.clickable && <Link target="_blank" rel="noopener noreferrer" href={warzoneSeasonUrl + props.ladder.lid}>(Season Page)</Link>}</Card.Header>
+            <Card.Header className="card-header"><h5>{ props.ladder.ladder_name }&nbsp;</h5> {!props.clickable && <Link target="_blank" rel="noopener noreferrer" href={warzoneSeasonUrl + props.ladder.lid}>(Season Page)</Link>}</Card.Header>
             <Card.Body>
             <Grid
                 container
@@ -115,6 +128,9 @@ const renderCardText = (props) => {
                 >
                     <Grid item xs={12}>
                         <Card.Text>Games: {Number(props.ladder.game_count).toLocaleString()}</Card.Text>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Card.Text>Winner: {renderWinnerName(props)}</Card.Text>
                     </Grid>
                     <Grid item xs={12}>
                         <Card.Text>Template: { renderTemplateName(props) }</Card.Text>
@@ -153,7 +169,7 @@ const renderCardText = (props) => {
 
 function LadderCard(props) {
     const history = useHistory();
-
+    console.log(`Props:\n${JSON.stringify(props, null, 4)}`);
     return (
         <Card key={props.ladder.lid} className="ladder-card" onClick={() => {props.clickable && history.push("/ladder?ladder=" + props.ladder.lid)}}>
             { renderCardContainer(props) }

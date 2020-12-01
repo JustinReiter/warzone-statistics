@@ -7,21 +7,21 @@ function LaddersCard(props) {
 
     return (
         <Card className="ladders-card">
-            <Card.Header>Seasonal Statistics</Card.Header>
+            <Card.Header><h6>Seasonal Statistics</h6></Card.Header>
             <Card.Body>
                 <Grid
                     container
                     spacing={1}
-                    alignItems="center"
+                    alignItems="flex-start"
                     direction="row"
-                    justify="space-between"
+                    justify="space-around"
                 >
                     <Grid
                         container
                         spacing={1}
                         alignItems="flex-start"
                         direction="column"
-                        justify="flex-start"
+                        justify="center"
                         xs={12} md={4}
                     >
                         <Grid item xs={12}>
@@ -44,7 +44,7 @@ function LaddersCard(props) {
                     <Grid
                         container
                         spacing={1}
-                        alignItems="flex-start"
+                        alignItems="center"
                         direction="column"
                         justify="flex-start"
                         xs={12} md={4}
@@ -82,7 +82,7 @@ function LaddersCard(props) {
                     <Grid
                         container
                         spacing={1}
-                        alignItems="flex-start"
+                        alignItems="center"
                         direction="column"
                         justify="flex-start"
                         xs={12} md={4}
@@ -93,7 +93,7 @@ function LaddersCard(props) {
                                     <TableHead>
                                     <TableRow>
                                         <TableCell className="top-players-header" >Top 5</TableCell>
-                                        <TableCell className="top-players-header" align="right">Seasonals</TableCell>
+                                        <TableCell className="top-players-header" align="right">Seasons</TableCell>
                                     </TableRow>
                                     </TableHead>
                                     <TableBody>

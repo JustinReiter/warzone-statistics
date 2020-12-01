@@ -76,11 +76,12 @@ function LadderOverview(props) {
                 container
                 spacing={1}
                 alignItems="center"
+                className="overview-grid"
             >
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={6} className="overview-grid">
                     <LadderCard clickable={false} ladder={props.ladder || {}} showStats={true} />
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid item xs={12} md={6} className="overview-grid">
                     <div className="games-graph">
                         <h4 className="games-chart-title">Number of Games Completed by Day</h4>
                         <ResponsiveContainer width="100%" height={500}>
@@ -107,7 +108,7 @@ function LadderOverview(props) {
                 alignItems="flex-start"
             >
                 <Grid item xs={12} md={8}>
-                    <GamesTable games={games} />
+                    <GamesTable games={games} showSeason={false} />
                 </Grid>
                 <Grid item xs={12} md={4}>
                     <PlayersTable players={players}/>

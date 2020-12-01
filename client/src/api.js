@@ -13,6 +13,12 @@ function getLadder(ladderId) {
     });
 }
 
+function getColours() {
+    return axios.get("/colours", {
+        baseURL: BASE_URL
+    });
+}
+
 function getUsers() {
     return axios.get("/users", {
         baseURL: BASE_URL
@@ -34,6 +40,7 @@ function getUserByName(userName) {
 export {
     getLadders,
     getLadder,
+    getColours,
     getUsers,
     getUserById,
     getUserByName

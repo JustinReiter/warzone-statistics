@@ -3,8 +3,7 @@ import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, T
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
 import EnhancedTableHeader from './EnhancedTableHeader';
-import { warzoneGameUrl, seasonMapping } from '../Constants';
-import './GamesTable.css';
+import './HeadToHeadTable.css';
 
 const useStyles1 = makeStyles((theme) => ({
     root: {
@@ -66,20 +65,17 @@ function TablePaginationActions(props) {
 }
 
 const headCells = [
-  { id: 'winnerName', numeric: false, disablePadding: false, label: 'Winner' },
-  { id: 'loserName', numeric: false, disablePadding: false, label: 'Loser' },
-  { id: 'startDate', numeric: false, disablePadding: false, label: 'Start Date' },
-  { id: 'endDate', numeric: false, disablePadding: false, label: 'End Date' },
-  { id: 'turns', numeric: true, disablePadding: false, label: 'Turns' },
+  { id: 'name', numeric: false, disablePadding: false, label: 'Opponent' },
+  { id: 'wins', numeric: true, disablePadding: false, label: 'Wins' },
+  { id: 'losses', numeric: true, disablePadding: false, label: 'Losses' },
+  { id: 'games', numeric: true, disablePadding: false, label: 'Games' },
 ];
 
 function descendingComparator(a, b, column) {
-  if (column.indexOf('Date') >= 0) {
-    return new Date(a[column]) > new Date(b[column]) ? 1 : -1;
-  } else if (column === 'turns') {
-    return a[column] < b[column] ? 1 : -1;
-  } else {
+  if (column === 'name') {
     return a[column] > b[column] ? 1 : -1;
+  } else {
+    return a[column] < b[column] ? 1 : -1;
   }
 }
 
@@ -135,12 +131,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function GamesTable(props) {
+function HeadToHeadTable(props) {
     const classes = useStyles();
     const [games, setGames] = useState([]);
+    const [player, setPlayer] = useState("");
     const [page, setPage] = useState(0);
-    const [order, setOrder] = useState('asc');
-    const [orderBy, setOrderBy] = useState('endDate');
+    const [order, setOrder] = useState('desc');
+    const [orderBy, setOrderBy] = useState('games');
     const [search, setSearch] = useState("");
 
     useEffect(() => {
@@ -148,10 +145,8 @@ function GamesTable(props) {
     }, [props.games]);
 
     useEffect(() => {
-      if (props.showSeason === true) {
-        headCells.splice(0, 0, { id: 'season', numeric: false, disablePadding: false, label: 'Season' })
-      }
-    }, [props.showSeason]);
+      setPlayer(props.player);
+    }, [props.player]);
 
     const handleSort = (event, property) => {
       const isAsc = orderBy === property && order === 'asc';
@@ -159,48 +154,48 @@ function GamesTable(props) {
       setOrderBy(property);
     }
 
-    const gameRows = ((games && games.map((game) => {
-        let winnerId = game['player' + game.winner + '_id'];
-        let winnerName = game['player' + game.winner + '_name'];
-        winnerName = winnerName || "winner";
-        let loserId = winnerId === game.player0_id ? game.player1_id : game.player0_id;
-        let loserName = winnerId === game.player0_id ? game.player1_name : game.player0_name;
-        loserName = loserName || "loser";
+    const headToHeadObj = {};
 
-        let colour;
-        if (props.playerId) {
-          colour = winnerId === props.playerId ? "#3d511d" : "#410808";
+    for (const game of games) {
+        let playerIndex = Number(game['player0_id']) === Number(player) ? 0 : 1;
+        let didPlayerWin = Number(game.winner) === playerIndex;
+
+        for (let i = 0; i < 4; i++) {
+          if (i == playerIndex || !game['player' + i + "_id"]) {
+            continue;
+          }
+
+          if (!(game['player' + i + "_id"] in headToHeadObj)) {
+            headToHeadObj[game['player' + i + "_id"]] = {name: game['player' + i + "_name"], wins: 0, losses: 0};
+          }
+
+          headToHeadObj[game['player' + i + "_id"]].wins += didPlayerWin;
+          headToHeadObj[game['player' + i + "_id"]].losses += !didPlayerWin;
         }
+    }
 
-        return {lid: game.lid, season: seasonMapping[Number(game.lid)], colour, winnerId, winnerName, loserId, loserName, gid: Number(game.gid), turns: Number(game.turns), startDate: new Date(game.start_date).toLocaleString().slice(0, -3).replace(",", ""), endDate: new Date(game.end_date).toLocaleString().slice(0, -3).replace(",", "")};
-    })) || []);
+    const headToHeadArr = Object.entries(headToHeadObj).map((entry) => { return {name: entry[1].name, id: Number(entry[0]), wins: entry[1].wins, losses: entry[1].losses, games: entry[1].wins + entry[1].losses};});
 
-    const queriedGameRows = queryFilter(gameRows, search);
-    const emptyRows = 10 - Math.min(10, queriedGameRows.length - page * 10);
+    const queriedHeadToHeadRows = queryFilter(headToHeadArr, search);
+    const emptyRows = 10 - Math.min(10, queriedHeadToHeadRows.length - page * 10);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
 
-    let nameWidths = props.showSeason ? "20%" : "25%";
-    let dateWidths = props.showSeason ? "15%" : "20%";
-
     return (
-        <div className="GamesTable">
+        <div>
             <Table component={Paper} classes={classes} style={{backgroundColor: "rgb(24, 26, 27)"}}>
                 <colgroup>
-                    { props.showSeason && <col width="20%" /> }
-                    <col width={nameWidths} />
-                    <col width={nameWidths} />
-                    <col width={dateWidths} />
-                    <col width={dateWidths} />
-                    <col width="5%" />
-                    <col width="5%" />
+                    <col width="70%" />
+                    <col width="10%" />
+                    <col width="10%" />
+                    <col width="10%" />
                 </colgroup>
                 <TableHead>
                     <TableRow>
-                        <TableCell className="game-cell" colSpan={props.showSeason ? 4 : 3}><h3>Recent Games</h3></TableCell>
-                        <TableCell className="game-cell" colSpan={3}><TextField id="game-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                        <TableCell className="game-cell" colSpan={2}><h3>H2H Results</h3></TableCell>
+                        <TableCell className="game-cell" colSpan={2}><TextField id="game-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
                     </TableRow>
                 </TableHead>
                 <EnhancedTableHeader
@@ -209,50 +204,24 @@ function GamesTable(props) {
                   orderBy={orderBy}
                   onRequestSort={handleSort}
                   headerCells={headCells}
-                  padEmptyCell={true}
+                  padEmptyCell={false}
                 />
                 <TableBody>
-                {stableSort(queriedGameRows, getComparator(order, orderBy))
+                {stableSort(queriedHeadToHeadRows, getComparator(order, orderBy))
                   .slice(page * 10, (page+1) * 10)
                   .map((row, index) => {
                     return (
                       <TableRow hover={true} key={row.gid} style={{backgroundColor: row.colour}}>
-                        {
-                          props.showSeason &&
-                          <TableCell className="game-cell">
-                            <Link
-                              href={"/ladder?ladder=" + row.lid}
-                            >
-                              {row.season || row.lid}
-                            </Link>
-                          </TableCell>
-                        }
                         <TableCell className="game-cell" component="th" scope="row">
                             <Link
-                                href={"/player?pid=" + row.winnerId}
+                                href={"/player?pid=" + row.id}
                             >
-                                {row.winnerName}
+                                {row.name}
                             </Link>
                         </TableCell>
-                        <TableCell className="game-cell">
-                            <Link
-                                href={"/player?pid=" + row.loserId}
-                            >
-                                {row.loserName}
-                            </Link>
-                        </TableCell>
-                        <TableCell className="game-cell">{row.startDate}</TableCell>
-                        <TableCell className="game-cell">{row.endDate}</TableCell>
-                        <TableCell className="game-cell" align="right">{row.turns}</TableCell>
-                        <TableCell align="right">
-                          <Link
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              href={warzoneGameUrl + row.gid}
-                          >
-                              Link
-                          </Link>
-                        </TableCell>
+                        <TableCell className="game-cell" align="right" >{row.wins}</TableCell>
+                        <TableCell className="game-cell" align="right" >{row.losses}</TableCell>
+                        <TableCell className="game-cell" align="right" >{row.games}</TableCell>
                       </TableRow>
                     );
                 })}
@@ -267,8 +236,8 @@ function GamesTable(props) {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[10]}
-                            colSpan={props.showSeason ? 7 : 6}
-                            count={queriedGameRows.length}
+                            colSpan={4}
+                            count={queriedHeadToHeadRows.length}
                             page={page}
                             rowsPerPage={10}
                             SelectProps={{
@@ -282,9 +251,8 @@ function GamesTable(props) {
                     </TableRow>
                 </TableFooter>
             </Table>
-            <p>* Note: -1 turn games end before picks; 0 turn games end after picks</p>
         </div>
     );
 }
 
-export default GamesTable;
+export default HeadToHeadTable;

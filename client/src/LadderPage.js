@@ -34,8 +34,6 @@ function LaddersPage(props) {
                     players={ladder.players}
                     colourData={ladder.colourData}
                 />
-                {/* <Card className="Page-Header" title={LaddersPageTitle} body={LaddersPageDescription} />
-                <LadderTable ladders={ladders} /> */}
             </Container>
         </div>
     );

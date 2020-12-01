@@ -6,6 +6,7 @@
 
 .card-header {
   border-bottom-color: rgba(140, 130, 115, 0.13) !important;
+  display: flex;
 }
 
 .card-footer {

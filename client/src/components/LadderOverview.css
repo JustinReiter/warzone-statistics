@@ -1,6 +1,10 @@
 .ladder-table {
-  margin-top: 2%;
+  /* margin-top: 2%; */
   min-height: 100vh;
+}
+
+.overview-grid {
+  padding-top: 7vh;
 }
 
 .row-content {

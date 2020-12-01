@@ -39,6 +39,18 @@
   color:rgb(109, 149, 204) !important;
 }
 
+.MuiFormLabel-root {
+  color: rgba(232, 230, 227, 0.87) !important;
+}
+
+.MuiInput-underline::before {
+  border-bottom-color: rgba(140, 130, 115, 0.42) !important;
+}
+
+input:focus {
+  color: rgba(232, 230, 227, 0.87) !important;
+}
+
 .player-cell {
   white-space: nowrap;
   overflow: hidden;

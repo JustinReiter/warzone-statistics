@@ -16,6 +16,7 @@ const warzoneTemplateURL = 'https://www.warzone.com/MultiPlayer?TemplateID=';
 
 // Warzone colour mapping
 const colourMapping = {
+    "8f9779": "Artichoke",
     "59009d": "Purple",
     "ff7d00": "Orange",
     "606060": "Dark Gray",
