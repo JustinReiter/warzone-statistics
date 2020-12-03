@@ -22,7 +22,7 @@ async function getAllLadderStats(ladder) {
     let obj = {};
 
     [obj.players, obj.boots, obj.games, obj.avgTurns, obj.top5, obj.active5, obj.gamesToday] = await Promise.all([
-        db.any('SELECT COUNT(*) FROM (SELECT DISTINCT pid FROM player_results) AS distinct_pids;'),
+        db.any('SELECT COUNT(*) FROM players AS distinct_pids;'),
         db.any('SELECT COUNT(*) FROM games WHERE booted=true;'),
         db.any('SELECT COUNT(*) FROM games;'),
         db.any('SELECT AVG(turns) FROM games'),

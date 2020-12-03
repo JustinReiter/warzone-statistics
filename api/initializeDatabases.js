@@ -149,9 +149,70 @@ function collapsePlayerNames() {
     });
 }
 
+const STARTING_MU = 25;
+const STARTING_SIGMA = 25 / 3;
+const trueskill = require('trueskill').default;
+
+// Use TrueSkill for Season X (4FFA)
+function populateTrueSkillRatings() {
+    db.any('SELECT * FROM games WHERE lid=4009 ORDER BY end_date ASC;').then((games) => {
+        // playerId ---> {skill: [mu, sigma], rank: int}
+        let playerSkills = {};
+        let colourData = {};
+
+        for (const game of games) {
+            for (let i = 0; i < 4; i++) {
+                // Add new player object to skills Obj if doesnt exist
+                if (!(Number(game[`player${i}_id`]) in playerSkills)) {
+                    playerSkills[Number(game[`player${i}_id`])] = {skill: [STARTING_MU, STARTING_SIGMA], wins: 0, losses: 0};
+                }
+
+                // Add colour value if does not exist
+                if (!(game[`player${i}_colour`] in colourData)) {
+                    colourData[game[`player${i}_colour`]] = {wins: 0, losses: 0};
+                }
+
+                // Update rank and colours for game and wins/losses
+                if (i === Number(game.winner)) {
+                    playerSkills[Number(game[`player${i}_id`])].rank = 1;
+                    playerSkills[Number(game[`player${i}_id`])].wins++;
+                    colourData[game[`player${i}_colour`]].wins++;
+                } else {
+                    playerSkills[Number(game[`player${i}_id`])].rank = 2;
+                    playerSkills[Number(game[`player${i}_id`])].losses++;
+                    colourData[game[`player${i}_colour`]].losses++;
+                }
+            }
+
+            // Adjust ranking
+            trueskill.AdjustPlayers([playerSkills[Number(game.player0_id)], playerSkills[Number(game.player1_id)],
+                playerSkills[Number(game.player2_id)], playerSkills[Number(game.player3_id)]]);
+        }
+
+        // Update skill values into the player_results database
+        for (const [pid, player] of Object.entries(playerSkills)) {
+            db.none('INSERT INTO player_results (pid, lid, wins, losses, elo, sigma) VALUES ($1, 4009, $2, $3, $4, $5);',
+                [pid, player.wins, player.losses, player.skill[0], player.skill[1]])
+            .then(() => {
+                console.log(`[PopulateTSRatings] Successfully inserted into player_results (${pid}, 4009, ${player.wins}, ${player.losses}, ${player.skill[0]}, ${player.skill[1]})`);
+            });
+        }
+
+        // Update colour values into the colour_results database
+        for (const [colour, data] of Object.entries(colourData)) {
+            db.none('INSERT INTO colour_results (colour, lid, wins, losses) VALUES ($1, 4009, $2, $3);',
+                [colour, data.wins, data.losses])
+            .then(() => {
+                console.log(`[PopulateTSRatings] Successfully inserted into colour_results (${colour}, 4009, ${data.wins}, ${data.losses})`);
+            });
+        }
+    });
+}
+
 module.exports = {
     populateDailyStandings,
     populateColourResults,
     populateEloRatings,
-    collapsePlayerNames
+    collapsePlayerNames,
+    populateTrueSkillRatings
 };
