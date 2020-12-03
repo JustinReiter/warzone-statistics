@@ -151,7 +151,7 @@ function collapsePlayerNames() {
 
 const STARTING_MU = 25;
 const STARTING_SIGMA = 25 / 3;
-const trueskill = require('trueskill').default;
+const { rate, Rating, quality } = require('ts-trueskill');
 
 // Use TrueSkill for Season X (4FFA)
 function populateTrueSkillRatings() {
@@ -164,7 +164,7 @@ function populateTrueSkillRatings() {
             for (let i = 0; i < 4; i++) {
                 // Add new player object to skills Obj if doesnt exist
                 if (!(Number(game[`player${i}_id`]) in playerSkills)) {
-                    playerSkills[Number(game[`player${i}_id`])] = {skill: [STARTING_MU, STARTING_SIGMA], wins: 0, losses: 0};
+                    playerSkills[Number(game[`player${i}_id`])] = {skill: [new Rating(STARTING_MU, STARTING_SIGMA)], wins: 0, losses: 0};
                 }
 
                 // Add colour value if does not exist
@@ -184,28 +184,42 @@ function populateTrueSkillRatings() {
                 }
             }
 
+            // Quality of the match (idk why i have this but the docs did)
+            const q = quality([playerSkills[Number(game.player0_id)].skill, playerSkills[Number(game.player1_id)].skill,
+                playerSkills[Number(game.player2_id)].skill, playerSkills[Number(game.player3_id)].skill]);
+
             // Adjust ranking
-            trueskill.AdjustPlayers([playerSkills[Number(game.player0_id)], playerSkills[Number(game.player1_id)],
-                playerSkills[Number(game.player2_id)], playerSkills[Number(game.player3_id)]]);
+            // console.log(`Before: ${playerSkills[Number(game.player0_id)].skill[0].mu}`);
+            const [p0, p1, p2, p3] = rate([playerSkills[Number(game.player0_id)].skill, playerSkills[Number(game.player1_id)].skill,
+                    playerSkills[Number(game.player2_id)].skill, playerSkills[Number(game.player3_id)].skill],
+                    [playerSkills[Number(game.player0_id)].rank, playerSkills[Number(game.player1_id)].rank,
+                    playerSkills[Number(game.player2_id)].rank, playerSkills[Number(game.player3_id)].rank]);
+            // console.log(`After: ${playerSkills[Number(game.player0_id)].skill[0].mu}`);
+
+            // Update player skills
+            playerSkills[Number(game.player0_id)].skill[0] = new Rating(p0[0]);
+            playerSkills[Number(game.player1_id)].skill[0] = new Rating(p1[0]);
+            playerSkills[Number(game.player2_id)].skill[0] = new Rating(p2[0]);
+            playerSkills[Number(game.player3_id)].skill[0] = new Rating(p3[0]);
         }
 
         // Update skill values into the player_results database
         for (const [pid, player] of Object.entries(playerSkills)) {
             db.none('INSERT INTO player_results (pid, lid, wins, losses, elo, sigma) VALUES ($1, 4009, $2, $3, $4, $5);',
-                [pid, player.wins, player.losses, player.skill[0], player.skill[1]])
+                [pid, player.wins, player.losses, player.skill[0].mu, player.skill[0].sigma])
             .then(() => {
-                console.log(`[PopulateTSRatings] Successfully inserted into player_results (${pid}, 4009, ${player.wins}, ${player.losses}, ${player.skill[0]}, ${player.skill[1]})`);
+                console.log(`[PopulateTSRatings] Successfully inserted into player_results (${pid}, 4009, ${player.wins}, ${player.losses}, ${player.skill[0].mu}, ${player.skill[0].sigma})`);
             });
         }
 
         // Update colour values into the colour_results database
-        for (const [colour, data] of Object.entries(colourData)) {
-            db.none('INSERT INTO colour_results (colour, lid, wins, losses) VALUES ($1, 4009, $2, $3);',
-                [colour, data.wins, data.losses])
-            .then(() => {
-                console.log(`[PopulateTSRatings] Successfully inserted into colour_results (${colour}, 4009, ${data.wins}, ${data.losses})`);
-            });
-        }
+        // for (const [colour, data] of Object.entries(colourData)) {
+        //     db.none('INSERT INTO colour_results (colour, lid, wins, losses) VALUES ($1, 4009, $2, $3);',
+        //         [colour, data.wins, data.losses])
+        //     .then(() => {
+        //         console.log(`[PopulateTSRatings] Successfully inserted into colour_results (${colour}, 4009, ${data.wins}, ${data.losses})`);
+        //     });
+        // }
     });
 }
 
