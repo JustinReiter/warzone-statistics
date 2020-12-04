@@ -23,27 +23,20 @@ router.get('/id/:userId', function(req, res, next) {
         .then(async (users) => {
             if (users.length) {
 
-                let gamesPromise;
-                if (req.params.ladderId === "4009") {
-                    gamesPromise = db.any(`SELECT gid, player0_id, player1_id, player2_id, player3_id, p0.name AS player0_name, p1.name AS player1_name, p2.name AS player2_name, p3.name AS player3_name, winner, booted, start_date, end_date, turns
-                                        FROM games, players AS p0, players AS p1, players AS p2, players AS p3
-                                        WHERE (player0_id=$1 OR player1_id=$1 OR player2_id=$1 OR player3_id=$1)
-                                        AND p0.pid=player0_id AND p1.pid=player1_id AND p2.pid=player2_id AND p3.pid=player3_id ORDER BY end_date DESC;`,
-                                        [users[0].pid]);
-                } else {
-                    gamesPromise = db.any(`SELECT gid, player0_id, player1_id, p0.name AS player0_name, p1.name AS player1_name, winner, booted, start_date, end_date, turns
-                                        FROM games, players AS p0, players AS p1 
-                                        WHERE (player0_id=$1 OR player1_id=$1) AND p0.pid=player0_id AND p1.pid=player1_id ORDER BY end_date DESC;`,
-                                        [users[0].pid]);
-                }
-
-                let [games, standings] = await Promise.all([
-                    gamesPromise,
+                let [gamesFFA, games1v1, standings] = await Promise.all([
+                    db.any(`SELECT gid, lid, player0_id, player1_id, player2_id, player3_id, p0.name AS player0_name, p1.name AS player1_name, p2.name AS player2_name, p3.name AS player3_name, winner, booted, start_date, end_date, turns
+                        FROM games, players AS p0, players AS p1, players AS p2, players AS p3
+                        WHERE ((player0_id=$1 OR player1_id=$1 OR player2_id=$1 OR player3_id=$1) AND lid=4009
+                        AND p0.pid=player0_id AND p1.pid=player1_id AND p2.pid=player2_id AND p3.pid=player3_id) ORDER BY end_date DESC;`, [users[0].pid]),
+                    db.any(`SELECT gid, lid, player0_id, player1_id, p0.name AS player0_name, p1.name AS player1_name, winner, booted, start_date, end_date, turns
+                        FROM games, players AS p0, players AS p1
+                        WHERE ((player0_id=$1 OR player1_id=$1) AND lid!=4009
+                        AND p0.pid=player0_id AND p1.pid=player1_id) ORDER BY end_date DESC;`, [users[0].pid]),
                     db.any(`SELECT pid, player_results.lid, ladders.name AS season, ladders.tid, templates.name AS template, wins, losses, elo FROM player_results, ladders, templates 
                         WHERE pid=$1 AND player_results.lid=ladders.lid AND ladders.tid=templates.tid
                         ORDER BY player_results.lid DESC;`, [users[0].pid])
                 ]);
-                res.json({users: users, games: games, standings: standings});
+                res.json({users: users, games: gamesFFA.concat(games1v1), standings: standings});
             } else {
                 res.json({users: users, games: []});
             }
