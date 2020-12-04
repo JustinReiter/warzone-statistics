@@ -185,10 +185,10 @@ async function updateLadderDatabase(ladder, ladderData) {
             player1.losses += !game.winner;
 
             // Update elo
-            const expectedPlayer0Score = 1 / (1 + Math.pow(10, (player1.elo-player0.elo) / 400));
+            const expectedPlayer0Score = 1 / (1 + Math.pow(10, (Number(player1.elo)-Number(player0.elo)) / 400));
             const actualPlayer0Score = !game.winner;
-            player0.elo += K * (actualPlayer0Score - expectedPlayer0Score);
-            player1.elo += K * (expectedPlayer0Score - actualPlayer0Score);
+            player0.elo = Number(player0.elo) + K * (actualPlayer0Score - expectedPlayer0Score);
+            player1.elo = Number(player1.elo) + K * (expectedPlayer0Score - actualPlayer0Score);
 
 
 

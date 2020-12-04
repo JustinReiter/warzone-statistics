@@ -98,6 +98,12 @@ db.any('SELECT * FROM player_results WHERE lid=4009;').then((players) => {
 	}
 });
 
+db.any('SELECT * FROM player_results WHERE lid=4076 ORDER BY elo DESC LIMIT 10;').then((res) => {
+	for (const record of res) {
+		console.log(`Elo: ${record.elo} // ${JSON.stringify(record, null, 54)}`);
+	}
+});
+
 
 // Single-use script to reset players database
 // collapsePlayerNames();
