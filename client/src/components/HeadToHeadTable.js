@@ -103,7 +103,7 @@ function queryFilter(array, searchString) {
     }
 
     return array.filter((game) => {
-        return headCells.filter((header) => new String(game[header.id]).toLowerCase().indexOf(searchString.trim().toLowerCase()) >= 0).length > 0;
+        return headCells.filter((header) => new String(game[header.id]).toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
     });
 }
 
@@ -161,7 +161,7 @@ function HeadToHeadTable(props) {
         let didPlayerWin = Number(game.winner) === playerIndex;
 
         for (let i = 0; i < 4; i++) {
-          if (i == playerIndex || !game['player' + i + "_id"]) {
+          if (i === playerIndex || !game['player' + i + "_id"]) {
             continue;
           }
 

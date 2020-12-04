@@ -103,7 +103,7 @@ function queryFilter(array, searchString) {
   }
 
   return array.filter((game) => {
-      return headCells.filter((header) => new String(game[header.id]).toLowerCase().indexOf(searchString.trim().toLowerCase()) >= 0).length > 0;
+      return headCells.filter((header) => new String(game[header.id]).toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
   });
 }
 
@@ -224,6 +224,8 @@ function PlayersTable(props) {
                 </TableFooter>
             </Table>
             <p>* Note: Elo Rating is independent of Warzone Rating</p>
+            <p>** All seasons except for Season X use Elo rating (μ=1500)</p>
+            <p>*** Season X uses TrueSkill Rating (μ=25; σ=25/3) due to being an FFA</p>
         </div>
     );
 }

@@ -4,6 +4,10 @@
   color: rgba(232, 230, 227, 0.87) !important;
 }
 
+.ladders-card-column {
+  padding-top: 2vh;
+}
+
 .card-header {
   border-bottom-color: rgba(140, 130, 115, 0.13) !important;
 }

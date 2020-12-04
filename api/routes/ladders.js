@@ -73,12 +73,24 @@ router.get('/id/:ladderId', function(req, res, next) {
                     res.json({error: "No ladder found with ID"});
                 } else {
                     // Join the games table with the player tables to grab the player names
+                    // Hardcode custom games query for ladder 4009 (Season X -- 4FFA)
+                    let gamesPromise;
+                    if (req.params.ladderId === "4009") {
+                        gamesPromise = db.any(`SELECT gid, player0_id, player1_id, p0.name AS player0_name, p1.name AS player1_name, winner, booted, start_date, end_date, turns
+                                            FROM games, players AS p0, players AS p1, players AS p2, players AS p3
+                                            WHERE lid=$1 AND games.player0_id=p0.pid AND games.player1_id=p1.pid 
+                                            AND games.player2_id=p2.pid AND games.player3_id=p3.pid ORDER BY end_date DESC;`,
+                                            [req.params.ladderId]);
+                    } else {
+                        gamesPromise = db.any(`SELECT gid, player0_id, player1_id, p0.name AS player0_name, p1.name AS player1_name, winner, booted, start_date, end_date, turns
+                                            FROM games, players AS p0, players AS p1 
+                                            WHERE lid=$1 AND games.player0_id=p0.pid AND games.player1_id=p1.pid ORDER BY end_date DESC;`,
+                                            [req.params.ladderId]);
+                    }
+
                     let games, standings, colourData, players = [];
                     [games, standings, colourData, players, ladder[0].stats] = await Promise.all([
-                        db.any(`SELECT gid, player0_id, player1_id, p0.name AS player0_name, p1.name AS player1_name, winner, booted, start_date, end_date, turns
-                        FROM games, players AS p0, players AS p1 
-                        WHERE lid=$1 AND games.player0_id=p0.pid AND games.player1_id=p1.pid ORDER BY end_date DESC;`,
-                        [req.params.ladderId]),
+                        gamesPromise,
                         db.any('SELECT date, games FROM daily_standings WHERE lid=$1 ORDER BY date DESC LIMIT 30',
                             [req.params.ladderId]),
                         db.any('SELECT colour, wins, losses FROM colour_results WHERE lid=$1 ORDER BY wins DESC, losses ASC', req.params.ladderId),

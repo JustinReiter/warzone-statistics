@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Badge, Card } from 'react-bootstrap';
 import { CardActionArea, Grid, Table, TableHead, TableCell, TableBody, TableRow, Paper, Link } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
-import { warzoneSeasonUrl, warzoneTemplateURL, warzoneProfileUrl } from '../Constants';
+import { warzoneSeasonUrl, warzoneTemplateURL } from '../Constants';
 import './LadderCard.css';
 
 const formatDateString = (date) => {
@@ -119,7 +119,7 @@ const renderCardText = (props) => {
                 justify="space-between"
             >
                 <Grid
-                    item
+                    container
                     spacing={1}
                     alignItems="flex-start"
                     direction="column"
@@ -144,7 +144,7 @@ const renderCardText = (props) => {
                 </Grid>
 
                 <Grid
-                    item
+                    container
                     spacing={1}
                     alignItems="flex-start"
                     direction="column"
@@ -169,7 +169,6 @@ const renderCardText = (props) => {
 
 function LadderCard(props) {
     const history = useHistory();
-    console.log(`Props:\n${JSON.stringify(props, null, 4)}`);
     return (
         <Card key={props.ladder.lid} className="ladder-card" onClick={() => {props.clickable && history.push("/ladder?ladder=" + props.ladder.lid)}}>
             { renderCardContainer(props) }

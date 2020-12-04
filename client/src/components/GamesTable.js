@@ -107,7 +107,7 @@ function queryFilter(array, searchString) {
     }
 
     return array.filter((game) => {
-        return headCells.filter((header) => new String(game[header.id]).toLowerCase().indexOf(searchString.trim().toLowerCase()) >= 0).length > 0;
+        return headCells.filter((header) => new String(game[header.id]).toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
     });
 }
 
@@ -148,8 +148,10 @@ function GamesTable(props) {
     }, [props.games]);
 
     useEffect(() => {
-      if (props.showSeason === true) {
+      if (props.showSeason) {
         headCells.splice(0, 0, { id: 'season', numeric: false, disablePadding: false, label: 'Season' })
+      } else if (headCells.length === 6) {
+        headCells.splice(0, 1);
       }
     }, [props.showSeason]);
 
@@ -160,19 +162,25 @@ function GamesTable(props) {
     }
 
     const gameRows = ((games && games.map((game) => {
+        let loserIds = [];
+        let loserNames = [];
+        for (let i = 0; i < 4 && game[`player${i}_id`]; i++) {
+            if (i === Number(game.winner)) {
+                continue;
+            }
+            loserIds.push(game[`player${i}_id`]);
+            loserNames.push(game[`player${i}_name`] || "loser");
+        }
+
         let winnerId = game['player' + game.winner + '_id'];
-        let winnerName = game['player' + game.winner + '_name'];
-        winnerName = winnerName || "winner";
-        let loserId = winnerId === game.player0_id ? game.player1_id : game.player0_id;
-        let loserName = winnerId === game.player0_id ? game.player1_name : game.player0_name;
-        loserName = loserName || "loser";
+        let winnerName = game['player' + game.winner + '_name'] || "winner";
 
         let colour;
         if (props.playerId) {
           colour = winnerId === props.playerId ? "#3d511d" : "#410808";
         }
 
-        return {lid: game.lid, season: seasonMapping[Number(game.lid)], colour, winnerId, winnerName, loserId, loserName, gid: Number(game.gid), turns: Number(game.turns), startDate: new Date(game.start_date).toLocaleString().slice(0, -3).replace(",", ""), endDate: new Date(game.end_date).toLocaleString().slice(0, -3).replace(",", "")};
+        return {lid: game.lid, season: seasonMapping[Number(game.lid)], colour, winnerId, winnerName, loserIds, loserNames, gid: Number(game.gid), turns: Number(game.turns), startDate: new Date(game.start_date).toLocaleString().slice(0, -3).replace(",", ""), endDate: new Date(game.end_date).toLocaleString().slice(0, -3).replace(",", "")};
     })) || []);
 
     const queriedGameRows = queryFilter(gameRows, search);
@@ -235,11 +243,16 @@ function GamesTable(props) {
                             </Link>
                         </TableCell>
                         <TableCell className="game-cell">
-                            <Link
-                                href={"/player?pid=" + row.loserId}
-                            >
-                                {row.loserName}
-                            </Link>
+                            { row.loserIds.map((loserId, loserIndex) => {
+                                return (
+                                    <Link
+                                        href={"/player?pid=" + row.loserIds[loserIndex]}
+                                        key={loserId + "-" + row.gid}
+                                    >
+                                        {row.loserNames[loserIndex]}
+                                    </Link>
+                                );
+                            })}
                         </TableCell>
                         <TableCell className="game-cell">{row.startDate}</TableCell>
                         <TableCell className="game-cell">{row.endDate}</TableCell>
@@ -283,6 +296,8 @@ function GamesTable(props) {
                 </TableFooter>
             </Table>
             <p>* Note: -1 turn games end before picks; 0 turn games end after picks</p>
+            <p>** All seasons except for Season X use Elo rating (μ=1500)</p>
+            <p>*** Season X uses TrueSkill Rating (μ=25; σ=25/3) due to being an FFA</p>
         </div>
     );
 }

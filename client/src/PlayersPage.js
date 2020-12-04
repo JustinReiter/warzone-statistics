@@ -104,7 +104,7 @@ function queryFilter(array, searchString) {
   }
 
   return array.filter((player) => {
-      return headCells.filter((header) => new String(player[header.id]).toLowerCase().indexOf(searchString.trim().toLowerCase()) >= 0).length > 0;
+      return headCells.filter((header) => new String(player[header.id]).toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
   });
 }
 

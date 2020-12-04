@@ -111,7 +111,7 @@ function queryFilter(array, searchString) {
   }
 
   return array.filter((player) => {
-      return headCells.filter((header) => new String(player[header.id]).toLowerCase().indexOf(searchString.trim().toLowerCase()) >= 0).length > 0;
+      return headCells.filter((header) => new String(player[header.id]).toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
   });
 }
 
@@ -157,7 +157,6 @@ function PlayerPage(props) {
             history.push("/players");
         }
 
-        console.log(qs.pid);
         getUserById(qs.pid).then((res) => {
             if (!res.data.users.length) {
                 history.push("/players");
@@ -268,6 +267,8 @@ function PlayerPage(props) {
                         </TableFooter>
                     </Table>
                     <p>* Note: Elo Rating is independent of Warzone Rating</p>
+                    <p>** All seasons except for Season X use Elo rating (μ=1500)</p>
+                    <p>*** Season X uses TrueSkill Rating (μ=25; σ=25/3) due to being an FFA</p>
                 </Grid>
                 <Grid item xs={12} md={5}>
                     <HeadToHeadTable games={games} player={player.pid} />

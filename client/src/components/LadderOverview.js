@@ -119,7 +119,7 @@ function LadderOverview(props) {
                         <h4 className="games-chart-title">Results by Colour</h4>
                         <ResponsiveContainer width="100%" height={600}>
                             <BarChart width={1000} height={250} data={colourData}
-                                margin={{top: 10, right: 20, left: 20, bottom: 50}}
+                                margin={{top: 10, right: 20, left: 20, bottom: 60}}
                                 barGap={3}
                                 barCategoryGap={6}
                             >

@@ -23,6 +23,7 @@ function LaddersCard(props) {
                         direction="column"
                         justify="center"
                         xs={12} md={4}
+                        className="ladders-card-column"
                     >
                         <Grid item xs={12}>
                             <Card.Text>Total Games: {props.stats.games && Number(props.stats.games[0].count).toLocaleString()}</Card.Text>
@@ -44,10 +45,11 @@ function LaddersCard(props) {
                     <Grid
                         container
                         spacing={1}
-                        alignItems="center"
+                        alignItems="flex-start"
                         direction="column"
                         justify="flex-start"
                         xs={12} md={4}
+                        className="ladders-card-column"
                     >
                         <Grid item xs={12}>
                             <TableContainer component={Paper}>
@@ -82,10 +84,11 @@ function LaddersCard(props) {
                     <Grid
                         container
                         spacing={1}
-                        alignItems="center"
+                        alignItems="flex-start"
                         direction="column"
                         justify="flex-start"
                         xs={12} md={4}
+                        className="ladders-card-column"
                     >
                         <Grid item xs={12}>
                             <TableContainer component={Paper}>

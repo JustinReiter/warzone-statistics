@@ -158,7 +158,7 @@ function populateTrueSkillRatings() {
     db.any('SELECT * FROM games WHERE lid=4009 ORDER BY end_date ASC;').then((games) => {
         // playerId ---> {skill: [mu, sigma], rank: int}
         let playerSkills = {};
-        let colourData = {};
+        // let colourData = {};
 
         for (const game of games) {
             for (let i = 0; i < 4; i++) {
@@ -168,19 +168,19 @@ function populateTrueSkillRatings() {
                 }
 
                 // Add colour value if does not exist
-                if (!(game[`player${i}_colour`] in colourData)) {
-                    colourData[game[`player${i}_colour`]] = {wins: 0, losses: 0};
-                }
+                // if (!(game[`player${i}_colour`] in colourData)) {
+                //     colourData[game[`player${i}_colour`]] = {wins: 0, losses: 0};
+                // }
 
                 // Update rank and colours for game and wins/losses
                 if (i === Number(game.winner)) {
                     playerSkills[Number(game[`player${i}_id`])].rank = 1;
                     playerSkills[Number(game[`player${i}_id`])].wins++;
-                    colourData[game[`player${i}_colour`]].wins++;
+                    // colourData[game[`player${i}_colour`]].wins++;
                 } else {
                     playerSkills[Number(game[`player${i}_id`])].rank = 2;
                     playerSkills[Number(game[`player${i}_id`])].losses++;
-                    colourData[game[`player${i}_colour`]].losses++;
+                    // colourData[game[`player${i}_colour`]].losses++;
                 }
             }
 

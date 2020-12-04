@@ -34,7 +34,6 @@ function LandingPage() {
 
         getColours().then((res) => {
             let intermediateColourData = res.data.colourData.map((colour) => {
-                console.log(`Color: ${colour.colour.toLowerCase()} mapping: ${colourMapping[colour.colour.toLowerCase()]}`);
                 return {
                     Colour: colourMapping[colour.colour.toLowerCase()],
                     Wins: colour.wins,
@@ -98,7 +97,7 @@ function LandingPage() {
                         <h4 className="games-chart-title">Seasonal-Wide Colour Results</h4>
                         <ResponsiveContainer width="100%" height={600}>
                             <BarChart width={1000} height={250} data={colours}
-                                margin={{top: 10, right: 20, left: 20, bottom: 50}}
+                                margin={{top: 10, right: 20, left: 20, bottom: 60}}
                                 barGap={3}
                                 barCategoryGap={6}
                             >
