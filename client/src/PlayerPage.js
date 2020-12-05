@@ -76,14 +76,14 @@ const headCells = [
   { id: 'template', numeric: false, disablePadding: false, label: 'Template' },
   { id: 'wins', numeric: true, disablePadding: false, label: 'Wins' },
   { id: 'losses', numeric: true, disablePadding: false, label: 'Losses' },
-  { id: 'elo', numeric: true, disablePadding: false, label: 'Elo' },
+  { id: 'elo', numeric: true, disablePadding: false, label: 'Rating' },
 ];
 
 function descendingComparator(a, b, column) {
   if (column === "season") {
     return Number(a["lid"]) < Number(b["lid"]) ? 1 : -1;
   } else {
-    return Number(a[column]) < Number(b[column]) ? 1 : -1;
+    return a[column] < b[column] ? 1 : -1;
   }
 }
 
@@ -169,7 +169,7 @@ function PlayerPage(props) {
     }, [history, qs.pid]);
 
     const seasonRows = ((standings && standings.map((record) => {
-        return {lid: record.lid, season: record.season || record.lid, template: record.template, tid: record.tid, wins: record.wins, losses: record.losses, elo: record.elo};
+        return {lid: Number(record.lid), season: record.season || Number(record.lid), template: record.template, tid: Number(record.tid), wins: Number(record.wins), losses: Number(record.losses), elo: Number(record.elo)};
     })) || []);
     
     const queriedSeasonRows = queryFilter(seasonRows, search);
@@ -238,7 +238,7 @@ function PlayerPage(props) {
                                 </TableCell>
                                 <TableCell className="player-cell" align="right">{row.wins}</TableCell>
                                 <TableCell className="player-cell" align="right">{row.losses}</TableCell>
-                                <TableCell className="player-cell" align="right">{row.elo}</TableCell>
+                                <TableCell className="player-cell" align="right">{row.lid === 4009 ? row.elo : Math.round(row.elo)}</TableCell>
                             </TableRow>
                         ))}
                         {emptyRows > 0 && (
@@ -266,9 +266,9 @@ function PlayerPage(props) {
                             </TableRow>
                         </TableFooter>
                     </Table>
-                    <p>* Note: Elo Rating is independent of Warzone Rating</p>
-                    <p>** All seasons except for Season X use Elo rating (μ=1500)</p>
-                    <p>*** Season X uses TrueSkill Rating (μ=25; σ=25/3) due to being an FFA</p>
+                    <p>* Note: Elo Rating is independent of Warzone Rating
+                    <br/>** All seasons (except Season X) use Elo (μ=1500)
+                    <br/>*** Season X uses TrueSkill (μ=25; σ=25/3)</p>
                 </Grid>
                 <Grid item xs={12} md={5}>
                     <HeadToHeadTable games={games} player={player.pid} />

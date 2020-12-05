@@ -161,7 +161,7 @@ function HeadToHeadTable(props) {
         let didPlayerWin = Number(game.winner) === playerIndex;
 
         for (let i = 0; i < 4; i++) {
-          if (i === playerIndex || !game['player' + i + "_id"]) {
+          if (!game['player' + i + "_id"] || Number(game['player' + i + "_id"]) === Number(player)) {
             continue;
           }
 

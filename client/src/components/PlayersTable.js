@@ -68,7 +68,7 @@ const headCells = [
   { id: 'player', numeric: false, disablePadding: false, label: 'Player' },
   { id: 'wins', numeric: true, disablePadding: false, label: 'Wins' },
   { id: 'losses', numeric: true, disablePadding: false, label: 'Losses' },
-  { id: 'elo', numeric: true, disablePadding: false, label: 'Elo' },
+  { id: 'elo', numeric: true, disablePadding: false, label: 'Rating' },
 ];
 
 function descendingComparator(a, b, column) {
@@ -150,7 +150,7 @@ function PlayersTable(props) {
     }
 
     const playerRows = ((players && players.map((player) => {
-        return {player: player.name, id: player.pid, wins: player.wins, losses: player.losses, elo: player.elo};
+        return {player: player.name, id: player.pid, wins: Number(player.wins), losses: Number(player.losses), elo: Number(player.elo)};
     })) || []);
 
     const queriedPlayerRows = queryFilter(playerRows, search);
@@ -195,7 +195,7 @@ function PlayersTable(props) {
                         </TableCell>
                         <TableCell className="player-cell" align="right">{row.wins}</TableCell>
                         <TableCell className="player-cell" align="right">{row.losses}</TableCell>
-                        <TableCell className="player-cell" align="right">{row.elo}</TableCell>
+                        <TableCell className="player-cell" align="right">{props.isSeasonX ? row.elo : Math.round(row.elo)}</TableCell>
                     </TableRow>
                 ))}
                 {emptyRows > 0 && (
@@ -223,9 +223,9 @@ function PlayersTable(props) {
                     </TableRow>
                 </TableFooter>
             </Table>
-            <p>* Note: Elo Rating is independent of Warzone Rating</p>
-            <p>** All seasons except for Season X use Elo rating (μ=1500)</p>
-            <p>*** Season X uses TrueSkill Rating (μ=25; σ=25/3) due to being an FFA</p>
+            <p>* Note: Elo Rating is independent of Warzone Rating
+            <br/>** All seasons (except Season X) use Elo (μ=1500)
+            <br/>*** Season X uses TrueSkill (μ=25; σ=25/3)</p>
         </div>
     );
 }

@@ -67,7 +67,7 @@ function TablePaginationActions(props) {
 
 const headCells = [
   { id: 'winnerName', numeric: false, disablePadding: false, label: 'Winner' },
-  { id: 'loserName', numeric: false, disablePadding: false, label: 'Loser' },
+  { id: 'loserNames', numeric: false, disablePadding: false, label: 'Loser' },
   { id: 'startDate', numeric: false, disablePadding: false, label: 'Start Date' },
   { id: 'endDate', numeric: false, disablePadding: false, label: 'End Date' },
   { id: 'turns', numeric: true, disablePadding: false, label: 'Turns' },
@@ -75,9 +75,13 @@ const headCells = [
 
 function descendingComparator(a, b, column) {
   if (column.indexOf('Date') >= 0) {
-    return new Date(a[column]) > new Date(b[column]) ? 1 : -1;
+    return a[column] < b[column] ? 1 : -1;
+  } else if (column === "season") {
+    return a.lid < b.lid ? 1 : -1;
   } else if (column === 'turns') {
     return a[column] < b[column] ? 1 : -1;
+  } else if (column === 'loserNames') {
+    return a[column][0] > b[column][0] ? 1 : -1;
   } else {
     return a[column] > b[column] ? 1 : -1;
   }
@@ -139,7 +143,7 @@ function GamesTable(props) {
     const classes = useStyles();
     const [games, setGames] = useState([]);
     const [page, setPage] = useState(0);
-    const [order, setOrder] = useState('asc');
+    const [order, setOrder] = useState('desc');
     const [orderBy, setOrderBy] = useState('endDate');
     const [search, setSearch] = useState("");
 
@@ -148,7 +152,7 @@ function GamesTable(props) {
     }, [props.games]);
 
     useEffect(() => {
-      if (props.showSeason) {
+      if (props.showSeason && headCells.length === 5) {
         headCells.splice(0, 0, { id: 'season', numeric: false, disablePadding: false, label: 'Season' })
       } else if (headCells.length === 6) {
         headCells.splice(0, 1);
@@ -180,7 +184,7 @@ function GamesTable(props) {
           colour = winnerId === props.playerId ? "#3d511d" : "#410808";
         }
 
-        return {lid: game.lid, season: seasonMapping[Number(game.lid)], colour, winnerId, winnerName, loserIds, loserNames, gid: Number(game.gid), turns: Number(game.turns), startDate: new Date(game.start_date).toLocaleString().slice(0, -3).replace(",", ""), endDate: new Date(game.end_date).toLocaleString().slice(0, -3).replace(",", "")};
+        return {lid: Number(game.lid), season: seasonMapping[Number(game.lid)], colour, winnerId, winnerName, loserIds, loserNames, gid: Number(game.gid), turns: Number(game.turns), startDate: new Date(game.start_date), endDate: new Date(game.end_date)};
     })) || []);
 
     const queriedGameRows = queryFilter(gameRows, search);
@@ -245,17 +249,20 @@ function GamesTable(props) {
                         <TableCell className="game-cell">
                             { row.loserIds.map((loserId, loserIndex) => {
                                 return (
-                                    <Link
-                                        href={"/player?pid=" + row.loserIds[loserIndex]}
-                                        key={loserId + "-" + row.gid}
-                                    >
-                                        {row.loserNames[loserIndex]}
-                                    </Link>
+                                    <>
+                                      {loserIndex > 0 && <br/>}
+                                      <Link
+                                          href={"/player?pid=" + row.loserIds[loserIndex]}
+                                          key={loserId + "-" + row.gid}
+                                      >
+                                          {row.loserNames[loserIndex]}
+                                      </Link>
+                                    </>
                                 );
                             })}
                         </TableCell>
-                        <TableCell className="game-cell">{row.startDate}</TableCell>
-                        <TableCell className="game-cell">{row.endDate}</TableCell>
+                        <TableCell className="game-cell">{row.startDate.toLocaleString().slice(0, -3).replace(",", "")}</TableCell>
+                        <TableCell className="game-cell">{row.endDate.toLocaleString().slice(0, -3).replace(",", "")}</TableCell>
                         <TableCell className="game-cell" align="right">{row.turns}</TableCell>
                         <TableCell align="right">
                           <Link
@@ -295,9 +302,16 @@ function GamesTable(props) {
                     </TableRow>
                 </TableFooter>
             </Table>
-            <p>* Note: -1 turn games end before picks; 0 turn games end after picks</p>
-            <p>** All seasons except for Season X use Elo rating (μ=1500)</p>
-            <p>*** Season X uses TrueSkill Rating (μ=25; σ=25/3) due to being an FFA</p>
+            <p>* Note: -1 turn games end before picks; 0 turn games end after picks
+            { props.showSeason && 
+              (
+                <>
+                  <br/>** All seasons (except Season X) use Elo (μ=1500)
+                  <br/>*** Season X uses TrueSkill (μ=25; σ=25/3)
+                </>
+              )
+            }
+            </p>
         </div>
     );
 }

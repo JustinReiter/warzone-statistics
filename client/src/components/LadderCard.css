@@ -33,6 +33,6 @@
   white-space: pre;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 8ch;
+  max-width: 15ch;
   color: rgba(232, 230, 227, 0.87) !important;
 }

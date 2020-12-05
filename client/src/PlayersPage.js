@@ -148,7 +148,7 @@ function PlayersPage(props) {
     }, []);
 
     const playerRows = ((players && players.map((player) => {
-        return {player: player.name, id: player.pid, wins: player.wins, losses: player.losses, seasonsPlayed: player.count};
+        return {player: player.name, id: player.pid, wins: Number(player.wins), losses: Number(player.losses), seasonsPlayed: Number(player.count)};
     })) || []);
 
     const queriedPlayerRows = queryFilter(playerRows, search);

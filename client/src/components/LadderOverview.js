@@ -111,7 +111,7 @@ function LadderOverview(props) {
                     <GamesTable games={games} showSeason={false} />
                 </Grid>
                 <Grid item xs={12} md={4}>
-                    <PlayersTable players={players}/>
+                    <PlayersTable players={players} isSeasonX={props.ladder.lid === 4009}/>
                 </Grid>
 
                 <Grid item xs={12}>
