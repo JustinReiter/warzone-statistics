@@ -50,7 +50,7 @@ function LandingPage() {
     return (
         <div className="App">
             <Container maxWidth="lg">
-                <Card title={LandingPageTitle} body={LandingPageDescription} />
+                <Card title={LandingPageTitle} body={LandingPageDescription} showContact={true} />
                 <LaddersCard stats={stats || {}} />
 
                 <Grid item xs={12} style={{paddingTop: "2%"}}>

@@ -69,6 +69,7 @@ const headCells = [
   { id: 'player', numeric: false, disablePadding: false, label: 'Player' },
   { id: 'wins', numeric: true, disablePadding: false, label: 'Wins' },
   { id: 'losses', numeric: true, disablePadding: false, label: 'Losses' },
+  { id: 'games', numeric: true, disablePadding: false, label: 'Games' },
   { id: 'seasonsPlayed', numeric: true, disablePadding: false, label: 'Seasons Played' },
 ];
 
@@ -148,7 +149,7 @@ function PlayersPage(props) {
     }, []);
 
     const playerRows = ((players && players.map((player) => {
-        return {player: player.name, id: player.pid, wins: Number(player.wins), losses: Number(player.losses), seasonsPlayed: Number(player.count)};
+        return {player: player.name, id: player.pid, wins: Number(player.wins), losses: Number(player.losses), games: Number(player.wins) + Number(player.losses), seasonsPlayed: Number(player.count)};
     })) || []);
 
     const queriedPlayerRows = queryFilter(playerRows, search);
@@ -169,15 +170,16 @@ function PlayersPage(props) {
         <Container maxWidth="lg">
           <Table component={Paper} width="100%" style={{backgroundColor: "rgb(24, 26, 27)"}}>
               <colgroup>
-                  <col width="50%" />
-                  <col width="15%" />
-                  <col width="15%" />
-                  <col width="20%" />
+                  <col width="40%" />
+                  <col width="14%" />
+                  <col width="14%" />
+                  <col width="14%" />
+                  <col width="18%" />
               </colgroup>
               <TableHead>
                 <TableRow>
                     <TableCell className="player-cell" colSpan={3}><h3>Player Standings</h3></TableCell>
-                    <TableCell className="player-cell" colSpan={1}><TextField id="players-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                    <TableCell className="player-cell" colSpan={2}><TextField id="players-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
                 </TableRow>
               </TableHead>
               <EnhancedTableHeader
@@ -200,6 +202,7 @@ function PlayersPage(props) {
                       </TableCell>
                       <TableCell className="player-cell" align="right">{row.wins}</TableCell>
                       <TableCell className="player-cell" align="right">{row.losses}</TableCell>
+                      <TableCell className="player-cell" align="right">{row.games}</TableCell>
                       <TableCell className="player-cell" align="right">{row.seasonsPlayed}</TableCell>
                   </TableRow>
               ))}
@@ -213,7 +216,7 @@ function PlayersPage(props) {
                   <TableRow>
                       <TablePagination
                           rowsPerPageOptions={[10]}
-                          colSpan={4}
+                          colSpan={5}
                           count={queriedPlayerRows.length}
                           page={page}
                           rowsPerPage={10}
@@ -228,7 +231,6 @@ function PlayersPage(props) {
                   </TableRow>
               </TableFooter>
           </Table>
-          <p>* Note: Elo Rating is independent of Warzone Rating</p>
         </Container>
       </div>
     );

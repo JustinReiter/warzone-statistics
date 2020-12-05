@@ -1,7 +1,8 @@
 const home = ``;
 
 const LandingPageTitle = 'Warzone Statistics';
-const LandingPageDescription = 'Warzone Statistics';
+const LandingPageDescription = 'This platform contains data covering the entire Seasonal on Warzone.' +
+                                    ' If you notice anything incorrect or off, please send a screenshot to me (JustinR17) with the issue.';
 
 const LandingPageSeasonalTitle = 'Recent Seasonals';
 const LandingPageSeasonalDescription = 'Here are the 4 last seasonals. To view any seasonal, visit the \'Ladders\' page';

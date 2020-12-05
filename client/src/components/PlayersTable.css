@@ -36,6 +36,10 @@
   color: rgba(232, 230, 227, 0.87) !important;
 }
 
+.MuiInput-root {
+  color: rgba(232, 230, 227, 0.87) !important;
+}
+
 .MuiInput-underline::before {
   border-bottom-color: rgba(140, 130, 115, 0.42) !important;
 }

@@ -194,7 +194,7 @@ function GamesTable(props) {
         setPage(newPage);
     };
 
-    let nameWidths = props.showSeason ? "20%" : "25%";
+    let nameWidths = props.showSeason ? "19%" : "24%";
     let dateWidths = props.showSeason ? "15%" : "20%";
 
     return (
@@ -207,7 +207,7 @@ function GamesTable(props) {
                     <col width={dateWidths} />
                     <col width={dateWidths} />
                     <col width="5%" />
-                    <col width="5%" />
+                    <col width="7%" />
                 </colgroup>
                 <TableHead>
                     <TableRow>
@@ -303,14 +303,14 @@ function GamesTable(props) {
                 </TableFooter>
             </Table>
             <p>* Note: -1 turn games end before picks; 0 turn games end after picks
-            { props.showSeason && 
+            {/* { props.showSeason && 
               (
                 <>
                   <br/>** All seasons (except Season X) use Elo (μ=1500)
                   <br/>*** Season X uses TrueSkill (μ=25; σ=25/3)
                 </>
               )
-            }
+            } */}
             </p>
         </div>
     );
