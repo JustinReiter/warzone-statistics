@@ -26,10 +26,10 @@ function ContactCard() {
                     </Typography>
 
                     <Typography className={classes.body} variant="body1" component="p">
-                        The purpose of this site is to summarize and display various statistics covering all of the ladders found on Warzone. It is intended to be an easier way in navigating and exporing the Seasonal.
+                        The purpose of this site is to summarize and display various statistics covering all of the ladders found on Warzone. It is intended to be an easier way in navigating and exploring the Seasonal.
                     </Typography>
                     <Typography className={classes.body} variant="body1" component="p">
-                        If you have any questions or find bugs, feel free to write mail to me or to ping me on discord with suggestions.
+                        If you have any questions or find bugs, feel free to send mail to me or to ping me on discord.
                     </Typography>
 
                     <Typography className={classes.profile} variant="body1" component="p">
@@ -37,7 +37,7 @@ function ContactCard() {
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            JustinR17 Warzone Profile
+                            JustinR17 WZ Profile
                         </Link>
                     </Typography>
                 </CardContent>

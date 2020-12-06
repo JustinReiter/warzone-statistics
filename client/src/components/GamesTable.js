@@ -115,6 +115,10 @@ function queryFilter(array, searchString) {
     });
 }
 
+const formatDateTimeString = (date) => {
+  return `${date.getFullYear()}/${("0" + (date.getMonth()+1)).slice(-2)}/${("0" + date.getDate()).slice(-2)} ${("0" + date.getHours()).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}`;
+};
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
@@ -261,8 +265,8 @@ function GamesTable(props) {
                                 );
                             })}
                         </TableCell>
-                        <TableCell className="game-cell">{row.startDate.toLocaleString().slice(0, -3).replace(",", "")}</TableCell>
-                        <TableCell className="game-cell">{row.endDate.toLocaleString().slice(0, -3).replace(",", "")}</TableCell>
+                        <TableCell className="game-cell">{formatDateTimeString(row.startDate)}</TableCell>
+                        <TableCell className="game-cell">{formatDateTimeString(row.endDate)}</TableCell>
                         <TableCell className="game-cell" align="right">{row.turns}</TableCell>
                         <TableCell align="right">
                           <Link

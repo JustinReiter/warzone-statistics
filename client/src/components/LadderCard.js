@@ -6,11 +6,13 @@ import { warzoneSeasonUrl, warzoneTemplateURL } from '../Constants';
 import './LadderCard.css';
 
 const formatDateString = (date) => {
-    return new Date(date).toLocaleString().slice(0, 10);
+    let interDate = new Date(date);
+    return `${interDate.getFullYear()}/${interDate.getMonth()+1}/${interDate.getDate()}`;
 };
 
 const formatDateTimeString = (date) => {
-    return new Date(date).toLocaleString().slice(0, 17).replace(",", "");
+    let interDate = new Date(date);
+    return `${interDate.getFullYear()}/${interDate.getMonth()+1}/${interDate.getDate()} ${interDate.getHours()}:${("0" + interDate.getMinutes()).slice(-2)}`;
 };
 
 // Render the card container dependent on if card should be clickable
