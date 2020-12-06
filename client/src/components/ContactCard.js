@@ -26,7 +26,7 @@ function ContactCard() {
                     </Typography>
 
                     <Typography className={classes.body} variant="body1" component="p">
-                        The purpose of this site is to summarize and display various statistics covering all of the ladders found on Warzone. It is intended to be an easier way in navigating and exploring the Seasonal.
+                        The purpose of this site is to summarize and display various statistics covering the entire seasonal ladder found on Warzone. It is intended to be an easier way in navigating the Seasonal and I have plans to extend this to the other ladders.
                     </Typography>
                     <Typography className={classes.body} variant="body1" component="p">
                         If you have any questions or find bugs, feel free to send mail to me or to ping me on discord.

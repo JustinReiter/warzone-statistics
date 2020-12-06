@@ -195,7 +195,7 @@ function HeadToHeadTable(props) {
                 <TableHead>
                     <TableRow>
                         <TableCell className="game-cell" colSpan={2}><h3>H2H Results</h3></TableCell>
-                        <TableCell className="game-cell" colSpan={2}><TextField id="game-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                        <TableCell className="game-cell" colSpan={2}><TextField id="head-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
                     </TableRow>
                 </TableHead>
                 <EnhancedTableHeader
