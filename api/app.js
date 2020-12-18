@@ -7,7 +7,7 @@ var cors = require('cors');
 require('dotenv').config();
 
 const { updateLadders, updateDailyStandings } = require('./updateLadders');
-const { populateColourResults, populateDailyStandings, populateEloRatings, populateTrueSkillRatings } = require('./initializeDatabases');
+const { populateColourResults, populateDailyStandings, populateEloRatings, populateSingleLadderEloRatings, populateTrueSkillRatings } = require('./initializeDatabases');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -91,19 +91,20 @@ db.any('SELECT * FROM player_results;').then((players) => {
 	}
 });
 
+// Initialize player_results with elo ratings
+const LADDER_TO_UPDATE = 4076;
+db.any('SELECT * FROM player_results WHERE lid=$1;', [LADDER_TO_UPDATE]).then((players) => {
+	if (players.length === 0) {
+		populateSingleLadderEloRatings(LADDER_TO_UPDATE);
+	}
+});
+
 // Initialize player_results/colour_results for season X (TrueSkill for 4FFA)
 db.any('SELECT * FROM player_results WHERE lid=4009;').then((players) => {
 	if (players.length === 0) {
 		populateTrueSkillRatings();
 	}
 });
-
-db.any('SELECT * FROM player_results WHERE lid=4076 ORDER BY elo DESC LIMIT 10;').then((res) => {
-	for (const record of res) {
-		console.log(`Elo: ${record.elo} // ${JSON.stringify(record, null, 54)}`);
-	}
-});
-
 
 // Single-use script to reset players database
 // collapsePlayerNames();

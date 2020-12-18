@@ -119,6 +119,45 @@ function populateEloRatings() {
     });
 }
 
+function populateSingleLadderEloRatings(ladder) {
+    db.any('SELECT * FROM games WHERE lid=$1 ORDER BY end_date ASC;',
+        [ladder])
+    .then((games) => {
+        let players = {};
+
+        for (const game of games) {
+            if (!(game.player0_id in players)) {
+                players[game.player0_id] = {wins: 0, losses: 0, elo: STARTING_ELO};
+            }
+            if (!(game.player1_id in players)) {
+                players[game.player1_id] = {wins: 0, losses: 0, elo: STARTING_ELO};
+            }
+
+            let expectedScorePlayer0 = 1 / (1 + Math.pow(10, (players[game.player1_id].elo - players[game.player0_id].elo) / 400)); 
+            let actualScorePlayer0 = Number(game.winner === "0");
+
+            players[game.player0_id].elo += K * (actualScorePlayer0 - expectedScorePlayer0);
+            players[game.player1_id].elo += K * (expectedScorePlayer0 - actualScorePlayer0);
+
+            players[game.player0_id].wins += actualScorePlayer0;
+            players[game.player0_id].losses += !actualScorePlayer0;
+            players[game.player1_id].wins += !actualScorePlayer0;
+            players[game.player1_id].losses += actualScorePlayer0;
+        }
+
+        for (const [player, record] of Object.entries(players)) {
+            db.none('INSERT INTO player_results (pid, lid, wins, losses, elo) VALUES ($1, $2, $3, $4, $5)',
+                [player, ladder, record.wins, record.losses, record.elo])
+            .then(() => {
+                console.log(`[PopulatePlayerResults] Successfully inserted into player_results (${player}, ${ladder}, ${record.wins}, ${record.losses}, ${record.elo})`);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        }
+    });
+}
+
 function collapsePlayerNames() {
     db.any('SELECT * FROM players;').then((players) => {
         let playersFinal = {};
@@ -227,6 +266,7 @@ module.exports = {
     populateDailyStandings,
     populateColourResults,
     populateEloRatings,
+    populateSingleLadderEloRatings,
     collapsePlayerNames,
     populateTrueSkillRatings
 };
