@@ -91,7 +91,8 @@ const seasonMapping = {
     4070: "Season XXXIX",
     4074: "Season XL",
     4075: "Season XLI",
-    4076: "Season XLII"
+    4076: "Season XLII",
+    4077: "Season XLIII"
 };
 
 export {
