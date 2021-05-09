@@ -14,6 +14,7 @@ var usersRouter = require('./routes/users');
 var laddersRouter = require('./routes/ladders');
 var gamesRouter = require('./routes/games');
 var coloursRouter = require('./routes/colours');
+var clanLeagueRouter = require('./routes/clanleague');
 
 var app = express();
 
@@ -37,6 +38,7 @@ app.use('/users', usersRouter);
 app.use("/ladders", laddersRouter);
 app.use("/games", gamesRouter);
 app.use("/colours", coloursRouter);
+app.use("/cl", clanLeagueRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -71,40 +73,40 @@ console.log(`Starting running back-end process at ${new Date().toISOString()}`);
 
 //! Run single-use scripts
 // Initalize colour_results for all ladders
-db.any('SELECT * FROM colour_results;').then((colours) => {
-	if (colours.length === 0) {
-		populateColourResults();
-	}
-});
+// db.any('SELECT * FROM colour_results;').then((colours) => {
+// 	if (colours.length === 0) {
+// 		populateColourResults();
+// 	}
+// });
 
 // Initialize daily_standings for all ladders
-db.any('SELECT * FROM daily_standings;').then((standings) => {
-	if (standings.length === 0) {
-		populateDailyStandings();
-	}
-});
+// db.any('SELECT * FROM daily_standings;').then((standings) => {
+// 	if (standings.length === 0) {
+// 		populateDailyStandings();
+// 	}
+// });
 
 // Initialize player_results with elo ratings
-db.any('SELECT * FROM player_results;').then((players) => {
-	if (players.length === 0) {
-		populateEloRatings();
-	}
-});
+// db.any('SELECT * FROM player_results;').then((players) => {
+// 	if (players.length === 0) {
+// 		populateEloRatings();
+// 	}
+// });
 
 // Initialize player_results with elo ratings
 const LADDER_TO_UPDATE = 4076;
-db.any('SELECT * FROM player_results WHERE lid=$1;', [LADDER_TO_UPDATE]).then((players) => {
-	if (players.length === 0) {
-		populateSingleLadderEloRatings(LADDER_TO_UPDATE);
-	}
-});
+// db.any('SELECT * FROM player_results WHERE lid=$1;', [LADDER_TO_UPDATE]).then((players) => {
+// 	if (players.length === 0) {
+// 		populateSingleLadderEloRatings(LADDER_TO_UPDATE);
+// 	}
+// });
 
 // Initialize player_results/colour_results for season X (TrueSkill for 4FFA)
-db.any('SELECT * FROM player_results WHERE lid=4009;').then((players) => {
-	if (players.length === 0) {
-		populateTrueSkillRatings();
-	}
-});
+// db.any('SELECT * FROM player_results WHERE lid=4009;').then((players) => {
+// 	if (players.length === 0) {
+// 		populateTrueSkillRatings();
+// 	}
+//});
 
 // Single-use script to reset players database
 // collapsePlayerNames();

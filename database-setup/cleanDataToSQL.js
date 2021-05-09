@@ -15,9 +15,9 @@ function GetAllGameFiles() {
 }
 
 function writeSQLToFile(games, players) {
-    let logger = fs.createWriteStream('init_full_game_data.sql');
+    let logger = fs.createWriteStream('init_season_10_game_data.sql');
     
-    let ladderPointer = 0;
+    let ladderPointer = 9;
     logger.write(`-- Insert ${ladders[ladderPointer]} games to database\n`);
     for (const game of games) {
         if (game.lid != ladderIds[ladderPointer]) {
@@ -26,12 +26,12 @@ function writeSQLToFile(games, players) {
         }
 
         // logger.write(`UPDATE games SET start_date='${game.start_date}', end_date='${game.end_date}' WHERE gid=${game.gid};\n`);
-        logger.write(`INSERT INTO games (gid, lid, winner, booted, turns, start_date, end_date, player0_id, player0_colour, player1_id, player1_colour) VALUES (${game.gid}, ${game.lid}, '${game.winner}', ${Boolean(game.booted)}, ${game.turns}, '${game.start_date}', '${game.end_date}', ${game.player0_id}, '${game.player0_colour}', ${game.player1_id}, '${game.player1_colour}');\n`);
+        logger.write(`INSERT INTO games (gid, lid, winner, booted, turns, start_date, end_date, player0_id, player0_colour, player1_id, player1_colour, player2_id, player2_colour, player3_id, player3_colour) VALUES (${game.gid}, ${game.lid}, '${game.winner}', ${Boolean(game.booted)}, ${game.turns}, '${game.start_date}', '${game.end_date}', ${game.player0_id}, '${game.player0_colour}', ${game.player1_id}, '${game.player1_colour}', ${game.player2_id}, '${game.player2_colour}', ${game.player3_id}, '${game.player3_colour}');\n`);
     }
 
     logger.write("\n-- Insert players to database\n");
     for (const [id, name] of Object.entries(players)) {
-        logger.write(`INSERT INTO players (pid, name, version) VALUES (${id}, '${name}', 1);\n`);
+        logger.write(`INSERT INTO players (pid, name) VALUES (${id}, '${name}');\n`);
     }
     
     logger.close();
@@ -40,7 +40,8 @@ function writeSQLToFile(games, players) {
 function ReadGameFiles() {
     let dataToOutput = [];
     let playerNamesToOutput = {};
-    for (let i = 0; i < ladders.length; i++) {
+    // for (let i = 0; i < ladders.length; i++) {
+        let i = 9;
         let games = fs.readdirSync("./GameData/" + (i+1) + "SeasonalGames");
         
         for (const game of games) {
@@ -49,7 +50,7 @@ function ReadGameFiles() {
             dataToOutput.push({
                 gid: gameData.id,
                 lid: ladderIds[i],
-                winner: Number(gameData.players[1].state === "Won"),
+                winner: gameData.players.reduce((acc, cur, idx) => { if (cur.state === "Won") acc.push(idx); return acc; }, [])[0],
                 booted: Number(gameData.players.filter((player) => player.state === "Booted").length),
                 turns: gameData.numberOfTurns,
                 start_date: new Date(gameData.created + "Z").toISOString().slice(0, 19).replace('T', ' '),
@@ -60,10 +61,22 @@ function ReadGameFiles() {
                 player1_colour: gameData.players[1].color.substring(1)
             });
 
+            if (i === 9) {
+                dataToOutput[dataToOutput.length-1].player2_id = Number(gameData.players[2].id);
+                dataToOutput[dataToOutput.length-1].player2_colour = gameData.players[2].color.substring(1);
+                dataToOutput[dataToOutput.length-1].player3_id = Number(gameData.players[3].id);
+                dataToOutput[dataToOutput.length-1].player3_colour = gameData.players[3].color.substring(1);
+            }
+
             playerNamesToOutput[Number(gameData.players[0].id)] = gameData.players[0].name;
             playerNamesToOutput[Number(gameData.players[1].id)] = gameData.players[1].name; 
+
+            if (i === 9) {
+                playerNamesToOutput[Number(gameData.players[2].id)] = gameData.players[2].name;
+                playerNamesToOutput[Number(gameData.players[3].id)] = gameData.players[3].name;
+            }
         }
-    }
+    // }
 
     writeSQLToFile(dataToOutput, playerNamesToOutput);
 }
