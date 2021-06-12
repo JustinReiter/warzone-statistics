@@ -36,8 +36,9 @@ async function getAllLadderStats(ladder) {
     return obj;
 }
 
-// Get general ladder data from all ladders
-router.get('/', function(req, res, next) {
+var ladderResponse;
+
+async function cacheLadderResponse() {
     db.any(`SELECT ladder_name, winner_name, templates.name AS template_name, * FROM templates, 
         (SELECT ladders.name AS ladder_name, players.name AS winner_name, * FROM ladders LEFT JOIN players ON ladders.winner=players.pid) AS ladders
         WHERE ladders.tid=templates.tid ORDER BY lid DESC;`)
@@ -54,11 +55,18 @@ router.get('/', function(req, res, next) {
                 ladderArray[i].stats = resolvedArray[i];
             }
 
-            res.json({ladders: ladderArray, stats: await getAllLadderStats()});
+            ladderResponse = {ladders: ladderArray, stats: await getAllLadderStats()};
     }).catch((err) => {
         console.log(err);
-        res.json({error: "Error while processing query"});
     });
+}
+
+// Get general ladder data from all ladders
+router.get('/', async function(req, res, next) {
+    // Cache value if it does not exist already
+    if (!ladderResponse) await cacheLadderResponse();
+    
+    res.json(ladderResponse);
 });
 
 // Get general ladder data from all ladders
@@ -117,4 +125,4 @@ router.get('/id/:ladderId', function(req, res, next) {
     }
 });
 
-module.exports = router;
+module.exports = {router, cacheLadderResponse};
