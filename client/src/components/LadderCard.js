@@ -113,7 +113,7 @@ const renderTemplateName = (props) => {
 const renderCardText = (props) => {
     return (
         <Fragment>
-            <Card.Header className="card-header"><h5>{ props.ladder.ladder_name }&nbsp;</h5> {!props.clickable && <Link target="_blank" rel="noopener noreferrer" href={warzoneSeasonUrl + props.ladder.lid}>(Season Page)</Link>}</Card.Header>
+            <Card.Header className="card-header"><h5>{ props.ladder.ladder_name }&nbsp;</h5> {!props.clickable && props.ladder.ladder_name && <Link target="_blank" rel="noopener noreferrer" href={warzoneSeasonUrl + props.ladder.lid}>(Season Page)</Link>}</Card.Header>
             <Card.Body>
             <Grid
                 container

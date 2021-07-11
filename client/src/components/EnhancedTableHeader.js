@@ -22,7 +22,7 @@ function EnhancedTableHeader(props) {
     onRequestSort(event, property);
   };
 
-  let combinedClasses = {...defaultClasses, ...classes}
+  let combinedClasses = {...defaultClasses, ...classes};
 
   return (
     <TableHead>

@@ -99,11 +99,27 @@ const seasonMapping = {
 const triviaList = [
     {
         title: "Most Elitist Colour",
-        desc: "The most exclusive colour on the Seasonal is Artichoke with only a single win used by Semicedevine."
+        desc: "The most exclusive colour on the Seasonal is Artichoke with only a single win used by Semicedevine.",
+        links: [
+            {
+                link: "https://www.warzone.com/MultiPlayer?GameID=10501433",
+                text: "Warzone Game"
+            }
+        ]
     },
     {
         title: "Biggest Rivalry",
-        desc: "The two players to have played the most matches on the Seasonal are XX and YY with ZZ games played"
+        desc: "The two players to have played the most matches on the Seasonal are Buns157 and rakleader with 11 games played",
+        links: [
+            {
+                link: "http://localhost:3000/player?pid=8039234532",
+                text: "Buns157"
+            },
+            {
+                link: "http://localhost:3000/player?pid=8136895102",
+                text: "rakleader"
+            }
+        ]
     },
     {
         title: "Longest Seasonal Game",
@@ -125,7 +141,7 @@ const triviaList = [
             },
             {
                 link: "http://localhost:3000/player?pid=133355543",
-                text: "Diabolicus "
+                text: "Diabolicus"
             },
             {
                 link: "http://localhost:3000/player?pid=132609340",
@@ -144,6 +160,24 @@ const triviaList = [
             {
                 link: "http://localhost:3000/ladder?ladder=4078",
                 text: "Season XLIV"
+            }
+        ]
+    },
+    {
+        title: "Most Season Wins",
+        desc: "Deadman, master of desaster and Rufus are tied for most season wins at 3.",
+        links: [
+            {
+                link: "http://localhost:3000/player?pid=2428496679",
+                text: "Deadman"
+            },
+            {
+                link: "http://localhost:3000/player?pid=2214950915",
+                text: "master of desaster"
+            },
+            {
+                link: "http://localhost:3000/player?pid=2979814301",
+                text: "Rufus"
             }
         ]
     }

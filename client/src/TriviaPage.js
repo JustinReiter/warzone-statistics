@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Card } from 'react-bootstrap';
 import { Grid, Container, Link } from '@material-ui/core';
 import { triviaList } from './Constants';
 import './PlayerPage.css';
+
+function renderLinks(links) {
+    return links.map((link, idx) => (<Fragment key={idx}><Link target="_blank" rel="noopener noreferrer" href={link.link}>{link.text}</Link><br/></Fragment>));
+}
+
 
 function TriviaPage(props) {
 
@@ -23,14 +28,10 @@ function TriviaPage(props) {
                             item
                             md={12} xs={12}
                         >
-                            <Card key={idx} style={{color: 'black'}}>
+                            <Card key={idx} className="ladder-card">
                                 <Card.Header><h6>{trivia.title}</h6></Card.Header>
                                 <Card.Body>{trivia.desc}</Card.Body>
-                                <Card.Footer>
-                                    { trivia.links && trivia.links.map((link, idx) => {
-                                        return <Link target="_blank" rel="noopener noreferrer" href={link.link} key={idx}>{link.text}</Link>
-                                    })}
-                                </Card.Footer>
+                                { trivia.links && <Card.Footer>{renderLinks(trivia.links)}</Card.Footer>}
                             </Card>
                         </Grid>
                         );
