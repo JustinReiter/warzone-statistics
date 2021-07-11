@@ -1,6 +1,6 @@
+import { CardActionArea, Grid, Link, Paper, Table, TableContainer, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import React, { Fragment } from 'react';
 import { Badge, Card } from 'react-bootstrap';
-import { CardActionArea, Grid, Table, TableHead, TableCell, TableBody, TableRow, Paper, Link } from '@material-ui/core';
 import { useHistory } from 'react-router-dom';
 import { warzoneSeasonUrl, warzoneTemplateURL } from '../Constants';
 import './LadderCard.css';
@@ -49,29 +49,31 @@ const renderRightGrid = (props) => {
     } else {
         return (
             <Grid item xs={12}>
-                <Table size="small" aria-label="Top 5 Players by Wins" width="100%" component={Paper}>
-                    <colgroup>
-                        <col width="80%" />
-                        <col width="10%" />
-                        <col width="10%" />
-                    </colgroup>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell className="top-players-card-header">Top 5</TableCell>
-                            <TableCell className="top-players-card-header" align="right">Wins</TableCell>
-                            <TableCell className="top-players-card-header" align="right">Losses</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {props.ladder.stats.top5.map((player) => (
-                            <TableRow key={player.name}>
-                                <TableCell className="top-players-card-cell" component="th" scope="row">{player.name}</TableCell>
-                                <TableCell className="top-players-card-cell" align="right">{player.wins}</TableCell>
-                                <TableCell className="top-players-card-cell" align="right">{player.losses}</TableCell>
+                <TableContainer component={Paper}>
+                    <Table size="small" aria-label="Top 5 Players by Wins" width="100%">
+                        <colgroup>
+                            <col width="80%" />
+                            <col width="10%" />
+                            <col width="10%" />
+                        </colgroup>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell className="top-players-card-header">Top 5</TableCell>
+                                <TableCell className="top-players-card-header" align="right">Wins</TableCell>
+                                <TableCell className="top-players-card-header" align="right">Losses</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHead>
+                        <TableBody>
+                            {props.ladder.stats.top5.map((player) => (
+                                <TableRow key={player.name}>
+                                    <TableCell className="top-players-card-cell" component="th" scope="row">{player.name}</TableCell>
+                                    <TableCell className="top-players-card-cell" align="right">{player.wins}</TableCell>
+                                    <TableCell className="top-players-card-cell" align="right">{player.losses}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </Grid>
         )
     }
@@ -92,7 +94,7 @@ const renderWinnerName = (props) => {
 }
 
 const renderTemplateName = (props) => {
-    if (props.clickable) {
+    if (props.clickable || !props.ladder.template_name) {
         return props.ladder.template_name;
     } else {
         return (
@@ -118,14 +120,15 @@ const renderCardText = (props) => {
                 spacing={1}
                 alignItems="center"
                 direction="row"
-                justify="space-between"
+                justifyContent="space-between"
             >
                 <Grid
                     container
+                    item
                     spacing={1}
                     alignItems="flex-start"
                     direction="column"
-                    justify="flex-start"
+                    justifyContent="flex-start"
                     xs={12} md={6}
                 >
                     <Grid item xs={12}>
@@ -147,10 +150,11 @@ const renderCardText = (props) => {
 
                 <Grid
                     container
+                    item
                     spacing={1}
                     alignItems="flex-start"
                     direction="column"
-                    justify="flex-start"
+                    justifyContent="flex-start"
                     xs={12} md={6}
                 >
                     { props.ladder.stats && renderRightGrid(props) }

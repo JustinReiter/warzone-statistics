@@ -13,6 +13,7 @@ function LadderOverview(props) {
     let [players, setPlayers] = useState([]);
     let [colourData, setColourData] = useState([]);
     let [turnData, setTurnData] = useState([]);
+    let [maxRange, setMaxRange] = useState(175);
 
     useEffect(() => {
         setStandings(props.standings && props.standings.map((day) => {
@@ -20,8 +21,11 @@ function LadderOverview(props) {
                 name: day.date.slice(0, 10),
                 Games: day.games
             };
-        })
-        );
+        }));
+
+        if (props.standings) {
+            setMaxRange(Math.round((props.standings.reduce((curMax, curVal) => Math.max(curMax, curVal.games), 0)+20)/10)*10);
+        }
     }, [props.standings]);
 
     useEffect(() => {
@@ -92,7 +96,7 @@ function LadderOverview(props) {
                                 <Label value="Number of Games Completed by Day" offset={0} position="top" />
                                 <CartesianGrid strokeDasharray="3 3" stroke="#3e4446" />
                                 <XAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} angle={-60} textAnchor='end' dataKey="name" />
-                                <YAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} />
+                                <YAxis domain={[0, maxRange]} stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} />
                                 <Tooltip cursor={{stroke: "#6a6357"}} contentStyle={{backgroundColor: "rgb(32, 35, 42)", color: "rgba(232, 230, 227, 0.87)"}} />
                                 <Legend wrapperStyle={{top: 10, color: "rgba(232, 230, 227, 0.87)"}}/>
                                 <Line type="monotone" dataKey="Games" stroke="#8884d8" />

@@ -2,11 +2,27 @@ import React from 'react';
 import { TableCell, TableHead, TableRow, TableSortLabel } from '@material-ui/core';
 import './EnhancedTableHeader.css';
 
+const defaultClasses = {
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+  }
+}
+
 function EnhancedTableHeader(props) {
   const { classes, order, orderBy, onRequestSort, headerCells } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
+
+  let combinedClasses = {...defaultClasses, ...classes}
 
   return (
     <TableHead>
@@ -15,7 +31,7 @@ function EnhancedTableHeader(props) {
           <TableCell
             key={headCell.id}
             align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'default'}
+            padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false}
             className="game-header"
           >
@@ -25,11 +41,6 @@ function EnhancedTableHeader(props) {
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                </span>
-              ) : null}
             </TableSortLabel>
           </TableCell>
         ))}

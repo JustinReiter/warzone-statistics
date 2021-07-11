@@ -15,6 +15,7 @@ function LandingPage() {
     const [ games, setGames ] = useState([]);
     const [ players, setPlayers ] = useState([]);
     const [ colours, setColours ] = useState([]);
+    const [ maxRange, setMaxRange] = useState(9000);
 
     useEffect(() => {
         getLadders().then((res) => {
@@ -25,6 +26,7 @@ function LandingPage() {
                 return {Seasonal: ladder.ladder_name, Games: ladder.game_count};
             }).reverse();
             setGames(gamesData);
+            setMaxRange(Math.round((gamesData.reduce((curMax, curVal) => Math.max(curMax, curVal.Games), 0)+200)/100)*100);
 
             let playersData = res.data.ladders.map((ladder) => {
                 return {Seasonal: ladder.ladder_name, Players: ladder.stats.players[0].count};
@@ -57,14 +59,14 @@ function LandingPage() {
                     <div className="games-graph">
                         <h4 className="games-chart-title">Number of Games by Season</h4>
                         <ResponsiveContainer width="100%" height={500}>
-                            <LineChart data={games || []}
+                            <LineChart data={[...games] || []}
                                 margin={{top: 30, right: 20, left: 20, bottom: 50}}
                                 width={500} height={500}
                             >
                                 <Label value="Number of Games by Seasonal" offset={0} position="top" />
                                 <CartesianGrid strokeDasharray="3 3" stroke="#3e4446" />
                                 <XAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} angle={-60} textAnchor='end' dataKey="Seasonal" />
-                                <YAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} />
+                                <YAxis domain={[0, maxRange]} stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} />
                                 <Tooltip cursor={{stroke: "#6a6357"}} contentStyle={{backgroundColor: "rgb(32, 35, 42)", color: "rgba(232, 230, 227, 0.87)"}} />
                                 <Legend wrapperStyle={{top: 10, color: "rgba(232, 230, 227, 0.87)"}}/>
                                 <Line type="monotone" dataKey="Games" stroke="#8884d8" />
@@ -103,7 +105,7 @@ function LandingPage() {
                             >
                                 <CartesianGrid strokeDasharray="3 3" stroke="#3e4446" />
                                 <XAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} angle={-60} textAnchor='end' interval={0} dataKey="Colour" />
-                                <YAxis stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} />
+                                <YAxis domain={[0, Math.round((colours.reduce((curMax, curVal) => Math.max(curMax, curVal.Wins, curVal.Losses), 0)+200)/100)*100]} stroke="rgb(168, 160, 149)" axisLine={{ stroke: "#6a6357"}} />
                                 <Tooltip cursor={{fill: "#35393b"}} contentStyle={{backgroundColor: "rgb(32, 35, 42)", color: "rgba(232, 230, 227, 0.87)"}} />
                                 <Legend wrapperStyle={{top: 10, color: "rgba(232, 230, 227, 0.87)"}}/>
                                 <Bar dataKey="Wins" fill="#8884d8" />

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { Container, Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, Grid, TextField } from '@material-ui/core';
+import { Container, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, Grid, TextField } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
 import PlayerCard from './components/PlayerCard';
@@ -17,28 +17,39 @@ const useStyles1 = makeStyles((theme) => ({
       flexShrink: 0,
       marginLeft: theme.spacing(2.5),
     },
+    visuallyHidden: {
+      border: 0,
+      clip: 'rect(0 0 0 0)',
+      height: 1,
+      margin: -1,
+      overflow: 'hidden',
+      padding: 0,
+      position: 'absolute',
+      top: 20,
+      width: 1,
+    }
   })
 );
 
 function TablePaginationActions(props) {
     const classes = useStyles1();
     const theme = useTheme();
-    const { count, page, rowsPerPage, onChangePage } = props;
+    const { count, page, rowsPerPage, onPageChange } = props;
   
     const handleFirstPageButtonClick = (event) => {
-      onChangePage(event, 0);
+      onPageChange(event, 0);
     };
   
     const handleBackButtonClick = (event) => {
-      onChangePage(event, page - 1);
+      onPageChange(event, page - 1);
     };
   
     const handleNextButtonClick = (event) => {
-      onChangePage(event, page + 1);
+      onPageChange(event, page + 1);
     };
   
     const handleLastPageButtonClick = (event) => {
-      onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+      onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
     };
   
     return (
@@ -111,31 +122,13 @@ function queryFilter(array, searchString) {
   }
 
   return array.filter((player) => {
-      return headCells.filter((header) => new String(player[header.id]).toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
+      return headCells.filter((header) => player[header.id].toString().toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
   });
 }
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-  },
-  paper: {
-    width: '100%',
-    marginBottom: theme.spacing(2),
-  },
-  table: {
-    minWidth: 750,
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1,
   }
 }));
 
@@ -197,75 +190,77 @@ function PlayerPage(props) {
                 alignItems="flex-start"
               >
                   <Grid item xs={12} md={7}>
-                    <Table component={Paper} width="100%" style={{backgroundColor: "rgb(24, 26, 27)"}}>
-                        <colgroup>
-                            <col width="32%" />
-                            <col width="32%" />
-                            <col width="10%" />
-                            <col width="10%" />
-                            <col width="16%" />
-                        </colgroup>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell className="player-cell" colSpan={3}><h3>Season Results</h3></TableCell>
-                                <TableCell className="player-cell" colSpan={2}><TextField id="seasons-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                    <TableContainer component={Paper}>
+                      <Table width="100%" style={{backgroundColor: "rgb(24, 26, 27)"}}>
+                          <colgroup>
+                              <col width="32%" />
+                              <col width="32%" />
+                              <col width="10%" />
+                              <col width="10%" />
+                              <col width="16%" />
+                          </colgroup>
+                          <TableHead>
+                              <TableRow>
+                                  <TableCell className="player-cell" colSpan={3}><h3>Season Results</h3></TableCell>
+                                  <TableCell className="player-cell" colSpan={2}><TextField id="seasons-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                              </TableRow>
+                          </TableHead>
+                          <EnhancedTableHeader
+                            classes={classes}
+                            order={order}
+                            orderBy={orderBy}
+                            onRequestSort={handleSort}
+                            headerCells={headCells}
+                            padEmptyCell={false}
+                          />
+                          <TableBody>
+                          {seasonRows && (stableSort(queriedSeasonRows, getComparator(order, orderBy)).slice(page * 10, (page+1) * 10)).map((row) => (
+                              <TableRow hover={true} key={row.lid}>
+                                  <TableCell className="player-cell" component="th" scope="row">
+                                      <Link
+                                          href={"/ladder?ladder=" + row.lid}
+                                      >
+                                          {row.season}
+                                      </Link>
+                                  </TableCell>
+                                  <TableCell className="player-cell" component="th" scope="row">
+                                      <Link
+                                          href={warzoneTemplateURL + row.tid}
+                                      >
+                                          {row.template}
+                                      </Link>
+                                  </TableCell>
+                                  <TableCell className="player-cell" align="right">{row.wins}</TableCell>
+                                  <TableCell className="player-cell" align="right">{row.losses}</TableCell>
+                                  <TableCell className="player-cell" align="right">{row.lid === 4009 ? row.elo : Math.round(row.elo)}</TableCell>
+                              </TableRow>
+                          ))}
+                          {emptyRows > 0 && (
+                            <TableRow style={{ height: 53 * emptyRows }}>
+                              <TableCell colSpan={4} />
                             </TableRow>
-                        </TableHead>
-                        <EnhancedTableHeader
-                          classes={classes}
-                          order={order}
-                          orderBy={orderBy}
-                          onRequestSort={handleSort}
-                          headerCells={headCells}
-                          padEmptyCell={false}
-                        />
-                        <TableBody>
-                        {seasonRows && (stableSort(queriedSeasonRows, getComparator(order, orderBy)).slice(page * 10, (page+1) * 10)).map((row) => (
-                            <TableRow hover={true} key={row.lid}>
-                                <TableCell className="player-cell" component="th" scope="row">
-                                    <Link
-                                        href={"/ladder?ladder=" + row.lid}
-                                    >
-                                        {row.season}
-                                    </Link>
-                                </TableCell>
-                                <TableCell className="player-cell" component="th" scope="row">
-                                    <Link
-                                        href={warzoneTemplateURL + row.tid}
-                                    >
-                                        {row.template}
-                                    </Link>
-                                </TableCell>
-                                <TableCell className="player-cell" align="right">{row.wins}</TableCell>
-                                <TableCell className="player-cell" align="right">{row.losses}</TableCell>
-                                <TableCell className="player-cell" align="right">{row.lid === 4009 ? row.elo : Math.round(row.elo)}</TableCell>
-                            </TableRow>
-                        ))}
-                        {emptyRows > 0 && (
-                          <TableRow style={{ height: 53 * emptyRows }}>
-                            <TableCell colSpan={4} />
-                          </TableRow>
-                        )}
-                        </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TablePagination
-                                    rowsPerPageOptions={[10]}
-                                    colSpan={5}
-                                    count={queriedSeasonRows.length}
-                                    page={page}
-                                    rowsPerPage={10}
-                                    SelectProps={{
-                                        inputProps: { 'aria-label': 'rows per page'},
-                                        native: true
-                                    }}
-                                    onChangePage={handleChangePage}
-                                    ActionsComponent={TablePaginationActions}
-                                    style={{color: "rgba(232, 230, 227, 0.87)"}}
-                                />
-                            </TableRow>
-                        </TableFooter>
-                    </Table>
+                          )}
+                          </TableBody>
+                          <TableFooter>
+                              <TableRow>
+                                  <TablePagination
+                                      rowsPerPageOptions={[10]}
+                                      colSpan={5}
+                                      count={queriedSeasonRows.length}
+                                      page={page}
+                                      rowsPerPage={10}
+                                      SelectProps={{
+                                          inputProps: { 'aria-label': 'rows per page'},
+                                          native: true
+                                      }}
+                                      onPageChange={handleChangePage}
+                                      ActionsComponent={TablePaginationActions}
+                                      style={{color: "rgba(232, 230, 227, 0.87)"}}
+                                  />
+                              </TableRow>
+                          </TableFooter>
+                      </Table>
+                    </TableContainer>
                     <p>* Note: Elo Rating is independent of Warzone Rating
                     <br/>** All seasons (except Season X) use Elo (μ=1500)
                     <br/>*** Season X uses TrueSkill (μ=25; σ=25/3)</p>

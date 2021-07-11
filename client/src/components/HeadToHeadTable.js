@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, TextField } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, TextField } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
 import EnhancedTableHeader from './EnhancedTableHeader';
@@ -10,28 +10,39 @@ const useStyles1 = makeStyles((theme) => ({
       flexShrink: 0,
       marginLeft: theme.spacing(2.5),
     },
+    visuallyHidden: {
+      border: 0,
+      clip: 'rect(0 0 0 0)',
+      height: 1,
+      margin: -1,
+      overflow: 'hidden',
+      padding: 0,
+      position: 'absolute',
+      top: 20,
+      width: 1,
+    }
   })
 );
 
 function TablePaginationActions(props) {
     const classes = useStyles1();
     const theme = useTheme();
-    const { count, page, rowsPerPage, onChangePage } = props;
+    const { count, page, rowsPerPage, onPageChange } = props;
   
     const handleFirstPageButtonClick = (event) => {
-      onChangePage(event, 0);
+      onPageChange(event, 0);
     };
   
     const handleBackButtonClick = (event) => {
-      onChangePage(event, page - 1);
+      onPageChange(event, page - 1);
     };
   
     const handleNextButtonClick = (event) => {
-      onChangePage(event, page + 1);
+      onPageChange(event, page + 1);
     };
   
     const handleLastPageButtonClick = (event) => {
-      onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+      onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
     };
   
     return (
@@ -103,31 +114,13 @@ function queryFilter(array, searchString) {
     }
 
     return array.filter((game) => {
-        return headCells.filter((header) => new String(game[header.id]).toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
+        return headCells.filter((header) => game[header.id].toString().toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
     });
 }
 
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-  },
-  paper: {
-    width: '100%',
-    marginBottom: theme.spacing(2),
-  },
-  table: {
-    minWidth: 750,
-  },
-  visuallyHidden: {
-    border: 0,
-    clip: 'rect(0 0 0 0)',
-    height: 1,
-    margin: -1,
-    overflow: 'hidden',
-    padding: 0,
-    position: 'absolute',
-    top: 20,
-    width: 1,
   }
 }));
 
@@ -185,7 +178,8 @@ function HeadToHeadTable(props) {
 
     return (
         <div>
-            <Table component={Paper} classes={classes} style={{backgroundColor: "rgb(24, 26, 27)"}}>
+          <TableContainer component={Paper}>
+            <Table classes={classes} style={{backgroundColor: "rgb(24, 26, 27)"}}>
                 <colgroup>
                     <col width="70%" />
                     <col width="10%" />
@@ -211,7 +205,7 @@ function HeadToHeadTable(props) {
                   .slice(page * 10, (page+1) * 10)
                   .map((row, index) => {
                     return (
-                      <TableRow hover={true} key={row.gid} style={{backgroundColor: row.colour}}>
+                      <TableRow hover={true} key={row.id} style={{backgroundColor: row.colour}}>
                         <TableCell className="game-cell" component="th" scope="row">
                             <Link
                                 href={"/player?pid=" + row.id}
@@ -244,13 +238,14 @@ function HeadToHeadTable(props) {
                                 inputProps: { 'aria-label': 'rows per page'},
                                 native: true
                             }}
-                            onChangePage={handleChangePage}
+                            onPageChange={handleChangePage}
                             ActionsComponent={TablePaginationActions}
                             style={{color: "rgba(232, 230, 227, 0.87)"}}
                         />
                     </TableRow>
                 </TableFooter>
             </Table>
+          </TableContainer>
         </div>
     );
 }
