@@ -9,6 +9,7 @@ import LaddersPage from '../LaddersPage';
 import ContactPage from '../ContactPage';
 import PlayersPage from '../PlayersPage';
 import PlayerPage from '../PlayerPage';
+import TriviaPage from '../TriviaPage';
 import './Navbar.css';
 
 function NavbarComponent() {
@@ -22,6 +23,7 @@ function NavbarComponent() {
                         <Nav.Link as={Link} to="/">Home</Nav.Link>
                         <Nav.Link as={Link} to="/ladders">Seasonal</Nav.Link>
                         <Nav.Link as={Link} to="/players">Players</Nav.Link>
+                        <Nav.Link as={Link} to="/trivia">Trivia</Nav.Link>
                         <Nav.Link as={Link} to="/contact">Contact</Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
@@ -42,6 +44,9 @@ function NavbarComponent() {
                 </Route>
                 <Route path="/player">
                     <PlayerPage />
+                </Route>
+                <Route path="/trivia">
+                    <TriviaPage />
                 </Route>
                 <Route path="/contact">
                     <ContactPage />

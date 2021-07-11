@@ -1,0 +1,23 @@
+.trivia-page {
+  background-color: rgb(32, 35, 42);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  padding-top: 8%;
+  padding-bottom: 2%;
+}
+
+input:focus {
+  color: rgba(232, 230, 227, 0.87) !important;
+}
+
+.player-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 0;
+  color: rgba(232, 230, 227, 0.87) !important;
+}

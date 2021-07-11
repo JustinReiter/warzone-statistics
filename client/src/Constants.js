@@ -96,6 +96,61 @@ const seasonMapping = {
     4078: "Season XLIV"
 };
 
+const triviaList = [
+    {
+        title: "Most Elitist Colour",
+        desc: "The most exclusive colour on the Seasonal is Artichoke with only a single win used by Semicedevine."
+    },
+    {
+        title: "Biggest Rivalry",
+        desc: "The two players to have played the most matches on the Seasonal are XX and YY with ZZ games played"
+    },
+    {
+        title: "Longest Seasonal Game",
+        desc: "The longest game to be played on the Seasonal is a stalemate spanning 222 turns between XX and YY. The next closest game is 90 turns long!",
+        links: [
+            {
+                link: "https://www.warzone.com/MultiPlayer?GameID=26996922",
+                text: "Warzone Game"
+            }
+        ]
+    },
+    {
+        title: "Longest Standing Seasonal Players",
+        desc: "There are currently 4 players to have played in all seasons: Botanator, Diabolicus, majokun and Math Wolf.",
+        links: [
+            {
+                link: "http://localhost:3000/player?pid=633358359",
+                text: "Botanator"
+            },
+            {
+                link: "http://localhost:3000/player?pid=133355543",
+                text: "Diabolicus "
+            },
+            {
+                link: "http://localhost:3000/player?pid=132609340",
+                text: "majokun"
+            },
+            {
+                link: "http://localhost:3000/player?pid=253091943",
+                text: "Math Wolf"
+            }
+        ]
+    },
+    {
+        title: "Largest Season By Far",
+        desc: "Season XLIV destroyed player and game counts of previous seasons with 900 players playing 8,341 games!",
+        links: [
+            {
+                link: "http://localhost:3000/ladder?ladder=4078",
+                text: "Season XLIV"
+            }
+        ]
+    }
+]
+
+
+
 export {
     home,
     LandingPageTitle,
@@ -106,6 +161,7 @@ export {
     LaddersPageDescription,
     colourMapping,
     seasonMapping,
+    triviaList,
     warzoneGameUrl,
     warzoneProfileUrl,
     warzoneSeasonUrl,
