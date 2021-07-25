@@ -90,9 +90,6 @@ router.get('/', function(req, res, next) {
             console.log(`Finished processing ${division} - ${template}`);
         }
 
-        // console.log($('table[class=clot_table]'));
-        // console.log($('table[class=clot_table]').first().contents());
-
         res.json(games);
     });
 });

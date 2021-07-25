@@ -232,7 +232,7 @@ function HeadToHeadTable(props) {
                             rowsPerPageOptions={[10]}
                             colSpan={4}
                             count={queriedHeadToHeadRows.length}
-                            page={page}
+                            page={page > Math.max(Math.ceil(queriedHeadToHeadRows.length / 10)-1, 0) ? setPage(Math.max(Math.ceil(queriedHeadToHeadRows.length / 10)-1, 0)) : page}
                             rowsPerPage={10}
                             SelectProps={{
                                 inputProps: { 'aria-label': 'rows per page'},

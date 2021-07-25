@@ -141,6 +141,7 @@ function PlayerPage(props) {
     const [order, setOrder] = useState('desc');
     const [orderBy, setOrderBy] = useState('season');
     const [search, setSearch] = useState("");
+    const [seasonWins, setSeasonWins] = useState(0);
 
     const qs = queryString.parse(useLocation().search);
     const history = useHistory();
@@ -158,6 +159,7 @@ function PlayerPage(props) {
             setPlayer(res.data.users[0]);
             setGames(res.data.games)
             setStandings(res.data.standings);
+            setSeasonWins(Number(res.data.seasonWins));
         });
     }, [history, qs.pid]);
 
@@ -182,7 +184,7 @@ function PlayerPage(props) {
       <div className="players-page">
         <Container maxWidth="lg">
           <div className="PlayersTable">
-              <PlayerCard player={player} games={games} standings={standings} />
+              <PlayerCard player={player} games={games} standings={standings} seasonWins={seasonWins}/>
 
               <Grid 
                 container
@@ -237,7 +239,7 @@ function PlayerPage(props) {
                           ))}
                           {emptyRows > 0 && (
                             <TableRow style={{ height: 53 * emptyRows }}>
-                              <TableCell colSpan={4} />
+                              <TableCell colSpan={5} />
                             </TableRow>
                           )}
                           </TableBody>
@@ -247,7 +249,7 @@ function PlayerPage(props) {
                                       rowsPerPageOptions={[10]}
                                       colSpan={5}
                                       count={queriedSeasonRows.length}
-                                      page={page}
+                                      page={page > Math.max(Math.ceil(queriedSeasonRows.length / 10)-1, 0) ? setPage(Math.max(Math.ceil(queriedSeasonRows.length / 10)-1, 0)) : page}
                                       rowsPerPage={10}
                                       SelectProps={{
                                           inputProps: { 'aria-label': 'rows per page'},

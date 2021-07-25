@@ -166,7 +166,7 @@ function PlayersTable(props) {
                 <TableHead>
                 <TableRow>
                     <TableCell className="player-cell" colSpan={2}><h3>Standings</h3></TableCell>
-                    <TableCell className="player-cell" colSpan={2}><TextField id="player-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                    <TableCell className="player-cell" colSpan={2}><TextField id="player-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} fullWidth /></TableCell>
                 </TableRow>
                 </TableHead>
                 <EnhancedTableHeader
@@ -176,6 +176,7 @@ function PlayersTable(props) {
                   onRequestSort={handleSort}
                   headerCells={headCells}
                   padEmptyCell={false}
+                  colSpan={2}
                 />
                 <TableBody>
                 {playerRows && (stableSort(queriedPlayerRows, getComparator(order, orderBy)).slice(page * 10, (page+1) * 10)).map((row) => (
@@ -204,7 +205,7 @@ function PlayersTable(props) {
                             rowsPerPageOptions={[10]}
                             colSpan={4}
                             count={queriedPlayerRows.length}
-                            page={page}
+                            page={page > Math.max(Math.ceil(queriedPlayerRows.length / 10)-1, 0) ? setPage(Math.max(Math.ceil(queriedPlayerRows.length / 10)-1, 0)) : page}
                             rowsPerPage={10}
                             SelectProps={{
                                 inputProps: { 'aria-label': 'rows per page'},

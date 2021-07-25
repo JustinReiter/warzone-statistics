@@ -102,8 +102,13 @@ router.get('/id/:ladderId', function(req, res, next) {
                         db.any('SELECT date, games FROM daily_standings WHERE lid=$1 ORDER BY date DESC LIMIT 30',
                             [req.params.ladderId]),
                         db.any('SELECT colour, wins, losses FROM colour_results WHERE lid=$1 ORDER BY wins DESC, losses ASC', req.params.ladderId),
-                        db.any(`SELECT player_results.pid, players.name, wins, losses, elo FROM player_results, players 
-                                WHERE lid=$1 AND player_results.pid=players.pid ORDER BY player_results.wins DESC, player_results.losses ASC, player_results.elo DESC;`,
+                        db.any(`SELECT player_results.pid, players.name, wins, losses, elo, COUNT(ladders.winner) AS seasonWins
+                        FROM player_results, players 
+                        left join ladders
+                        on ladders.winner=players.pid
+                        WHERE player_results.lid=$1 AND player_results.pid=players.pid
+                        group by ladders.winner, player_results.pid, player_results.wins, player_results.losses, player_results.elo, players.name
+                        ORDER BY player_results.wins DESC, player_results.losses ASC, player_results.elo desc;`,
                                 [req.params.ladderId]),
                         getExtraLadderStats(Number(req.params.ladderId))
                     ]);

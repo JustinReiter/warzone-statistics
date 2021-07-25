@@ -107,6 +107,9 @@ const renderCardText = (props) => {
                         <Card.Text>Seasons: { Number(props.standings && props.standings.length).toLocaleString() }</Card.Text>
                     </Grid>
                     <Grid item xs={12}>
+                        <Card.Text>Season Wins: { props.seasonWins && props.seasonWins.toLocaleString() }</Card.Text>
+                    </Grid>
+                    <Grid item xs={12}>
                         <Card.Text>Wins: {seasonalWins(props.standings)}</Card.Text>
                     </Grid>
                     <Grid item xs={12}>

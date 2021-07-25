@@ -276,7 +276,7 @@ function GamesTable(props) {
 
                 {emptyRows > 0 && (
                   <TableRow style={{ height: 53 * emptyRows }}>
-                    <TableCell colSpan={5} />
+                    <TableCell colSpan={props.showSeason ? 7 : 6} />
                   </TableRow>
                 )}
                 </TableBody>
@@ -286,7 +286,7 @@ function GamesTable(props) {
                             rowsPerPageOptions={[10]}
                             colSpan={props.showSeason ? 7 : 6}
                             count={queriedGameRows.length}
-                            page={page}
+                            page={page > Math.max(Math.ceil(queriedGameRows.length / 10)-1, 0) ? setPage(Math.max(Math.ceil(queriedGameRows.length / 10)-1, 0)) : page}
                             rowsPerPage={10}
                             SelectProps={{
                                 inputProps: { 'aria-label': 'rows per page'},

@@ -1,5 +1,6 @@
 const axios = require('axios').default;
-const BASE_URL = "https://warzone-statistics-backend.herokuapp.com/";
+// const BASE_URL = "https://warzone-statistics-backend.herokuapp.com/";
+const BASE_URL = "http://localhost:9000";
 
 function getLadders() {
     return axios.get("/ladders", {

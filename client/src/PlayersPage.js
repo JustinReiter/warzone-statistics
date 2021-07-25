@@ -82,6 +82,7 @@ const headCells = [
   { id: 'losses', numeric: true, disablePadding: false, label: 'Losses' },
   { id: 'games', numeric: true, disablePadding: false, label: 'Games' },
   { id: 'seasonsPlayed', numeric: true, disablePadding: false, label: 'Seasons Played' },
+  { id: 'seasonWins', numeric: true, disablePadding: false, label: 'Season Wins' },
 ];
 
 function descendingComparator(a, b, column) {
@@ -142,7 +143,7 @@ function PlayersPage(props) {
     }, []);
 
     const playerRows = ((players && players.map((player) => {
-        return {player: player.name, id: player.pid, wins: Number(player.wins), losses: Number(player.losses), games: Number(player.wins) + Number(player.losses), seasonsPlayed: Number(player.count)};
+        return {player: player.name, id: player.pid, wins: Number(player.wins), losses: Number(player.losses), games: Number(player.wins) + Number(player.losses), seasonsPlayed: Number(player.count), seasonWins: Number(player.seasonwins)};
     })) || []);
 
     const queriedPlayerRows = queryFilter(playerRows, search);
@@ -164,16 +165,17 @@ function PlayersPage(props) {
           <TableContainer component={Paper}>
             <Table width="100%" style={{backgroundColor: "rgb(24, 26, 27)"}}>
                 <colgroup>
-                    <col width="40%" />
+                    <col width="36%" />
+                    <col width="11%" />
+                    <col width="11%" />
                     <col width="14%" />
                     <col width="14%" />
-                    <col width="14%" />
-                    <col width="18%" />
+                    <col width="16%" />
                 </colgroup>
                 <TableHead>
                   <TableRow>
-                      <TableCell className="player-cell" colSpan={3}><h3>Player Standings</h3></TableCell>
-                      <TableCell className="player-cell" colSpan={2}><TextField id="players-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                      <TableCell className="player-cell" colSpan={4}><h3>Player Standings</h3></TableCell>
+                      <TableCell className="player-cell" colSpan={2}><TextField id="players-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} fullWidth /></TableCell>
                   </TableRow>
                 </TableHead>
                 <EnhancedTableHeader
@@ -198,6 +200,7 @@ function PlayersPage(props) {
                         <TableCell className="player-cell" align="right">{row.losses}</TableCell>
                         <TableCell className="player-cell" align="right">{row.games}</TableCell>
                         <TableCell className="player-cell" align="right">{row.seasonsPlayed}</TableCell>
+                        <TableCell className="player-cell" align="right">{row.seasonWins}</TableCell>
                     </TableRow>
                 ))}
                 {emptyRows > 0 && (
@@ -210,9 +213,9 @@ function PlayersPage(props) {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[10]}
-                            colSpan={5}
+                            colSpan={6}
                             count={queriedPlayerRows.length}
-                            page={page}
+                            page={page > Math.max(Math.ceil(queriedPlayerRows.length / 10)-1, 0) ? setPage(Math.max(Math.ceil(queriedPlayerRows.length / 10)-1, 0)) : page}
                             rowsPerPage={10}
                             SelectProps={{
                                 inputProps: { 'aria-label': 'rows per page'},
