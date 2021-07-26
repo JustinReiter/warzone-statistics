@@ -8,7 +8,7 @@ require('dotenv').config();
 
 const { updateLadders, updateDailyStandings } = require('./updateLadders');
 // const { populateColourResults, populateDailyStandings, populateEloRatings, populateSingleLadderEloRatings, populateTrueSkillRatings } = require('./initializeDatabases');
-const ladders = require('./routes/ladders');
+const seasonal = require('./routes/seasonal');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -35,7 +35,8 @@ app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use("/ladders", ladders.router);
+app.use('/ladders', laddersRouter);
+app.use("/seasonal", seasonal.router);
 app.use("/games", gamesRouter);
 app.use("/colours", coloursRouter);
 
@@ -70,13 +71,13 @@ var updateDailyStandingsJob = schedule.scheduleJob('10 4 * * *', () => {
 // Update cached ladder reponse every 2 hours on :15
 var updateCachedLadderResponse = schedule.scheduleJob('15 */2 * * *', () => {
 	console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Starting process to cache ladder response`);
-	ladders.cacheLadderResponse();
+	seasonal.cacheSeasonalResponse();
 });
 
 console.log(`Starting running back-end process at ${new Date().toISOString()}`);
 
 // Caches general ladder response to reduce time to return requests (generally slowest request)
-ladders.cacheLadderResponse();
+seasonal.cacheSeasonalResponse();
 console.log(`[${new Date().toISOString().slice(0, 19).replace('T', ' ')}] Cached ladder response at start of session`);
 
 

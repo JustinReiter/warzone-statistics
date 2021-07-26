@@ -3,13 +3,13 @@ const axios = require('axios').default;
 const BASE_URL = "http://localhost:9000";
 
 function getLadders() {
-    return axios.get("/ladders", {
+    return axios.get("/seasonal", {
         baseURL: BASE_URL
     });
 }
 
 function getLadder(ladderId) {
-    return axios.get("/ladders/id/" + ladderId, {
+    return axios.get("/seasonal/id/" + ladderId, {
         baseURL: BASE_URL
     });
 }
