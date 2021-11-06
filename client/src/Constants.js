@@ -93,7 +93,9 @@ const seasonMapping = {
     4075: "Season XLI",
     4076: "Season XLII",
     4077: "Season XLIII",
-    4078: "Season XLIV"
+    4078: "Season XLIV",
+    4079: "Season XLV",
+    4080: "Season XLVI"
 };
 
 const triviaList = [
@@ -123,7 +125,7 @@ const triviaList = [
     },
     {
         title: "Longest Seasonal Game",
-        desc: "The longest game to be played on the Seasonal is a stalemate spanning 222 turns between XX and YY. The next closest game is 90 turns long!",
+        desc: "The longest game to be played on the Seasonal is a stalemate spanning 222 turns between scorpioncolo and Yeo (only to be finished due to Fizzer's auto-finish). The next closest game is 90 turns long!",
         links: [
             {
                 link: "https://www.warzone.com/MultiPlayer?GameID=26996922",
@@ -165,16 +167,8 @@ const triviaList = [
     },
     {
         title: "Most Season Wins",
-        desc: "Deadman, master of desaster and Rufus are tied for most season wins at 3.",
+        desc: "Rufus is the most distinguished player with 4 season wins.",
         links: [
-            {
-                link: "http://localhost:3000/player?pid=2428496679",
-                text: "Deadman"
-            },
-            {
-                link: "http://localhost:3000/player?pid=2214950915",
-                text: "master of desaster"
-            },
             {
                 link: "http://localhost:3000/player?pid=2979814301",
                 text: "Rufus"
