@@ -14,6 +14,16 @@ function GetAllGameFiles() {
     return res;
 }
 
+function formatTeamLadderGameObj(gameObj, teams) {
+    for (let i = 0; i < teams.length; i++) {
+        let orderedTeam = teams[i].sort((a, b) => Number(a.id) > Number(b.id) ? 1 : -1);
+        for (let j = 0; j < orderedTeam.length; j++) {
+            gameObj["player" + (i*orderedTeam.length+j) + "_id"] = Number(orderedTeam[j].id);
+            gameObj["player" + (i*orderedTeam.length+j) + "_colour"] = orderedTeam[j].color.substring(1)
+        }
+    }
+}
+
 function writeSQLToFile(games, players) {
     let logger = fs.createWriteStream('init_season_10_game_data.sql');
     
@@ -39,15 +49,16 @@ function writeSQLToFile(games, players) {
 
 function ReadGameFiles() {
     let dataToOutput = [];
+    let teamsToOutput = {};
     let playerNamesToOutput = {};
     // for (let i = 0; i < ladders.length; i++) {
-        let i = 9;
-        let games = fs.readdirSync("./GameData/" + (i+1) + "SeasonalGames");
+        let i = 4;
+        let games = fs.readdirSync("./GameData/3v3LadderGames");
         
         for (const game of games) {
-            let gameData = JSON.parse(fs.readFileSync("./GameData/" + (i+1) + "SeasonalGames" + "/" + game));
+            let gameData = JSON.parse(fs.readFileSync("./GameData/3v3LadderGames/" + game));
 
-            dataToOutput.push({
+            let gameObj = {
                 gid: gameData.id,
                 lid: ladderIds[i],
                 winner: gameData.players.reduce((acc, cur, idx) => { if (cur.state === "Won") acc.push(idx); return acc; }, [])[0],
@@ -55,25 +66,50 @@ function ReadGameFiles() {
                 turns: gameData.numberOfTurns,
                 start_date: new Date(gameData.created + "Z").toISOString().slice(0, 19).replace('T', ' '),
                 end_date: new Date(gameData.lastTurnTime + "Z").toISOString().slice(0, 19).replace('T', ' '),
-                player0_id: Number(gameData.players[0].id),
-                player0_colour: gameData.players[0].color.substring(1),
-                player1_id: Number(gameData.players[1].id),
-                player1_colour: gameData.players[1].color.substring(1)
-            });
+            };
 
-            if (i === 9) {
-                dataToOutput[dataToOutput.length-1].player2_id = Number(gameData.players[2].id);
-                dataToOutput[dataToOutput.length-1].player2_colour = gameData.players[2].color.substring(1);
-                dataToOutput[dataToOutput.length-1].player3_id = Number(gameData.players[3].id);
-                dataToOutput[dataToOutput.length-1].player3_colour = gameData.players[3].color.substring(1);
+            if ("team" in gameData.players[0]) {
+                // Track teams
+                let teams = gameData.players.reduce((prev, cur) => prev[cur.team].push(player), [[], []]);
+                for (const team of teams) {
+                    let sortedTeam = team.sort((a, b) => Number(a.id) > Number(b.id) ? 1 : -1);
+                    if (sortedTeam.length == 2) {
+                        if (sortedTeam[0] in teamsToOutput) {
+                            teamsToOutput[sortedTeam[0]][sortedTeam[1]] = 0;
+                        } else {
+                            teamsToOutput[sortedTeam[0]] = {};
+                            teamsToOutput[sortedTeam[0]][sortedTeam[1]] = 1;
+                        }
+                    } else if (sortedTeam.length == 3) {
+                        if (!(sortedTeam[0] in teamsToOutput)) {
+                            teamsToOutput[sortedTeam[0]] = {};
+                            teamsToOutput[sortedTeam[0]][sortedTeam[1]] = 1;
+                        }
+
+                        if (sortedTeam[1] in teamsToOutput[sortedTeam[0]]) {
+                            teamsToOutput[sortedTeam[0]][sortedTeam[1]][sortedTeam[2]] = 0;
+                        } else {
+                            teamsToOutput[sortedTeam[0]][sortedTeam[1]] = {};
+                            teamsToOutput[sortedTeam[0]][sortedTeam[1]][sortedTeam[2]] = 1;
+                        }
+                    }
+                }
+
+                formatTeamLadderGameObj(gameObj, teams);    
+            } else {
+                // Seasonal
+                for (let i = 0; i < gameData.players.length; i++) {
+                    gameObj["player" + i + "_id"] = Number(gameData.players[i].id);
+                    gameObj["player" + i + "_colour"] = gameData.players[i].color.substring(1);
+                }
             }
 
-            playerNamesToOutput[Number(gameData.players[0].id)] = gameData.players[0].name;
-            playerNamesToOutput[Number(gameData.players[1].id)] = gameData.players[1].name; 
+            
 
-            if (i === 9) {
-                playerNamesToOutput[Number(gameData.players[2].id)] = gameData.players[2].name;
-                playerNamesToOutput[Number(gameData.players[3].id)] = gameData.players[3].name;
+            dataToOutput.push(gameObj);
+
+            for (const player of gameData.players) {
+                playerNamesToOutput[Number(player.id)] = player.name;
             }
         }
     // }

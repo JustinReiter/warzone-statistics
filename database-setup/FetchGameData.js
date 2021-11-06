@@ -1,4 +1,4 @@
-const postURL = "https://www.warzone.com/API/GameFeed?GetSettings=true&GetHistory=true&GameID="
+const postURL = "https://www.warzone.com/API/GameFeed?GameID=";
 
 const fs = require('fs');
 const request = require('sync-request');
@@ -63,5 +63,5 @@ function GetLadderIDLength() {
 }
 
 // GetLadderIDLength();
-SaveAllGameData();
-// SaveOneLadder();
+// SaveAllGameData();
+SaveOneLadder();

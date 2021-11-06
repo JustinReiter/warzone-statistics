@@ -13,7 +13,7 @@ const request = require('request');
 // Seasonals - 4000-4032 & 4065-4069
 
 const names = ["1v1LadderGames", "2v2LadderGames", "", "RTLadderGames", "3v3LadderGames", "SeasonalGames"];
-const ladders = [4075, 4076];
+const ladders = [1];
 
 for (const ladder of ladders) {
     request.post({
@@ -25,12 +25,7 @@ for (const ladder of ladders) {
             return;
         }
         
-        let name;
-        if (ladder == 4075) {
-            name = "Seasonal XLI";
-        } else {
-            name = "Seasonal XLII";
-        }
+        let name = "2v2Ladder";
         writeContents(JSON.parse(body).gameIDs, name);
     });
 }

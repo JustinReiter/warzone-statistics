@@ -30,6 +30,16 @@ CREATE TABLE players
     PRIMARY KEY (pid, name, version)
 );
 
+CREATE TABLE teams
+(
+    team_id SERIAL NOT NULL,
+    player0_id BIGINT NOT NULL,
+    player1_id BIGINT,
+    player2_id BIGINT,
+    lid INTEGER NOT NULL,
+    FOREIGN KEY (lid) REFERENCES ladders(lid)
+);
+
 CREATE TABLE games
 (
     gid BIGINT PRIMARY KEY NOT NULL,
@@ -46,6 +56,18 @@ CREATE TABLE games
     player1_id BIGINT NOT NULL,
     player1_colour CHAR(6) NOT NULL,
 
+    player2_id BIGINT,
+    player2_colour CHAR(6),
+
+    player3_id BIGINT,
+    player3_colour CHAR(6),
+
+    player4_id BIGINT,
+    player4_colour CHAR(6),
+
+    player5_id BIGINT,
+    player5_colour CHAR(6),
+
     FOREIGN KEY (lid) REFERENCES ladders(lid)
 );
 
@@ -57,6 +79,17 @@ CREATE TABLE player_results
     losses SMALLINT NOT NULL DEFAULT 0,
     elo SMALLINT NOT NULL DEFAULT 1500,
     PRIMARY KEY (pid, lid),
+    FOREIGN KEY (lid) REFERENCES ladders(lid)
+);
+
+CREATE TABLE team_results
+(
+    team_id BIGINT NOT NULL,
+    lid INTEGER NOT NULL,
+    wins SMALLINT NOT NULL DEFAULT 0,
+    losses SMALLINT NOT NULL DEFAULT 0,
+    elo SMALLINT NOT NULL DEFAULT 1500,
+    PRIMARY KEY (team_id, lid),
     FOREIGN KEY (lid) REFERENCES ladders(lid)
 );
 
