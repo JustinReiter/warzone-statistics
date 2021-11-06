@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getLadders, getColours } from './api';
+import { getSeasonal, getColours } from './api';
 import { Container, Grid } from '@material-ui/core';
 import { ResponsiveContainer, LineChart, Label, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line, BarChart, Bar } from 'recharts';
 import './LandingPage.css';
@@ -18,7 +18,7 @@ function LandingPage() {
     const [ maxRange, setMaxRange] = useState(9000);
 
     useEffect(() => {
-        getLadders().then((res) => {
+        getSeasonal().then((res) => {
             setLadders(res.data.ladders);
             setStats(res.data.stats);
 

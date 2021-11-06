@@ -9,10 +9,10 @@ require('dotenv').config();
 const { updateLadders, updateDailyStandings } = require('./updateLadders');
 // const { populateColourResults, populateDailyStandings, populateEloRatings, populateSingleLadderEloRatings, populateTrueSkillRatings } = require('./initializeDatabases');
 const seasonal = require('./routes/seasonal');
+var ladders = require('./routes/ladders');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var laddersRouter = require('./routes/ladders');
 var gamesRouter = require('./routes/games');
 var coloursRouter = require('./routes/colours');
 
@@ -35,7 +35,7 @@ app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/ladders', laddersRouter);
+app.use('/ladders', ladders.router);
 app.use("/seasonal", seasonal.router);
 app.use("/games", gamesRouter);
 app.use("/colours", coloursRouter);

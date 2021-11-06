@@ -3,12 +3,24 @@ const axios = require('axios').default;
 const BASE_URL = "http://localhost:9000";
 
 function getLadders() {
+    return axios.get("/ladders", {
+        baseURL: BASE_URL
+    });
+}
+
+function getSeasonal() {
     return axios.get("/seasonal", {
         baseURL: BASE_URL
     });
 }
 
 function getLadder(ladderId) {
+    return axios.get("/ladders/id/" + ladderId, {
+        baseURL: BASE_URL
+    });
+}
+
+function getSeasonalLadder(ladderId) {
     return axios.get("/seasonal/id/" + ladderId, {
         baseURL: BASE_URL
     });
@@ -40,7 +52,9 @@ function getUserByName(userName) {
 
 export {
     getLadders,
+    getSeasonal,
     getLadder,
+    getSeasonalLadder,
     getColours,
     getUsers,
     getUserById,

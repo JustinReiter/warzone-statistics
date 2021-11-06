@@ -21,7 +21,8 @@ function NavbarComponent() {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
                         <Nav.Link as={Link} to="/">Home</Nav.Link>
-                        <Nav.Link as={Link} to="/ladders">Seasonal</Nav.Link>
+                        <Nav.Link as={Link} to="/seasonal">Seasonal</Nav.Link>
+                        <Nav.Link as={Link} to="/ladders">Ladders</Nav.Link>
                         <Nav.Link as={Link} to="/players">Players</Nav.Link>
                         <Nav.Link as={Link} to="/trivia">Trivia</Nav.Link>
                         <Nav.Link as={Link} to="/contact">Contact</Nav.Link>
@@ -33,8 +34,11 @@ function NavbarComponent() {
                 <Route exact path="/">
                     <LandingPage />
                 </Route>
+                <Route path="/seasonal">
+                    <LaddersPage seasonal={true}/>
+                </Route>
                 <Route path="/ladders">
-                    <LaddersPage />
+                    <LaddersPage seasonal={false}/>
                 </Route>
                 <Route path="/ladder">
                     <LadderPage />

@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Container } from '@material-ui/core';
 import queryString from 'query-string';
 import './LadderPage.css';
-import { getLadder } from './api';
+import { getLadder, getSeasonalLadder } from './api';
 import LadderOverview from './components/LadderOverview';
 
 function LaddersPage(props) {
@@ -15,13 +15,26 @@ function LaddersPage(props) {
         if (!qs.ladder || isNaN(qs.ladder)) {
             history.push("/ladders");
         }
-        getLadder(qs.ladder).then((res) => {
-            if (!res.data.ladder || res.data.ladder.length === 0) {
-                history.push("/ladders");
-            }
 
-            setLadder(res.data);
-        });
+        if (Number(qs.ladder) < 5) {
+            // Ladder is one of the standard ladders
+            getSeasonalLadder(qs.ladder).then((res) => {
+                if (!res.data.ladder || res.data.ladder.length === 0) {
+                    history.push("/ladders");
+                }
+    
+                setLadder(res.data);
+            });
+        } else {
+            // Ladder is a part of the Seasonal
+            getLadder(qs.ladder).then((res) => {
+                if (!res.data.ladder || res.data.ladder.length === 0) {
+                    history.push("/ladders");
+                }
+    
+                setLadder(res.data);
+            });
+        }
     }, [history, qs.ladder]);
 
     return (
