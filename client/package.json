@@ -21,6 +21,10 @@
     "react-scripts": "3.4.3",
     "recharts": "^1.8.5"
   },
+  "engines" : { 
+    "npm" : "8.x.x",
+    "node" : "16.x.x"
+  },
   "scripts": {
     "start": "react-scripts start",
     "heroku": "cd .. && git subtree push --prefix client frontend master || true",
