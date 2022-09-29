@@ -114,11 +114,11 @@ const triviaList = [
         desc: "The two players to have played the most matches on the Seasonal are Buns157 and rakleader with 11 games played",
         links: [
             {
-                link: "http://localhost:3000/player?pid=8039234532",
+                link: "/player?pid=8039234532",
                 text: "Buns157"
             },
             {
-                link: "http://localhost:3000/player?pid=8136895102",
+                link: "/player?pid=8136895102",
                 text: "rakleader"
             }
         ]
@@ -138,19 +138,19 @@ const triviaList = [
         desc: "There are currently 4 players to have played in all seasons: Botanator, Diabolicus, majokun and Math Wolf.",
         links: [
             {
-                link: "http://localhost:3000/player?pid=633358359",
+                link: "/player?pid=633358359",
                 text: "Botanator"
             },
             {
-                link: "http://localhost:3000/player?pid=133355543",
+                link: "/player?pid=133355543",
                 text: "Diabolicus"
             },
             {
-                link: "http://localhost:3000/player?pid=132609340",
+                link: "/player?pid=132609340",
                 text: "majokun"
             },
             {
-                link: "http://localhost:3000/player?pid=253091943",
+                link: "/player?pid=253091943",
                 text: "Math Wolf"
             }
         ]
@@ -160,7 +160,7 @@ const triviaList = [
         desc: "Season XLIV destroyed player and game counts of previous seasons with 900 players playing 8,341 games!",
         links: [
             {
-                link: "http://localhost:3000/ladder?ladder=4078",
+                link: "/ladder?ladder=4078",
                 text: "Season XLIV"
             }
         ]
@@ -170,7 +170,7 @@ const triviaList = [
         desc: "Rufus is the most distinguished player with 4 season wins.",
         links: [
             {
-                link: "http://localhost:3000/player?pid=2979814301",
+                link: "/player?pid=2979814301",
                 text: "Rufus"
             }
         ]
