@@ -4,12 +4,12 @@ import queryString from 'query-string';
 import { Container, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, Grid, TextField } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
-import PlayerCard from './components/PlayerCard';
-import GamesTable from './components/GamesTable';
-import HeadToHeadTable from './components/HeadToHeadTable';
-import EnhancedTableHeader from './components/EnhancedTableHeader';
-import { warzoneTemplateURL } from './Constants';
-import { getUserById } from './api';
+import PlayerCard from '../../components/Cards/PlayerCard/PlayerCard';
+import GamesTable from '../../components/Tables/GamesTable/GamesTable';
+import HeadToHeadTable from '../../components/Tables/HeadToHeadTable/HeadToHeadTable';
+import EnhancedTableHeader from '../../components/EnhancedTableHeader/EnhancedTableHeader';
+import { warzoneTemplateURL } from '../../Constants';
+import { getUserById } from '../../api';
 import './PlayerPage.css';
 
 const useStyles1 = makeStyles((theme) => ({

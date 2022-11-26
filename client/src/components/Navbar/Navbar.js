@@ -3,13 +3,13 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
 
-import LandingPage from '../LandingPage';
-import LadderPage from '../LadderPage';
-import LaddersPage from '../LaddersPage';
-import ContactPage from '../ContactPage';
-import PlayersPage from '../PlayersPage';
-import PlayerPage from '../PlayerPage';
-import TriviaPage from '../TriviaPage';
+import LandingPage from '../../pages/LandingPage/LandingPage';
+import LadderPage from '../../pages/LadderPage/LadderPage';
+import LaddersPage from '../../pages/LaddersPage/LaddersPage';
+import ContactPage from '../../pages/ContactPage/ContactPage';
+import PlayersPage from '../../pages/PlayersPage/PlayersPage';
+import PlayerPage from '../../pages/PlayerPage/PlayerPage';
+import TriviaPage from '../../pages/TriviaPage/TriviaPage';
 import './Navbar.css';
 
 function NavbarComponent() {

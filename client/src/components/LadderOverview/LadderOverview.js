@@ -1,10 +1,10 @@
 import React, { useState, useEffect }  from 'react';
 import { ResponsiveContainer, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Label, Legend, Line, BarChart, Bar } from 'recharts';
 import { Grid } from '@material-ui/core';
-import LadderCard from './LadderCard';
-import GamesTable from './GamesTable';
-import PlayersTable from './PlayersTable';
-import { colourMapping } from '../Constants';
+import LadderCard from '../Cards/LadderCard/LadderCard';
+import GamesTable from '../Tables/GamesTable/GamesTable';
+import PlayersTable from '../Tables/PlayersTable/PlayersTable';
+import { colourMapping } from '../../Constants';
 import './LadderOverview.css';
 
 function LadderOverview(props) {

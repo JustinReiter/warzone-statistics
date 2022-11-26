@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, TextField } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
-import EnhancedTableHeader from './EnhancedTableHeader';
-import './PlayersTable.css';
+import EnhancedTableHeader from '../../EnhancedTableHeader/EnhancedTableHeader';
+import './HeadToHeadTable.css';
 
 const useStyles1 = makeStyles((theme) => ({
     root: {
@@ -76,14 +76,14 @@ function TablePaginationActions(props) {
 }
 
 const headCells = [
-  { id: 'player', numeric: false, disablePadding: false, label: 'Player' },
+  { id: 'name', numeric: false, disablePadding: false, label: 'Opponent' },
   { id: 'wins', numeric: true, disablePadding: false, label: 'Wins' },
   { id: 'losses', numeric: true, disablePadding: false, label: 'Losses' },
-  { id: 'elo', numeric: true, disablePadding: false, label: 'Rating' },
+  { id: 'games', numeric: true, disablePadding: false, label: 'Games' },
 ];
 
 function descendingComparator(a, b, column) {
-  if (column === "player") {
+  if (column === 'name') {
     return a[column] > b[column] ? 1 : -1;
   } else {
     return a[column] < b[column] ? 1 : -1;
@@ -109,13 +109,13 @@ function stableSort(array, comparator) {
 }
 
 function queryFilter(array, searchString) {
-  if (!searchString || !searchString.trim()) {
-      return array;
-  }
+    if (!searchString || !searchString.trim()) {
+        return array;
+    }
 
-  return array.filter((game) => {
-      return headCells.filter((header) => game[header.id].toString().toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
-  });
+    return array.filter((game) => {
+        return headCells.filter((header) => game[header.id].toString().toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
+    });
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -124,17 +124,22 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function PlayersTable(props) {
+function HeadToHeadTable(props) {
     const classes = useStyles();
-    const [players, setPlayers] = useState([]);
+    const [games, setGames] = useState([]);
+    const [player, setPlayer] = useState("");
     const [page, setPage] = useState(0);
-    const [order, setOrder] = React.useState('desc');
-    const [orderBy, setOrderBy] = React.useState('wins');
+    const [order, setOrder] = useState('desc');
+    const [orderBy, setOrderBy] = useState('games');
     const [search, setSearch] = useState("");
 
     useEffect(() => {
-      setPlayers(props.players);
-    }, [props.players]);
+        setGames(props.games);
+    }, [props.games]);
+
+    useEffect(() => {
+      setPlayer(props.player);
+    }, [props.player]);
 
     const handleSort = (event, property) => {
       const isAsc = orderBy === property && order === 'asc';
@@ -142,32 +147,50 @@ function PlayersTable(props) {
       setOrderBy(property);
     }
 
-    const playerRows = ((players && players.map((player) => {
-        return {player: player.name, id: player.pid, wins: Number(player.wins), losses: Number(player.losses), elo: Number(player.elo)};
-    })) || []);
+    const headToHeadObj = {};
 
-    const queriedPlayerRows = queryFilter(playerRows, search);
-    const emptyRows = 10 - Math.min(10, queriedPlayerRows.length - page * 10);
+    for (const game of games) {
+        let playerIndex = Number(game['player0_id']) === Number(player) ? 0 : 1;
+        let didPlayerWin = Number(game.winner) === playerIndex;
+
+        for (let i = 0; i < 4; i++) {
+          if (!game['player' + i + "_id"] || Number(game['player' + i + "_id"]) === Number(player)) {
+            continue;
+          }
+
+          if (!(game['player' + i + "_id"] in headToHeadObj)) {
+            headToHeadObj[game['player' + i + "_id"]] = {name: game['player' + i + "_name"], wins: 0, losses: 0};
+          }
+
+          headToHeadObj[game['player' + i + "_id"]].wins += didPlayerWin;
+          headToHeadObj[game['player' + i + "_id"]].losses += !didPlayerWin;
+        }
+    }
+
+    const headToHeadArr = Object.entries(headToHeadObj).map((entry) => { return {name: entry[1].name, id: Number(entry[0]), wins: entry[1].wins, losses: entry[1].losses, games: entry[1].wins + entry[1].losses};});
+
+    const queriedHeadToHeadRows = queryFilter(headToHeadArr, search);
+    const emptyRows = 10 - Math.min(10, queriedHeadToHeadRows.length - page * 10);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
-    
+
     return (
-        <div className="PlayersTable">
+        <div>
           <TableContainer component={Paper}>
-            <Table width="100%" style={{backgroundColor: "rgb(24, 26, 27)"}}>
+            <Table classes={classes} style={{backgroundColor: "rgb(24, 26, 27)"}}>
                 <colgroup>
-                    <col width="50%" />
-                    <col width="15%" />
-                    <col width="15%" />
-                    <col width="20%" />
+                    <col width="70%" />
+                    <col width="10%" />
+                    <col width="10%" />
+                    <col width="10%" />
                 </colgroup>
                 <TableHead>
-                <TableRow>
-                    <TableCell className="player-cell" colSpan={2}><h3>Standings</h3></TableCell>
-                    <TableCell className="player-cell" colSpan={2}><TextField id="player-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
-                </TableRow>
+                    <TableRow>
+                        <TableCell className="game-cell" colSpan={2}><h3>H2H Results</h3></TableCell>
+                        <TableCell className="game-cell" colSpan={2}><TextField id="head-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                    </TableRow>
                 </TableHead>
                 <EnhancedTableHeader
                   classes={classes}
@@ -178,23 +201,28 @@ function PlayersTable(props) {
                   padEmptyCell={false}
                 />
                 <TableBody>
-                {playerRows && (stableSort(queriedPlayerRows, getComparator(order, orderBy)).slice(page * 10, (page+1) * 10)).map((row) => (
-                    <TableRow hover={true} key={row.id}>
-                        <TableCell className="player-cell" component="th" scope="row">
+                {stableSort(queriedHeadToHeadRows, getComparator(order, orderBy))
+                  .slice(page * 10, (page+1) * 10)
+                  .map((row, index) => {
+                    return (
+                      <TableRow hover={true} key={row.id} style={{backgroundColor: row.colour}}>
+                        <TableCell className="game-cell" component="th" scope="row">
                             <Link
                                 href={"/player?pid=" + row.id}
                             >
-                                {row.player}
+                                {row.name}
                             </Link>
                         </TableCell>
-                        <TableCell className="player-cell" align="right">{row.wins}</TableCell>
-                        <TableCell className="player-cell" align="right">{row.losses}</TableCell>
-                        <TableCell className="player-cell" align="right">{props.isSeasonX ? row.elo : Math.round(row.elo)}</TableCell>
-                    </TableRow>
-                ))}
+                        <TableCell className="game-cell" align="right" >{row.wins}</TableCell>
+                        <TableCell className="game-cell" align="right" >{row.losses}</TableCell>
+                        <TableCell className="game-cell" align="right" >{row.games}</TableCell>
+                      </TableRow>
+                    );
+                })}
+
                 {emptyRows > 0 && (
                   <TableRow style={{ height: 53 * emptyRows }}>
-                    <TableCell colSpan={4} />
+                    <TableCell colSpan={5} />
                   </TableRow>
                 )}
                 </TableBody>
@@ -203,7 +231,7 @@ function PlayersTable(props) {
                         <TablePagination
                             rowsPerPageOptions={[10]}
                             colSpan={4}
-                            count={queriedPlayerRows.length}
+                            count={queriedHeadToHeadRows.length}
                             page={page}
                             rowsPerPage={10}
                             SelectProps={{
@@ -218,11 +246,8 @@ function PlayersTable(props) {
                 </TableFooter>
             </Table>
           </TableContainer>
-            <p>* Note: Elo Rating is independent of Warzone Rating
-            <br/>** All seasons (except Season X) use Elo (μ=1500)
-            <br/>*** Season X uses TrueSkill (μ=25; σ=25/3)</p>
         </div>
     );
 }
 
-export default PlayersTable;
+export default HeadToHeadTable;

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { getLadders, getColours } from './api';
+import { getLadders, getColours } from '../../api';
 import { Container, Grid } from '@material-ui/core';
 import { ResponsiveContainer, LineChart, Label, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line, BarChart, Bar } from 'recharts';
 import './LandingPage.css';
-import Card from './components/Card';
-import LadderTable from './components/LadderTable';
-import LaddersCard from './components/LaddersCard';
-import { LandingPageTitle, LandingPageDescription, LandingPageSeasonalTitle, LandingPageSeasonalDescription, colourMapping } from './Constants';
+import Card from '../../components/Cards/Card/Card';
+import LadderTable from '../../components/Tables/LadderTable/LadderTable';
+import LaddersCard from '../../components/Cards/LaddersCard/LaddersCard';
+import { LandingPageTitle, LandingPageDescription, LandingPageSeasonalTitle, LandingPageSeasonalDescription, colourMapping } from '../../Constants';
 
 function LandingPage() {
 

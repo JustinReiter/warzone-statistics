@@ -3,8 +3,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Container } from '@material-ui/core';
 import queryString from 'query-string';
 import './LadderPage.css';
-import { getLadder } from './api';
-import LadderOverview from './components/LadderOverview';
+import { getLadder } from '../../api';
+import LadderOverview from '../../components/LadderOverview/LadderOverview';
 
 function LaddersPage(props) {
     let [ladder, setLadder] = useState({});

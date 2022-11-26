@@ -1,8 +1,8 @@
 import React, { Fragment } from 'react';
 import { Card } from 'react-bootstrap';
 import { Grid, Container, Link } from '@material-ui/core';
-import { triviaList } from './Constants';
-import './PlayerPage.css';
+import { triviaList } from '../../Constants';
+import './TriviaPage.css';
 
 function renderLinks(links) {
     return links.map((link, idx) => (<Fragment key={idx}><Link target="_blank" rel="noopener noreferrer" href={link.link}>{link.text}</Link><br/></Fragment>));

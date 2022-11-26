@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
-import LadderCard from './LadderCard';
+import LadderCard from '../../Cards/LadderCard/LadderCard';
 import './LadderTable.css';
 
 function LadderTable(props) {

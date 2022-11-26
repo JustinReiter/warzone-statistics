@@ -2,7 +2,7 @@ import { CardActionArea, Grid, Link, Paper, Table, TableContainer, TableBody, Ta
 import React, { Fragment } from 'react';
 import { Badge, Card } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
-import { warzoneSeasonUrl, warzoneTemplateURL } from '../Constants';
+import { warzoneSeasonUrl, warzoneTemplateURL } from '../../../Constants';
 import './LadderCard.css';
 
 const formatDateString = (date) => {

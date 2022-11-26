@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, TextField } from '@material-ui/core';
+import { Container, Table, TableContainer, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, TextField } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
-import EnhancedTableHeader from './EnhancedTableHeader';
-import './HeadToHeadTable.css';
+import EnhancedTableHeader from '../../components/EnhancedTableHeader/EnhancedTableHeader';
+import { getUsers } from '../../api';
+import './PlayersPage.css';
 
 const useStyles1 = makeStyles((theme) => ({
     root: {
@@ -76,17 +77,18 @@ function TablePaginationActions(props) {
 }
 
 const headCells = [
-  { id: 'name', numeric: false, disablePadding: false, label: 'Opponent' },
+  { id: 'player', numeric: false, disablePadding: false, label: 'Player' },
   { id: 'wins', numeric: true, disablePadding: false, label: 'Wins' },
   { id: 'losses', numeric: true, disablePadding: false, label: 'Losses' },
   { id: 'games', numeric: true, disablePadding: false, label: 'Games' },
+  { id: 'seasonsPlayed', numeric: true, disablePadding: false, label: 'Seasons Played' },
 ];
 
 function descendingComparator(a, b, column) {
-  if (column === 'name') {
+  if (column === "player") {
     return a[column] > b[column] ? 1 : -1;
   } else {
-    return a[column] < b[column] ? 1 : -1;
+    return Number(a[column]) < Number(b[column]) ? 1 : -1;
   }
 }
 
@@ -109,13 +111,13 @@ function stableSort(array, comparator) {
 }
 
 function queryFilter(array, searchString) {
-    if (!searchString || !searchString.trim()) {
-        return array;
-    }
+  if (!searchString || !searchString.trim()) {
+      return array;
+  }
 
-    return array.filter((game) => {
-        return headCells.filter((header) => game[header.id].toString().toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
-    });
+  return array.filter((player) => {
+      return headCells.filter((header) => player[header.id].toString().toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
+  });
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -124,105 +126,83 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function HeadToHeadTable(props) {
+
+function PlayersPage(props) {
     const classes = useStyles();
-    const [games, setGames] = useState([]);
-    const [player, setPlayer] = useState("");
+    const [players, setPlayers] = useState([]);
     const [page, setPage] = useState(0);
-    const [order, setOrder] = useState('desc');
-    const [orderBy, setOrderBy] = useState('games');
+    const [order, setOrder] = React.useState('desc');
+    const [orderBy, setOrderBy] = React.useState('wins');
     const [search, setSearch] = useState("");
 
     useEffect(() => {
-        setGames(props.games);
-    }, [props.games]);
+      getUsers().then((players) => {
+        setPlayers(players.data.users);
+      });
+    }, []);
 
-    useEffect(() => {
-      setPlayer(props.player);
-    }, [props.player]);
+    const playerRows = ((players && players.map((player) => {
+        return {player: player.name, id: player.pid, wins: Number(player.wins), losses: Number(player.losses), games: Number(player.wins) + Number(player.losses), seasonsPlayed: Number(player.count)};
+    })) || []);
+
+    const queriedPlayerRows = queryFilter(playerRows, search);
+    const emptyRows = 10 - Math.min(10, queriedPlayerRows.length - page * 10);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
 
     const handleSort = (event, property) => {
       const isAsc = orderBy === property && order === 'asc';
       setOrder(isAsc ? 'desc' : 'asc');
       setOrderBy(property);
     }
-
-    const headToHeadObj = {};
-
-    for (const game of games) {
-        let playerIndex = Number(game['player0_id']) === Number(player) ? 0 : 1;
-        let didPlayerWin = Number(game.winner) === playerIndex;
-
-        for (let i = 0; i < 4; i++) {
-          if (!game['player' + i + "_id"] || Number(game['player' + i + "_id"]) === Number(player)) {
-            continue;
-          }
-
-          if (!(game['player' + i + "_id"] in headToHeadObj)) {
-            headToHeadObj[game['player' + i + "_id"]] = {name: game['player' + i + "_name"], wins: 0, losses: 0};
-          }
-
-          headToHeadObj[game['player' + i + "_id"]].wins += didPlayerWin;
-          headToHeadObj[game['player' + i + "_id"]].losses += !didPlayerWin;
-        }
-    }
-
-    const headToHeadArr = Object.entries(headToHeadObj).map((entry) => { return {name: entry[1].name, id: Number(entry[0]), wins: entry[1].wins, losses: entry[1].losses, games: entry[1].wins + entry[1].losses};});
-
-    const queriedHeadToHeadRows = queryFilter(headToHeadArr, search);
-    const emptyRows = 10 - Math.min(10, queriedHeadToHeadRows.length - page * 10);
-
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-
+    
     return (
-        <div>
+      <div className="players-page">
+        <Container maxWidth="lg">
           <TableContainer component={Paper}>
-            <Table classes={classes} style={{backgroundColor: "rgb(24, 26, 27)"}}>
+            <Table width="100%" style={{backgroundColor: "rgb(24, 26, 27)"}}>
                 <colgroup>
-                    <col width="70%" />
-                    <col width="10%" />
-                    <col width="10%" />
-                    <col width="10%" />
+                    <col width="40%" />
+                    <col width="14%" />
+                    <col width="14%" />
+                    <col width="14%" />
+                    <col width="18%" />
                 </colgroup>
                 <TableHead>
-                    <TableRow>
-                        <TableCell className="game-cell" colSpan={2}><h3>H2H Results</h3></TableCell>
-                        <TableCell className="game-cell" colSpan={2}><TextField id="head-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
-                    </TableRow>
+                  <TableRow>
+                      <TableCell className="player-cell" colSpan={3}><h3>Player Standings</h3></TableCell>
+                      <TableCell className="player-cell" colSpan={2}><TextField id="players-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                  </TableRow>
                 </TableHead>
                 <EnhancedTableHeader
-                  classes={classes}
-                  order={order}
-                  orderBy={orderBy}
-                  onRequestSort={handleSort}
-                  headerCells={headCells}
-                  padEmptyCell={false}
-                />
+                    classes={classes}
+                    order={order}
+                    orderBy={orderBy}
+                    onRequestSort={handleSort}
+                    headerCells={headCells}
+                    padEmptyCell={false}
+                  />
                 <TableBody>
-                {stableSort(queriedHeadToHeadRows, getComparator(order, orderBy))
-                  .slice(page * 10, (page+1) * 10)
-                  .map((row, index) => {
-                    return (
-                      <TableRow hover={true} key={row.id} style={{backgroundColor: row.colour}}>
-                        <TableCell className="game-cell" component="th" scope="row">
+                {playerRows && (stableSort(queriedPlayerRows, getComparator(order, orderBy)).slice(page * 10, (page+1) * 10)).map((row) => (
+                    <TableRow hover={true} key={row.id}>
+                        <TableCell className="player-cell" component="th" scope="row">
                             <Link
                                 href={"/player?pid=" + row.id}
                             >
-                                {row.name}
+                                {row.player}
                             </Link>
                         </TableCell>
-                        <TableCell className="game-cell" align="right" >{row.wins}</TableCell>
-                        <TableCell className="game-cell" align="right" >{row.losses}</TableCell>
-                        <TableCell className="game-cell" align="right" >{row.games}</TableCell>
-                      </TableRow>
-                    );
-                })}
-
+                        <TableCell className="player-cell" align="right">{row.wins}</TableCell>
+                        <TableCell className="player-cell" align="right">{row.losses}</TableCell>
+                        <TableCell className="player-cell" align="right">{row.games}</TableCell>
+                        <TableCell className="player-cell" align="right">{row.seasonsPlayed}</TableCell>
+                    </TableRow>
+                ))}
                 {emptyRows > 0 && (
                   <TableRow style={{ height: 53 * emptyRows }}>
-                    <TableCell colSpan={5} />
+                    <TableCell colSpan={4} />
                   </TableRow>
                 )}
                 </TableBody>
@@ -230,8 +210,8 @@ function HeadToHeadTable(props) {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[10]}
-                            colSpan={4}
-                            count={queriedHeadToHeadRows.length}
+                            colSpan={5}
+                            count={queriedPlayerRows.length}
                             page={page}
                             rowsPerPage={10}
                             SelectProps={{
@@ -246,8 +226,9 @@ function HeadToHeadTable(props) {
                 </TableFooter>
             </Table>
           </TableContainer>
-        </div>
+        </Container>
+      </div>
     );
 }
 
-export default HeadToHeadTable;
+export default PlayersPage;

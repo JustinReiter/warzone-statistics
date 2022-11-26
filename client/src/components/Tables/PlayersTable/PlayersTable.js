@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Table, TableContainer, TableBody, TableCell, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, TextField } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, TextField } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
-import EnhancedTableHeader from './components/EnhancedTableHeader';
-import { getUsers } from './api';
-import './PlayersPage.css';
+import EnhancedTableHeader from '../../EnhancedTableHeader/EnhancedTableHeader';
+import './PlayersTable.css';
 
 const useStyles1 = makeStyles((theme) => ({
     root: {
@@ -80,15 +79,14 @@ const headCells = [
   { id: 'player', numeric: false, disablePadding: false, label: 'Player' },
   { id: 'wins', numeric: true, disablePadding: false, label: 'Wins' },
   { id: 'losses', numeric: true, disablePadding: false, label: 'Losses' },
-  { id: 'games', numeric: true, disablePadding: false, label: 'Games' },
-  { id: 'seasonsPlayed', numeric: true, disablePadding: false, label: 'Seasons Played' },
+  { id: 'elo', numeric: true, disablePadding: false, label: 'Rating' },
 ];
 
 function descendingComparator(a, b, column) {
   if (column === "player") {
     return a[column] > b[column] ? 1 : -1;
   } else {
-    return Number(a[column]) < Number(b[column]) ? 1 : -1;
+    return a[column] < b[column] ? 1 : -1;
   }
 }
 
@@ -115,8 +113,8 @@ function queryFilter(array, searchString) {
       return array;
   }
 
-  return array.filter((player) => {
-      return headCells.filter((header) => player[header.id].toString().toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
+  return array.filter((game) => {
+      return headCells.filter((header) => game[header.id].toString().toLowerCase().indexOf(searchString.toLowerCase()) >= 0).length > 0;
   });
 }
 
@@ -126,8 +124,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-
-function PlayersPage(props) {
+function PlayersTable(props) {
     const classes = useStyles();
     const [players, setPlayers] = useState([]);
     const [page, setPage] = useState(0);
@@ -136,13 +133,17 @@ function PlayersPage(props) {
     const [search, setSearch] = useState("");
 
     useEffect(() => {
-      getUsers().then((players) => {
-        setPlayers(players.data.users);
-      });
-    }, []);
+      setPlayers(props.players);
+    }, [props.players]);
+
+    const handleSort = (event, property) => {
+      const isAsc = orderBy === property && order === 'asc';
+      setOrder(isAsc ? 'desc' : 'asc');
+      setOrderBy(property);
+    }
 
     const playerRows = ((players && players.map((player) => {
-        return {player: player.name, id: player.pid, wins: Number(player.wins), losses: Number(player.losses), games: Number(player.wins) + Number(player.losses), seasonsPlayed: Number(player.count)};
+        return {player: player.name, id: player.pid, wins: Number(player.wins), losses: Number(player.losses), elo: Number(player.elo)};
     })) || []);
 
     const queriedPlayerRows = queryFilter(playerRows, search);
@@ -151,39 +152,31 @@ function PlayersPage(props) {
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
-
-    const handleSort = (event, property) => {
-      const isAsc = orderBy === property && order === 'asc';
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(property);
-    }
     
     return (
-      <div className="players-page">
-        <Container maxWidth="lg">
+        <div className="PlayersTable">
           <TableContainer component={Paper}>
             <Table width="100%" style={{backgroundColor: "rgb(24, 26, 27)"}}>
                 <colgroup>
-                    <col width="40%" />
-                    <col width="14%" />
-                    <col width="14%" />
-                    <col width="14%" />
-                    <col width="18%" />
+                    <col width="50%" />
+                    <col width="15%" />
+                    <col width="15%" />
+                    <col width="20%" />
                 </colgroup>
                 <TableHead>
-                  <TableRow>
-                      <TableCell className="player-cell" colSpan={3}><h3>Player Standings</h3></TableCell>
-                      <TableCell className="player-cell" colSpan={2}><TextField id="players-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
-                  </TableRow>
+                <TableRow>
+                    <TableCell className="player-cell" colSpan={2}><h3>Standings</h3></TableCell>
+                    <TableCell className="player-cell" colSpan={2}><TextField id="player-search-field" label="Search" value={search} onChange={(event) => setSearch(event.target.value)} /></TableCell>
+                </TableRow>
                 </TableHead>
                 <EnhancedTableHeader
-                    classes={classes}
-                    order={order}
-                    orderBy={orderBy}
-                    onRequestSort={handleSort}
-                    headerCells={headCells}
-                    padEmptyCell={false}
-                  />
+                  classes={classes}
+                  order={order}
+                  orderBy={orderBy}
+                  onRequestSort={handleSort}
+                  headerCells={headCells}
+                  padEmptyCell={false}
+                />
                 <TableBody>
                 {playerRows && (stableSort(queriedPlayerRows, getComparator(order, orderBy)).slice(page * 10, (page+1) * 10)).map((row) => (
                     <TableRow hover={true} key={row.id}>
@@ -196,8 +189,7 @@ function PlayersPage(props) {
                         </TableCell>
                         <TableCell className="player-cell" align="right">{row.wins}</TableCell>
                         <TableCell className="player-cell" align="right">{row.losses}</TableCell>
-                        <TableCell className="player-cell" align="right">{row.games}</TableCell>
-                        <TableCell className="player-cell" align="right">{row.seasonsPlayed}</TableCell>
+                        <TableCell className="player-cell" align="right">{props.isSeasonX ? row.elo : Math.round(row.elo)}</TableCell>
                     </TableRow>
                 ))}
                 {emptyRows > 0 && (
@@ -210,7 +202,7 @@ function PlayersPage(props) {
                     <TableRow>
                         <TablePagination
                             rowsPerPageOptions={[10]}
-                            colSpan={5}
+                            colSpan={4}
                             count={queriedPlayerRows.length}
                             page={page}
                             rowsPerPage={10}
@@ -226,9 +218,11 @@ function PlayersPage(props) {
                 </TableFooter>
             </Table>
           </TableContainer>
-        </Container>
-      </div>
+            <p>* Note: Elo Rating is independent of Warzone Rating
+            <br/>** All seasons (except Season X) use Elo (μ=1500)
+            <br/>*** Season X uses TrueSkill (μ=25; σ=25/3)</p>
+        </div>
     );
 }
 
-export default PlayersPage;
+export default PlayersTable;

@@ -2,8 +2,8 @@ import React, { useEffect, useState, Fragment } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, Paper, Link, IconButton, TextField } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { FirstPage as FirstPageIcon, KeyboardArrowLeft, KeyboardArrowRight, LastPage as LastPageIcon } from '@material-ui/icons';
-import EnhancedTableHeader from './EnhancedTableHeader';
-import { warzoneGameUrl, seasonMapping } from '../Constants';
+import EnhancedTableHeader from '../../EnhancedTableHeader/EnhancedTableHeader';
+import { warzoneGameUrl, seasonMapping } from '../../../Constants';
 import './GamesTable.css';
 
 const useStyles1 = makeStyles((theme) => ({

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Container } from '@material-ui/core';
 import './LaddersPage.css';
-import { getLadders } from './api';
-import Card from './components/Card';
-import LadderTable from './components/LadderTable';
+import { getLadders } from '../../api';
+import Card from '../../components/Cards/Card/Card';
+import LadderTable from '../../components/Tables/LadderTable/LadderTable';
 
-import { LaddersPageTitle, LaddersPageDescription } from './Constants';
+import { LaddersPageTitle, LaddersPageDescription } from '../../Constants';
 
 function LadderPage() {
     let [ladders, setLadders] = useState([]);

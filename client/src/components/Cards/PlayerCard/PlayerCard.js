@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { Card } from 'react-bootstrap';
 import { CardActionArea, Grid, Table, TableHead, TableCell, TableBody, TableRow, Paper, Link } from '@material-ui/core';
-import { warzoneProfileUrl } from '../Constants';
+import { warzoneProfileUrl } from '../../../Constants';
 import './PlayerCard.css';
 
 // Render the card container dependent on if card should be clickable
